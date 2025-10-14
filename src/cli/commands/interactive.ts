@@ -6,12 +6,13 @@
 
 import { Command } from 'commander';
 import inquirer from 'inquirer';
-import { logger } from '../utils/logger';
-import { ConfigManager } from '../utils/config';
-import { initCommand } from './init';
-import { scanCommand } from './scan';
-import { fixCommand } from './fix';
-import { syncCommand } from './sync';
+import { logger } from '../utils/logger.js';
+import { ConfigManager } from '../utils/config.js';
+import { Tool } from '../../types/index.js';
+import { initCommand } from './init.js';
+import { scanCommand } from './scan.js';
+import { fixCommand } from './fix.js';
+import { syncCommand } from './sync.js';
 
 export async function interactiveCommand(): Promise<void> {
   try {
@@ -24,7 +25,7 @@ export async function interactiveCommand(): Promise<void> {
     let needsInit = !credentials;
 
     if (!needsInit) {
-      logger.success(`Already initialized for assistant: ${configManager.loadConfig()?.assistantId}`);
+      logger.success(`Already initialized for organization: ${configManager.loadConfig()?.organizationId}`);
       const { reinit } = await inquirer.prompt([
         {
           type: 'confirm',
@@ -126,7 +127,7 @@ export async function interactiveCommand(): Promise<void> {
     }
 
     // Step 4: Fix issues
-    const toolsWithIssues = currentTools.tools.filter(t => t.issues && t.issues.length > 0);
+    const toolsWithIssues = currentTools.tools.filter((t: Tool) => t.issues && t.issues.length > 0);
     if (toolsWithIssues.length > 0) {
       logger.section('Step 4: Fix Issues');
       logger.warn(`Found ${toolsWithIssues.length} tools with issues`);
@@ -149,7 +150,7 @@ export async function interactiveCommand(): Promise<void> {
     logger.section('Step 5: Sync to Interworky');
 
     const reloadedTools = configManager.loadTools()!;
-    const enabledCount = reloadedTools.tools.filter(t => t.enabled).length;
+    const enabledCount = reloadedTools.tools.filter((t: Tool) => t.enabled).length;
 
     const { syncNow } = await inquirer.prompt([
       {

@@ -2,6 +2,7 @@
   "name": "carla-nextjs",
   "version": "1.0.0",
   "description": "Next.js plugin for Carla AI assistant with automatic API route scanning and tool generation",
+  "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {

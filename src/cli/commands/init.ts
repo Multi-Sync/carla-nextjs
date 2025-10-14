@@ -6,14 +6,14 @@
 
 import { Command } from 'commander';
 import inquirer from 'inquirer';
-import { logger } from '../utils/logger';
-import { ConfigManager } from '../utils/config';
-import { InterworkyAPI } from '../api/interworky';
+import { logger } from '../utils/logger.js';
+import { ConfigManager } from '../utils/config.js';
+import { InterworkyAPI } from '../api/interworky.js';
 
 export interface InitOptions {
   accessToken?: string;
   apiUrl?: string;
-  assistantId?: string;
+  organizationId?: string;
 }
 
 export async function initCommand(options: InitOptions): Promise<void> {
@@ -58,23 +58,23 @@ export async function initCommand(options: InitOptions): Promise<void> {
       accessToken = answers.accessToken;
     }
 
-    // Get assistant ID
-    let assistantId = options.assistantId || process.env.INTERWORKY_ASSISTANT_ID;
-    if (!assistantId) {
+    // Get organization ID
+    let organizationId = options.organizationId || process.env.INTERWORKY_ORGANIZATION_ID;
+    if (!organizationId) {
       const answers = await inquirer.prompt([
         {
           type: 'input',
-          name: 'assistantId',
-          message: 'Enter your assistant ID:',
+          name: 'organizationId',
+          message: 'Enter your organization ID:',
           validate: (input: string) => {
             if (!input || input.trim().length === 0) {
-              return 'Assistant ID is required';
+              return 'Organization ID is required';
             }
             return true;
           },
         },
       ]);
-      assistantId = answers.assistantId;
+      organizationId = answers.organizationId;
     }
 
     // Get API URL (with default)
@@ -98,13 +98,13 @@ export async function initCommand(options: InitOptions): Promise<void> {
       configManager.saveCredentials({
         accessToken: accessToken!,
         apiUrl: apiUrl!,
-        assistantId: assistantId!,
+        organizationId: organizationId!,
       });
 
       logger.succeedSpinner('Configuration saved');
 
       logger.section('✅ Initialization Complete');
-      logger.success(`Assistant ID: ${assistantId}`);
+      logger.success(`Organization ID: ${organizationId}`);
       logger.success(`API URL: ${apiUrl}`);
 
       logger.section('📝 Next Steps');
@@ -136,7 +136,7 @@ export function registerInitCommand(program: Command): void {
     .command('init')
     .description('Initialize and authenticate with Interworky')
     .option('-t, --access-token <token>', 'Interworky access token (JWT)')
-    .option('-a, --assistant-id <id>', 'Assistant ID')
-    .option('-u, --api-url <url>', 'Interworky API URL', 'http://localhost:8080/api')
+    .option('-o, --organization-id <id>', 'Organization ID')
+    .option('-u, --api-url <url>', 'Interworky API URL', 'http://localhost:3015/api')
     .action(initCommand);
 }

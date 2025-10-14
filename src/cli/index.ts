@@ -7,12 +7,12 @@
  */
 
 import { Command } from 'commander';
-import { registerInitCommand } from './commands/init';
-import { registerScanCommand } from './commands/scan';
-import { registerSyncCommand } from './commands/sync';
-import { registerStatusCommand } from './commands/status';
-import { registerFixCommand } from './commands/fix';
-import { registerInteractiveCommand } from './commands/interactive';
+import { registerInitCommand } from './commands/init.js';
+import { registerScanCommand } from './commands/scan.js';
+import { registerSyncCommand } from './commands/sync.js';
+import { registerStatusCommand } from './commands/status.js';
+import { registerFixCommand } from './commands/fix.js';
+import { registerInteractiveCommand } from './commands/interactive.js';
 import chalk from 'chalk';
 
 const program = new Command();

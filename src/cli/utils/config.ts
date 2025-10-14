@@ -4,7 +4,7 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import { CarlaConfig, ToolsConfig } from '../../types';
+import { CarlaConfig, ToolsConfig } from '../../types/index.js';
 
 const CONFIG_DIR = '.carla';
 const CONFIG_FILE = 'config.json';
@@ -118,12 +118,12 @@ export class ConfigManager {
   saveCredentials(credentials: {
     accessToken: string;
     apiUrl: string;
-    assistantId: string;
+    organizationId: string;
   }): void {
     const config: CarlaConfig = {
       accessToken: credentials.accessToken,
       apiUrl: credentials.apiUrl,
-      assistantId: credentials.assistantId,
+      organizationId: credentials.organizationId,
       lastSync: null,
     };
     this.saveConfig(config);
@@ -132,7 +132,7 @@ export class ConfigManager {
   /**
    * Get credentials
    */
-  getCredentials(): { accessToken: string; apiUrl: string; assistantId: string } | null {
+  getCredentials(): { accessToken: string; apiUrl: string; organizationId: string } | null {
     const config = this.loadConfig();
     if (!config || !config.accessToken) {
       return null;
@@ -140,7 +140,7 @@ export class ConfigManager {
     return {
       accessToken: config.accessToken,
       apiUrl: config.apiUrl,
-      assistantId: config.assistantId,
+      organizationId: config.organizationId,
     };
   }
 

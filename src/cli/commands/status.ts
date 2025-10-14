@@ -5,9 +5,10 @@
  */
 
 import { Command } from 'commander';
-import { logger } from '../utils/logger';
-import { ConfigManager } from '../utils/config';
-import { InterworkyAPI } from '../api/interworky';
+import { logger } from '../utils/logger.js';
+import { ConfigManager } from '../utils/config.js';
+import { InterworkyAPI } from '../api/interworky.js';
+import { Tool } from '../../types/index.js';
 
 export interface StatusOptions {
   verbose?: boolean;
@@ -29,7 +30,7 @@ export async function statusCommand(options: StatusOptions): Promise<void> {
       return;
     }
 
-    logger.success(`Assistant ID: ${config.assistantId}`);
+    logger.success(`Organization ID: ${config.organizationId}`);
     logger.info(`API URL: ${config.apiUrl}`);
 
     // Check local tools
@@ -40,9 +41,9 @@ export async function statusCommand(options: StatusOptions): Promise<void> {
       logger.warn('No tools scanned');
       logger.info('Run: npx carla-nextjs scan');
     } else {
-      const enabledCount = toolsConfig.tools.filter(t => t.enabled).length;
+      const enabledCount = toolsConfig.tools.filter((t: Tool) => t.enabled).length;
       const disabledCount = toolsConfig.tools.length - enabledCount;
-      const toolsWithIssues = toolsConfig.tools.filter(t => t.issues && t.issues.length > 0);
+      const toolsWithIssues = toolsConfig.tools.filter((t: Tool) => t.issues && t.issues.length > 0);
 
       logger.success(`Total: ${toolsConfig.tools.length} tools`);
       logger.info(`  ✓ Enabled: ${enabledCount}`);
@@ -57,9 +58,9 @@ export async function statusCommand(options: StatusOptions): Promise<void> {
       // Show tools with issues if verbose
       if (options.verbose && toolsWithIssues.length > 0) {
         logger.section('⚠️  Tools with Issues');
-        toolsWithIssues.forEach(tool => {
+        toolsWithIssues.forEach((tool: Tool) => {
           logger.warn(`${tool.name}:`);
-          tool.issues!.forEach(issue => {
+          tool.issues!.forEach((issue: string) => {
             logger.info(`    - ${issue}`);
           });
         });
@@ -146,7 +147,7 @@ export async function statusCommand(options: StatusOptions): Promise<void> {
       }
     }
     if (toolsConfig) {
-      const toolsWithIssues = toolsConfig.tools.filter(t => t.issues && t.issues.length > 0);
+      const toolsWithIssues = toolsConfig.tools.filter((t: Tool) => t.issues && t.issues.length > 0);
       if (toolsWithIssues.length > 0) {
         suggestions.push('Fix tool issues: npx carla-nextjs fix');
       }

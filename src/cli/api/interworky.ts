@@ -5,7 +5,7 @@
  */
 
 import axios, { AxiosInstance } from 'axios';
-import { OrganizationMethod, Tool } from '../../types';
+import { OrganizationMethod, Tool } from '../../types/index.js';
 
 export interface AuthResponse {
   token: string;
@@ -175,13 +175,13 @@ export class InterworkyAPI {
   /**
    * Sync tools to Interworky
    */
-  async syncTools(tools: Tool[], assistantId: string): Promise<SyncResponse> {
+  async syncTools(tools: Tool[], organizationId: string): Promise<SyncResponse> {
     try {
       // Convert tools to organization methods format
       const methods: OrganizationMethod[] = tools.map(tool => this.toolToMethod(tool));
 
       const response = await this.client.post('/organization-methods/bulk', {
-        assistant_id: assistantId,
+        organization_id: organizationId,
         methods,
       });
 
@@ -249,8 +249,8 @@ export class InterworkyAPI {
     // Convert parameters to dynamic_params format
     const dynamic_params = Object.entries(tool.parameters.properties).map(([name, prop]) => ({
       field_name: name,
-      field_type: prop.type,
-      field_description: prop.description,
+      field_type: (prop as { type: string; description: string }).type,
+      field_description: (prop as { type: string; description: string }).description,
       field_required: tool.parameters.required.includes(name),
     }));
 

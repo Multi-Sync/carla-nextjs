@@ -5,9 +5,10 @@
  */
 
 import { Command } from 'commander';
-import { logger } from '../utils/logger';
-import { ConfigManager } from '../utils/config';
-import { InterworkyAPI } from '../api/interworky';
+import { logger } from '../utils/logger.js';
+import { ConfigManager } from '../utils/config.js';
+import { InterworkyAPI } from '../api/interworky.js';
+import { Tool } from '../../types/index.js';
 
 export interface SyncOptions {
   force?: boolean;
@@ -37,7 +38,7 @@ export async function syncCommand(options: SyncOptions): Promise<void> {
     // Filter tools if needed
     let toolsToSync = toolsConfig.tools;
     if (options.enabledOnly) {
-      toolsToSync = toolsToSync.filter(t => t.enabled);
+      toolsToSync = toolsToSync.filter((t: Tool) => t.enabled);
       logger.info(`Syncing ${toolsToSync.length} enabled tools (${toolsConfig.tools.length - toolsToSync.length} disabled)`);
     } else {
       logger.info(`Syncing ${toolsToSync.length} tools`);
@@ -55,7 +56,7 @@ export async function syncCommand(options: SyncOptions): Promise<void> {
     try {
       // Sync tools
       logger.updateSpinnerText('Syncing tools...');
-      const result = await api.syncTools(toolsToSync, credentials.assistantId);
+      const result = await api.syncTools(toolsToSync, credentials.organizationId);
 
       logger.succeedSpinner('Sync complete');
 

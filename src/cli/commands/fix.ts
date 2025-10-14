@@ -5,10 +5,10 @@
  */
 
 import { Command } from 'commander';
-import { logger } from '../utils/logger';
-import { ConfigManager } from '../utils/config';
-import { ToolFixer } from '../fixer/tool-fixer';
-import { ToolsConfig } from '../../types';
+import { logger } from '../utils/logger.js';
+import { ConfigManager } from '../utils/config.js';
+import { ToolFixer, FixResult } from '../fixer/tool-fixer.js';
+import { ToolsConfig } from '../../types/index.js';
 
 export interface FixOptions {
   dryRun?: boolean;
@@ -42,8 +42,8 @@ export async function fixCommand(options: FixOptions): Promise<void> {
     const results = fixer.fixAll(toolsConfig.tools);
 
     // Count fixes
-    const fixedTools = results.filter(r => r.fixed);
-    const totalFixes = results.reduce((sum, r) => sum + r.fixes.length, 0);
+    const fixedTools = results.filter((r: FixResult) => r.fixed);
+    const totalFixes = results.reduce((sum: number, r: FixResult) => sum + r.fixes.length, 0);
 
     if (fixedTools.length === 0) {
       logger.success('No issues found - all tools are good! 🎉');

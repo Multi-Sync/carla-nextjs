@@ -5,11 +5,11 @@
  */
 
 import { Command } from 'commander';
-import { logger } from '../utils/logger';
-import { ConfigManager } from '../utils/config';
-import { ApiRouteScanner } from '../scanner/api-routes';
-import { ToolGenerator } from '../generator/tool-generator';
-import { ToolsConfig, ScanResult } from '../../types';
+import { logger } from '../utils/logger.js';
+import { ConfigManager } from '../utils/config.js';
+import { ApiRouteScanner } from '../scanner/api-routes.js';
+import { ToolGenerator } from '../generator/tool-generator.js';
+import { ToolsConfig, ScanResult } from '../../types/index.js';
 
 export interface ScanOptions {
   force?: boolean;
