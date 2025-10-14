@@ -162,7 +162,7 @@ export async function interactiveCommand(): Promise<void> {
     ]);
 
     if (syncNow) {
-      await syncCommand({ enabledOnly: true });
+      await syncCommand({}); // Now always syncs enabled tools only
     }
 
     // Complete

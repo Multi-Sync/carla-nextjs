@@ -13,6 +13,7 @@ import { registerSyncCommand } from './commands/sync.js';
 import { registerStatusCommand } from './commands/status.js';
 import { registerFixCommand } from './commands/fix.js';
 import { registerInteractiveCommand } from './commands/interactive.js';
+import { registerGenerateMCPCommand } from './commands/generate-mcp.js';
 import chalk from 'chalk';
 
 const program = new Command();
@@ -41,6 +42,7 @@ registerSyncCommand(program);
 registerStatusCommand(program);
 registerFixCommand(program);
 registerInteractiveCommand(program);
+registerGenerateMCPCommand(program);
 
 // Handle natural language input (future)
 const args = process.argv.slice(2);

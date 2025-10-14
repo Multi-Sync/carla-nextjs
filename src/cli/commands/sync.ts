@@ -12,7 +12,6 @@ import { Tool } from '../../types/index.js';
 
 export interface SyncOptions {
   force?: boolean;
-  enabledOnly?: boolean;
 }
 
 export async function syncCommand(options: SyncOptions): Promise<void> {
@@ -35,13 +34,14 @@ export async function syncCommand(options: SyncOptions): Promise<void> {
 
     logger.section('🔄 Syncing Tools to Interworky');
 
-    // Filter tools if needed
-    let toolsToSync = toolsConfig.tools;
-    if (options.enabledOnly) {
-      toolsToSync = toolsToSync.filter((t: Tool) => t.enabled);
-      logger.info(`Syncing ${toolsToSync.length} enabled tools (${toolsConfig.tools.length - toolsToSync.length} disabled)`);
+    // Filter disabled tools (always filter by default for security)
+    let toolsToSync = toolsConfig.tools.filter((t: Tool) => t.enabled);
+    const disabledCount = toolsConfig.tools.length - toolsToSync.length;
+
+    if (disabledCount > 0) {
+      logger.info(`Syncing ${toolsToSync.length} enabled tools (${disabledCount} disabled tools excluded)`);
     } else {
-      logger.info(`Syncing ${toolsToSync.length} tools`);
+      logger.info(`Syncing ${toolsToSync.length} enabled tools`);
     }
 
     if (toolsToSync.length === 0) {
@@ -102,8 +102,7 @@ export async function syncCommand(options: SyncOptions): Promise<void> {
 export function registerSyncCommand(program: Command): void {
   program
     .command('sync')
-    .description('Sync tools to Interworky')
+    .description('Sync enabled tools to Interworky (disabled tools are excluded)')
     .option('-f, --force', 'Force sync even if already synced')
-    .option('--enabled-only', 'Only sync enabled tools')
     .action(syncCommand);
 }
