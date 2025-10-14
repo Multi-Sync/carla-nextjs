@@ -11,6 +11,8 @@ import { registerInitCommand } from './commands/init';
 import { registerScanCommand } from './commands/scan';
 import { registerSyncCommand } from './commands/sync';
 import { registerStatusCommand } from './commands/status';
+import { registerFixCommand } from './commands/fix';
+import { registerInteractiveCommand } from './commands/interactive';
 import chalk from 'chalk';
 
 const program = new Command();
@@ -37,6 +39,8 @@ registerInitCommand(program);
 registerScanCommand(program);
 registerSyncCommand(program);
 registerStatusCommand(program);
+registerFixCommand(program);
+registerInteractiveCommand(program);
 
 // Handle natural language input (future)
 const args = process.argv.slice(2);
