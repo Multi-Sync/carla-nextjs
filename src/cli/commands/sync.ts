@@ -50,12 +50,12 @@ export async function syncCommand(options: SyncOptions): Promise<void> {
 
     // Initialize API client
     logger.startSpinner('Connecting to Interworky...');
-    const api = new InterworkyAPI(credentials.apiKey, credentials.apiUrl);
+    const api = new InterworkyAPI(credentials.accessToken, credentials.apiUrl);
 
     try {
       // Sync tools
       logger.updateSpinnerText('Syncing tools...');
-      const result = await api.syncTools(toolsToSync);
+      const result = await api.syncTools(toolsToSync, credentials.assistantId);
 
       logger.succeedSpinner('Sync complete');
 

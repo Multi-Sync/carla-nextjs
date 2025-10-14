@@ -11,8 +11,9 @@ import { ConfigManager } from '../utils/config';
 import { InterworkyAPI } from '../api/interworky';
 
 export interface InitOptions {
-  apiKey?: string;
+  accessToken?: string;
   apiUrl?: string;
+  assistantId?: string;
 }
 
 export async function initCommand(options: InitOptions): Promise<void> {
@@ -22,7 +23,7 @@ export async function initCommand(options: InitOptions): Promise<void> {
     logger.section('🚀 Initialize Carla NextJS');
 
     // Check if already initialized
-    if (configManager.hasCredentials() && !options.apiKey) {
+    if (configManager.hasCredentials() && !options.accessToken) {
       const { reinit } = await inquirer.prompt([
         {
           type: 'confirm',
@@ -38,57 +39,72 @@ export async function initCommand(options: InitOptions): Promise<void> {
       }
     }
 
-    // Get API key
-    let apiKey = options.apiKey;
-    if (!apiKey) {
+    // Check environment variable first
+    let accessToken = options.accessToken || process.env.INTERWORKY_ACCESS_TOKEN;
+    if (!accessToken) {
       const answers = await inquirer.prompt([
         {
           type: 'password',
-          name: 'apiKey',
-          message: 'Enter your Interworky API key:',
+          name: 'accessToken',
+          message: 'Enter your Interworky access token (JWT):',
           validate: (input: string) => {
             if (!input || input.trim().length === 0) {
-              return 'API key is required';
+              return 'Access token is required';
             }
             return true;
           },
         },
       ]);
-      apiKey = answers.apiKey;
+      accessToken = answers.accessToken;
+    }
+
+    // Get assistant ID
+    let assistantId = options.assistantId || process.env.INTERWORKY_ASSISTANT_ID;
+    if (!assistantId) {
+      const answers = await inquirer.prompt([
+        {
+          type: 'input',
+          name: 'assistantId',
+          message: 'Enter your assistant ID:',
+          validate: (input: string) => {
+            if (!input || input.trim().length === 0) {
+              return 'Assistant ID is required';
+            }
+            return true;
+          },
+        },
+      ]);
+      assistantId = answers.assistantId;
     }
 
     // Get API URL (with default)
-    let apiUrl = options.apiUrl;
+    let apiUrl = options.apiUrl || process.env.INTERWORKY_API_URL;
     if (!apiUrl) {
       const answers = await inquirer.prompt([
         {
           type: 'input',
           name: 'apiUrl',
           message: 'Interworky API URL:',
-          default: 'https://api.interworky.com',
+          default: 'http://localhost:8080/api',
         },
       ]);
       apiUrl = answers.apiUrl;
     }
 
-    // Validate API key
-    logger.startSpinner('Validating API key...');
-    const api = new InterworkyAPI(apiKey!, apiUrl!);
+    logger.startSpinner('Validating credentials...');
 
     try {
-      const orgInfo = await api.validateApiKey();
-      logger.succeedSpinner('API key validated');
-
       // Save configuration
       configManager.saveCredentials({
-        apiKey: apiKey!,
+        accessToken: accessToken!,
         apiUrl: apiUrl!,
-        organizationId: orgInfo.organizationId,
-        organizationName: orgInfo.organizationName,
+        assistantId: assistantId!,
       });
 
+      logger.succeedSpinner('Configuration saved');
+
       logger.section('✅ Initialization Complete');
-      logger.success(`Organization: ${orgInfo.organizationName}`);
+      logger.success(`Assistant ID: ${assistantId}`);
       logger.success(`API URL: ${apiUrl}`);
 
       logger.section('📝 Next Steps');
@@ -98,11 +114,11 @@ export async function initCommand(options: InitOptions): Promise<void> {
         'Sync to Interworky: npx carla-nextjs sync',
       ]);
     } catch (error) {
-      logger.failSpinner('API key validation failed');
+      logger.failSpinner('Initialization failed');
       if (error instanceof Error) {
         logger.error(error.message);
       }
-      logger.info('Please check your API key and try again');
+      logger.info('Please check your credentials and try again');
       process.exit(1);
     }
   } catch (error) {
@@ -119,7 +135,8 @@ export function registerInitCommand(program: Command): void {
   program
     .command('init')
     .description('Initialize and authenticate with Interworky')
-    .option('-k, --api-key <key>', 'Interworky API key')
-    .option('-u, --api-url <url>', 'Interworky API URL', 'https://api.interworky.com')
+    .option('-t, --access-token <token>', 'Interworky access token (JWT)')
+    .option('-a, --assistant-id <id>', 'Assistant ID')
+    .option('-u, --api-url <url>', 'Interworky API URL', 'http://localhost:8080/api')
     .action(initCommand);
 }

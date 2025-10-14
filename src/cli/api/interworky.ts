@@ -158,53 +158,30 @@ export interface SyncResponse {
 
 export class InterworkyAPI {
   private client: AxiosInstance;
-  private apiKey: string;
+  private accessToken: string;
 
-  constructor(apiKey: string, baseURL: string = 'https://api.interworky.com') {
-    this.apiKey = apiKey;
+  constructor(accessToken: string, baseURL: string = 'https://api.interworky.com') {
+    this.accessToken = accessToken;
     this.client = axios.create({
       baseURL,
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': apiKey,
+        'Authorization': `Bearer ${accessToken}`,
       },
       timeout: 30000,
     });
   }
 
   /**
-   * Validate API key and get organization info
-   */
-  async validateApiKey(): Promise<OrganizationInfo> {
-    try {
-      const response = await this.client.get('/api/auth/validate-key');
-      return {
-        organizationId: response.data.organizationId || response.data.organization_id,
-        organizationName: response.data.organizationName || response.data.organization_name,
-      };
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        if (error.response?.status === 401 || error.response?.status === 403) {
-          throw new Error('Invalid API key');
-        }
-        if (error.response?.status === 404) {
-          throw new Error('Organization not found');
-        }
-        throw new Error(error.response?.data?.message || 'Failed to validate API key');
-      }
-      throw error;
-    }
-  }
-
-  /**
    * Sync tools to Interworky
    */
-  async syncTools(tools: Tool[]): Promise<SyncResponse> {
+  async syncTools(tools: Tool[], assistantId: string): Promise<SyncResponse> {
     try {
       // Convert tools to organization methods format
       const methods: OrganizationMethod[] = tools.map(tool => this.toolToMethod(tool));
 
-      const response = await this.client.post('/api/organization-methods/bulk', {
+      const response = await this.client.post('/organization-methods/bulk', {
+        assistant_id: assistantId,
         methods,
       });
 
@@ -225,9 +202,9 @@ export class InterworkyAPI {
   /**
    * Get synced tools from Interworky
    */
-  async getTools(): Promise<OrganizationMethod[]> {
+  async getTools(organizationId: string): Promise<OrganizationMethod[]> {
     try {
-      const response = await this.client.get('/api/organization-methods');
+      const response = await this.client.get(`/organization-methods/organization/${organizationId}`);
       return response.data.methods || response.data || [];
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -242,7 +219,7 @@ export class InterworkyAPI {
    */
   async updateTool(toolId: string, updates: Partial<OrganizationMethod>): Promise<void> {
     try {
-      await this.client.put(`/api/organization-methods/${toolId}`, updates);
+      await this.client.put(`/organization-methods/${toolId}`, updates);
     } catch (error) {
       if (axios.isAxiosError(error)) {
         throw new Error(error.response?.data?.message || 'Failed to update tool');
@@ -256,7 +233,7 @@ export class InterworkyAPI {
    */
   async deleteTool(toolId: string): Promise<void> {
     try {
-      await this.client.delete(`/api/organization-methods/${toolId}`);
+      await this.client.delete(`/organization-methods/${toolId}`);
     } catch (error) {
       if (axios.isAxiosError(error)) {
         throw new Error(error.response?.data?.message || 'Failed to delete tool');

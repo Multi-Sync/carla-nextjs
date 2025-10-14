@@ -109,23 +109,21 @@ export class ConfigManager {
    */
   hasCredentials(): boolean {
     const config = this.loadConfig();
-    return config !== null && !!config.apiKey;
+    return config !== null && !!config.accessToken;
   }
 
   /**
    * Save credentials
    */
   saveCredentials(credentials: {
-    apiKey: string;
+    accessToken: string;
     apiUrl: string;
-    organizationId: string;
-    organizationName: string;
+    assistantId: string;
   }): void {
     const config: CarlaConfig = {
-      apiKey: credentials.apiKey,
+      accessToken: credentials.accessToken,
       apiUrl: credentials.apiUrl,
-      organizationId: credentials.organizationId,
-      organizationName: credentials.organizationName,
+      assistantId: credentials.assistantId,
       lastSync: null,
     };
     this.saveConfig(config);
@@ -134,14 +132,15 @@ export class ConfigManager {
   /**
    * Get credentials
    */
-  getCredentials(): { apiKey: string; apiUrl: string } | null {
+  getCredentials(): { accessToken: string; apiUrl: string; assistantId: string } | null {
     const config = this.loadConfig();
-    if (!config || !config.apiKey) {
+    if (!config || !config.accessToken) {
       return null;
     }
     return {
-      apiKey: config.apiKey,
+      accessToken: config.accessToken,
       apiUrl: config.apiUrl,
+      assistantId: config.assistantId,
     };
   }
 

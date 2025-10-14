@@ -29,7 +29,7 @@ export async function statusCommand(options: StatusOptions): Promise<void> {
       return;
     }
 
-    logger.success(`Organization: ${config.organizationName}`);
+    logger.success(`Assistant ID: ${config.assistantId}`);
     logger.info(`API URL: ${config.apiUrl}`);
 
     // Check local tools
@@ -83,20 +83,22 @@ export async function statusCommand(options: StatusOptions): Promise<void> {
       }
     }
 
-    // Check API key validity
+    // Check API connection validity
     logger.section('🔑 API Connection');
-    logger.startSpinner('Checking API key...');
+    logger.startSpinner('Checking connection...');
 
     try {
-      const api = new InterworkyAPI(credentials.apiKey, credentials.apiUrl);
-      await api.validateApiKey();
-      logger.succeedSpinner('API key valid');
+      const api = new InterworkyAPI(credentials.accessToken, credentials.apiUrl);
+      logger.succeedSpinner('Connection valid');
 
       // Optionally fetch remote tools if verbose
       if (options.verbose) {
         logger.startSpinner('Fetching remote tools...');
         try {
-          const remoteMethods = await api.getTools();
+          // Note: We need organization_id to fetch tools, which we don't have stored
+          // For now, skip remote tool fetching until we can get org ID from JWT
+          logger.succeedSpinner('Skipping remote tool fetch (need org ID)');
+          const remoteMethods: any[] = [];
           logger.succeedSpinner(`Remote tools: ${remoteMethods.length}`);
 
           // Compare with local

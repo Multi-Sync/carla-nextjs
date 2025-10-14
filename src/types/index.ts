@@ -61,10 +61,9 @@ export interface ToolsConfig {
 }
 
 export interface CarlaConfig {
-  organizationId: string;
-  organizationName: string;
-  apiKey: string;
+  accessToken: string;
   apiUrl: string;
+  assistantId: string;
   lastSync: string | null;
 }
 

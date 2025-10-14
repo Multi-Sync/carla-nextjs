@@ -24,7 +24,7 @@ export async function interactiveCommand(): Promise<void> {
     let needsInit = !credentials;
 
     if (!needsInit) {
-      logger.success(`Already initialized for: ${configManager.loadConfig()?.organizationName}`);
+      logger.success(`Already initialized for assistant: ${configManager.loadConfig()?.assistantId}`);
       const { reinit } = await inquirer.prompt([
         {
           type: 'confirm',
