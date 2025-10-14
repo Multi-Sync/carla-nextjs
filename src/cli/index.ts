@@ -7,7 +7,10 @@
  */
 
 import { Command } from 'commander';
+import { registerInitCommand } from './commands/init';
 import { registerScanCommand } from './commands/scan';
+import { registerSyncCommand } from './commands/sync';
+import { registerStatusCommand } from './commands/status';
 import chalk from 'chalk';
 
 const program = new Command();
@@ -30,7 +33,10 @@ const banner = `
 console.log(banner);
 
 // Register commands
+registerInitCommand(program);
 registerScanCommand(program);
+registerSyncCommand(program);
+registerStatusCommand(program);
 
 // Handle natural language input (future)
 const args = process.argv.slice(2);

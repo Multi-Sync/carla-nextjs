@@ -103,4 +103,64 @@ export class ConfigManager {
   getProjectRoot(): string {
     return this.projectRoot;
   }
+
+  /**
+   * Check if credentials exist
+   */
+  hasCredentials(): boolean {
+    const config = this.loadConfig();
+    return config !== null && !!config.apiKey;
+  }
+
+  /**
+   * Save credentials
+   */
+  saveCredentials(credentials: {
+    apiKey: string;
+    apiUrl: string;
+    organizationId: string;
+    organizationName: string;
+  }): void {
+    const config: CarlaConfig = {
+      apiKey: credentials.apiKey,
+      apiUrl: credentials.apiUrl,
+      organizationId: credentials.organizationId,
+      organizationName: credentials.organizationName,
+      lastSync: null,
+    };
+    this.saveConfig(config);
+  }
+
+  /**
+   * Get credentials
+   */
+  getCredentials(): { apiKey: string; apiUrl: string } | null {
+    const config = this.loadConfig();
+    if (!config || !config.apiKey) {
+      return null;
+    }
+    return {
+      apiKey: config.apiKey,
+      apiUrl: config.apiUrl,
+    };
+  }
+
+  /**
+   * Update last sync time
+   */
+  updateLastSync(timestamp: string): void {
+    const config = this.loadConfig();
+    if (config) {
+      config.lastSync = timestamp;
+      this.saveConfig(config);
+    }
+  }
+
+  /**
+   * Get last sync time
+   */
+  getLastSync(): string | null {
+    const config = this.loadConfig();
+    return config?.lastSync || null;
+  }
 }

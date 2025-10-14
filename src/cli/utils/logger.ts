@@ -32,6 +32,12 @@ export class Logger {
     this.spinner = ora(text).start();
   }
 
+  updateSpinnerText(text: string): void {
+    if (this.spinner) {
+      this.spinner.text = text;
+    }
+  }
+
   succeedSpinner(text: string): void {
     if (this.spinner) {
       this.spinner.succeed(text);

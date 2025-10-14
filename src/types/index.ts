@@ -62,9 +62,10 @@ export interface ToolsConfig {
 
 export interface CarlaConfig {
   organizationId: string;
-  assistantId: string;
-  apiToken: string;
-  interworkyApiUrl: string;
+  organizationName: string;
+  apiKey: string;
+  apiUrl: string;
+  lastSync: string | null;
 }
 
 export interface ScanResult {
