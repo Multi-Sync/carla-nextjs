@@ -1,153 +1,12 @@
 /**
  * Interworky API Client
  *
- * Handles communication with Interworky Core API
+ * Handles communication with Interworky Core API using hardcoded authentication
  */
 
 import axios, { AxiosInstance } from 'axios';
-import { OrganizationMethod, Tool } from '../../types';
-
-export interface AuthResponse {
-  token: string;
-  user: {
-    id: string;
-    email: string;
-    first_name: string;
-    last_name: string;
-  };
-}
-
-export interface OrganizationResponse {
-  organization: {
-    id: string;
-    organization_name: string;
-    organization_website: string;
-    creator_user_id: string;
-  };
-}
-
-export interface AssistantResponse {
-  id: string;
-  organization_id: string;
-  assistant_id: string;
-  assistant_name: string;
-}
-
-export interface BulkMethodsResponse {
-  methods: OrganizationMethod[];
-}
-
-export class InterworkyClient {
-  private client: AxiosInstance;
-  private token: string | null = null;
-
-  constructor(baseURL: string = 'https://api.interworky.com') {
-    this.client = axios.create({
-      baseURL,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-  }
-
-  /**
-   * Set authentication token
-   */
-  setToken(token: string): void {
-    this.token = token;
-    this.client.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-  }
-
-  /**
-   * Authenticate with email and password
-   */
-  async login(email: string, password: string): Promise<AuthResponse> {
-    const response = await this.client.post('/api/login', {
-      email,
-      password,
-    });
-
-    if (response.data.token) {
-      this.setToken(response.data.token);
-    }
-
-    return response.data;
-  }
-
-  /**
-   * Get user's organizations
-   */
-  async getOrganizations(userId: string): Promise<OrganizationResponse[]> {
-    const response = await this.client.get(`/api/organizations/user/${userId}`);
-    return response.data;
-  }
-
-  /**
-   * Get organization by ID
-   */
-  async getOrganization(orgId: string): Promise<OrganizationResponse> {
-    const response = await this.client.get(`/api/organizations/${orgId}`);
-    return response.data;
-  }
-
-  /**
-   * Get assistant info for organization
-   */
-  async getAssistantInfo(orgId: string): Promise<AssistantResponse> {
-    const response = await this.client.get(`/api/assistant-info/${orgId}`);
-    return response.data;
-  }
-
-  /**
-   * Create organization methods in bulk
-   */
-  async createBulkMethods(
-    assistantId: string,
-    methods: OrganizationMethod[]
-  ): Promise<BulkMethodsResponse> {
-    const response = await this.client.post('/api/organization-methods/bulk', {
-      assistant_id: assistantId,
-      methods,
-    });
-    return response.data;
-  }
-
-  /**
-   * Get organization methods
-   */
-  async getOrganizationMethods(orgId: string): Promise<OrganizationMethod[]> {
-    const response = await this.client.get(
-      `/api/organization-methods/organization/${orgId}`
-    );
-    return response.data;
-  }
-
-  /**
-   * Update a single organization method
-   */
-  async updateMethod(methodId: string, method: Partial<OrganizationMethod>): Promise<OrganizationMethod> {
-    const response = await this.client.put(
-      `/api/organization-methods/${methodId}`,
-      method
-    );
-    return response.data;
-  }
-
-  /**
-   * Delete an organization method
-   */
-  async deleteMethod(methodId: string): Promise<void> {
-    await this.client.delete(`/api/organization-methods/${methodId}`);
-  }
-}
-
-/**
- * Simplified API client for API key-based authentication
- */
-export interface OrganizationInfo {
-  organizationId: string;
-  organizationName: string;
-}
+import { OrganizationMethod, Tool } from '../../types/index.js';
+import { CARLA_ACCESS_TOKEN, INTERWORKY_API_URL } from '../../config/auth.js';
 
 export interface SyncResponse {
   success: boolean;
@@ -158,42 +17,26 @@ export interface SyncResponse {
 
 export class InterworkyAPI {
   private client: AxiosInstance;
-  private apiKey: string;
+  private organizationId: string;
 
-  constructor(apiKey: string, baseURL: string = 'https://api.interworky.com') {
-    this.apiKey = apiKey;
+  constructor(organizationId: string) {
+    this.organizationId = organizationId;
+
     this.client = axios.create({
-      baseURL,
+      baseURL: INTERWORKY_API_URL,
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': apiKey,
+        'Authorization': `Bearer ${CARLA_ACCESS_TOKEN}`,
       },
       timeout: 30000,
     });
   }
 
   /**
-   * Validate API key and get organization info
+   * Get organization ID
    */
-  async validateApiKey(): Promise<OrganizationInfo> {
-    try {
-      const response = await this.client.get('/api/auth/validate-key');
-      return {
-        organizationId: response.data.organizationId || response.data.organization_id,
-        organizationName: response.data.organizationName || response.data.organization_name,
-      };
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        if (error.response?.status === 401 || error.response?.status === 403) {
-          throw new Error('Invalid API key');
-        }
-        if (error.response?.status === 404) {
-          throw new Error('Organization not found');
-        }
-        throw new Error(error.response?.data?.message || 'Failed to validate API key');
-      }
-      throw error;
-    }
+  getOrganizationId(): string {
+    return this.organizationId;
   }
 
   /**
@@ -204,7 +47,8 @@ export class InterworkyAPI {
       // Convert tools to organization methods format
       const methods: OrganizationMethod[] = tools.map(tool => this.toolToMethod(tool));
 
-      const response = await this.client.post('/api/organization-methods/bulk', {
+      const response = await this.client.post('/organization-methods/bulk', {
+        organization_id: this.organizationId,
         methods,
       });
 
@@ -227,7 +71,7 @@ export class InterworkyAPI {
    */
   async getTools(): Promise<OrganizationMethod[]> {
     try {
-      const response = await this.client.get('/api/organization-methods');
+      const response = await this.client.get(`/organization-methods/organization/${this.organizationId}`);
       return response.data.methods || response.data || [];
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -242,7 +86,7 @@ export class InterworkyAPI {
    */
   async updateTool(toolId: string, updates: Partial<OrganizationMethod>): Promise<void> {
     try {
-      await this.client.put(`/api/organization-methods/${toolId}`, updates);
+      await this.client.put(`/organization-methods/${toolId}`, updates);
     } catch (error) {
       if (axios.isAxiosError(error)) {
         throw new Error(error.response?.data?.message || 'Failed to update tool');
@@ -256,7 +100,7 @@ export class InterworkyAPI {
    */
   async deleteTool(toolId: string): Promise<void> {
     try {
-      await this.client.delete(`/api/organization-methods/${toolId}`);
+      await this.client.delete(`/organization-methods/${toolId}`);
     } catch (error) {
       if (axios.isAxiosError(error)) {
         throw new Error(error.response?.data?.message || 'Failed to delete tool');
@@ -272,8 +116,8 @@ export class InterworkyAPI {
     // Convert parameters to dynamic_params format
     const dynamic_params = Object.entries(tool.parameters.properties).map(([name, prop]) => ({
       field_name: name,
-      field_type: prop.type,
-      field_description: prop.description,
+      field_type: (prop as { type: string; description: string }).type,
+      field_description: (prop as { type: string; description: string }).description,
       field_required: tool.parameters.required.includes(name),
     }));
 

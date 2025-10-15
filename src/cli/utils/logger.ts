@@ -68,6 +68,10 @@ export class Logger {
       console.log('  •', item);
     });
   }
+
+  code(code: string): void {
+    console.log(chalk.gray(code));
+  }
 }
 
 export const logger = new Logger();

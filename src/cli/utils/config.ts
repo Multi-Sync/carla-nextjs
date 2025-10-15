@@ -4,7 +4,7 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import { CarlaConfig, ToolsConfig } from '../../types';
+import { CarlaConfig, ToolsConfig } from '../../types/index.js';
 
 const CONFIG_DIR = '.carla';
 const CONFIG_FILE = 'config.json';
@@ -113,36 +113,65 @@ export class ConfigManager {
   }
 
   /**
-   * Save credentials
+   * Save API key
    */
-  saveCredentials(credentials: {
-    apiKey: string;
-    apiUrl: string;
-    organizationId: string;
-    organizationName: string;
-  }): void {
+  saveApiKey(apiKey: string): void {
     const config: CarlaConfig = {
-      apiKey: credentials.apiKey,
-      apiUrl: credentials.apiUrl,
-      organizationId: credentials.organizationId,
-      organizationName: credentials.organizationName,
+      apiKey,
       lastSync: null,
     };
     this.saveConfig(config);
   }
 
   /**
-   * Get credentials
+   * Get API key
    */
-  getCredentials(): { apiKey: string; apiUrl: string } | null {
+  getApiKey(): string | null {
     const config = this.loadConfig();
     if (!config || !config.apiKey) {
       return null;
     }
-    return {
-      apiKey: config.apiKey,
-      apiUrl: config.apiUrl,
-    };
+    return config.apiKey;
+  }
+
+  /**
+   * Legacy support: Save credentials (deprecated)
+   */
+  saveCredentials(credentials: {
+    accessToken: string;
+    apiUrl?: string;
+    organizationId: string;
+  }): void {
+    // Encode as Next.js API key format
+    const apiKey = Buffer.from(`${credentials.organizationId}$$${credentials.accessToken}`).toString('base64');
+    this.saveApiKey(apiKey);
+  }
+
+  /**
+   * Legacy support: Get credentials (deprecated)
+   */
+  getCredentials(): { accessToken: string; apiUrl: string; organizationId: string } | null {
+    const apiKey = this.getApiKey();
+    if (!apiKey) {
+      return null;
+    }
+
+    try {
+      const decoded = Buffer.from(apiKey, 'base64').toString('utf-8');
+      const [organizationId, accessToken] = decoded.split('$$');
+
+      if (!organizationId || !accessToken) {
+        return null;
+      }
+
+      return {
+        accessToken,
+        apiUrl: 'https://interworky.com/api-core/api', // Default API URL
+        organizationId,
+      };
+    } catch (error) {
+      return null;
+    }
   }
 
   /**
@@ -162,5 +191,45 @@ export class ConfigManager {
   getLastSync(): string | null {
     const config = this.loadConfig();
     return config?.lastSync || null;
+  }
+
+  /**
+   * Detect if project uses TypeScript or JavaScript
+   */
+  isTypeScriptProject(): boolean {
+    // Check for tsconfig.json
+    const tsconfigPath = path.join(this.projectRoot, 'tsconfig.json');
+    if (fs.existsSync(tsconfigPath)) {
+      return true;
+    }
+
+    // Check for TypeScript files in app/api or pages/api
+    const apiDirs = [
+      path.join(this.projectRoot, 'app', 'api'),
+      path.join(this.projectRoot, 'src', 'app', 'api'),
+      path.join(this.projectRoot, 'pages', 'api'),
+      path.join(this.projectRoot, 'src', 'pages', 'api'),
+    ];
+
+    for (const dir of apiDirs) {
+      if (fs.existsSync(dir)) {
+        const files = fs.readdirSync(dir, { recursive: true });
+        const hasTsFiles = files.some((file: any) =>
+          typeof file === 'string' && (file.endsWith('.ts') || file.endsWith('.tsx'))
+        );
+        if (hasTsFiles) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  /**
+   * Get file extension for the project (.ts or .js)
+   */
+  getFileExtension(): 'ts' | 'js' {
+    return this.isTypeScriptProject() ? 'ts' : 'js';
   }
 }

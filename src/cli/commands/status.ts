@@ -5,9 +5,12 @@
  */
 
 import { Command } from 'commander';
-import { logger } from '../utils/logger';
-import { ConfigManager } from '../utils/config';
-import { InterworkyAPI } from '../api/interworky';
+import { logger } from '../utils/logger.js';
+import { ConfigManager } from '../utils/config.js';
+import { InterworkyAPI } from '../api/interworky.js';
+import { Tool } from '../../types/index.js';
+import { getApiKeyFromEnv, decodeApiKey } from '../../utils/decode-api-key.js';
+import { INTERWORKY_API_URL } from '../../config/auth.js';
 
 export interface StatusOptions {
   verbose?: boolean;
@@ -19,18 +22,23 @@ export async function statusCommand(options: StatusOptions): Promise<void> {
   try {
     logger.section('📊 Carla NextJS Status');
 
-    // Check initialization
-    const credentials = configManager.getCredentials();
-    const config = configManager.loadConfig();
+    // Get API key and decode
+    let apiKey: string;
+    let orgId: string;
 
-    if (!credentials || !config) {
-      logger.error('Not initialized');
-      logger.info('Run: npx carla-nextjs init');
+    try {
+      apiKey = getApiKeyFromEnv();
+      const decoded = decodeApiKey(apiKey);
+      orgId = decoded.orgId;
+
+      logger.success(`Organization ID: ${orgId}`);
+      logger.info(`API URL: ${INTERWORKY_API_URL}`);
+    } catch (error) {
+      logger.error('API key not configured');
+      logger.info('Add NEXT_PUBLIC_CARLA_API_KEY to your .env.local file');
+      logger.info('Get your API key from: https://interworky.com/dashboard/integrations');
       return;
     }
-
-    logger.success(`Organization: ${config.organizationName}`);
-    logger.info(`API URL: ${config.apiUrl}`);
 
     // Check local tools
     const toolsConfig = configManager.loadTools();
@@ -40,9 +48,9 @@ export async function statusCommand(options: StatusOptions): Promise<void> {
       logger.warn('No tools scanned');
       logger.info('Run: npx carla-nextjs scan');
     } else {
-      const enabledCount = toolsConfig.tools.filter(t => t.enabled).length;
+      const enabledCount = toolsConfig.tools.filter((t: Tool) => t.enabled).length;
       const disabledCount = toolsConfig.tools.length - enabledCount;
-      const toolsWithIssues = toolsConfig.tools.filter(t => t.issues && t.issues.length > 0);
+      const toolsWithIssues = toolsConfig.tools.filter((t: Tool) => t.issues && t.issues.length > 0);
 
       logger.success(`Total: ${toolsConfig.tools.length} tools`);
       logger.info(`  ✓ Enabled: ${enabledCount}`);
@@ -57,9 +65,9 @@ export async function statusCommand(options: StatusOptions): Promise<void> {
       // Show tools with issues if verbose
       if (options.verbose && toolsWithIssues.length > 0) {
         logger.section('⚠️  Tools with Issues');
-        toolsWithIssues.forEach(tool => {
+        toolsWithIssues.forEach((tool: Tool) => {
           logger.warn(`${tool.name}:`);
-          tool.issues!.forEach(issue => {
+          tool.issues!.forEach((issue: string) => {
             logger.info(`    - ${issue}`);
           });
         });
@@ -83,48 +91,37 @@ export async function statusCommand(options: StatusOptions): Promise<void> {
       }
     }
 
-    // Check API key validity
+    // Check API connection validity
     logger.section('🔑 API Connection');
-    logger.startSpinner('Checking API key...');
+    logger.startSpinner('Checking connection...');
 
     try {
-      const api = new InterworkyAPI(credentials.apiKey, credentials.apiUrl);
-      await api.validateApiKey();
-      logger.succeedSpinner('API key valid');
+      const api = new InterworkyAPI(orgId);
+      const remoteMethods = await api.getTools();
+      logger.succeedSpinner('Connection valid');
 
-      // Optionally fetch remote tools if verbose
       if (options.verbose) {
-        logger.startSpinner('Fetching remote tools...');
-        try {
-          const remoteMethods = await api.getTools();
-          logger.succeedSpinner(`Remote tools: ${remoteMethods.length}`);
+        logger.success(`Remote tools: ${remoteMethods.length}`);
 
-          // Compare with local
-          if (toolsConfig) {
-            const localCount = toolsConfig.tools.length;
-            const diff = remoteMethods.length - localCount;
+        // Compare with local
+        if (toolsConfig) {
+          const localCount = toolsConfig.tools.length;
+          const diff = remoteMethods.length - localCount;
 
-            if (diff > 0) {
-              logger.info(`Remote has ${diff} more tools than local`);
-            } else if (diff < 0) {
-              logger.info(`Local has ${Math.abs(diff)} more tools than remote`);
-            } else {
-              logger.success('Local and remote tool counts match');
-            }
-          }
-        } catch (error) {
-          logger.failSpinner('Failed to fetch remote tools');
-          if (error instanceof Error) {
-            logger.error(error.message);
+          if (diff > 0) {
+            logger.info(`Remote has ${diff} more tools than local`);
+          } else if (diff < 0) {
+            logger.info(`Local has ${Math.abs(diff)} more tools than remote`);
+          } else {
+            logger.success('Local and remote tool counts match');
           }
         }
       }
     } catch (error) {
-      logger.failSpinner('API key invalid');
+      logger.failSpinner('API connection failed');
       if (error instanceof Error) {
         logger.error(error.message);
       }
-      logger.info('Run: npx carla-nextjs init');
     }
 
     // Next steps
@@ -144,7 +141,7 @@ export async function statusCommand(options: StatusOptions): Promise<void> {
       }
     }
     if (toolsConfig) {
-      const toolsWithIssues = toolsConfig.tools.filter(t => t.issues && t.issues.length > 0);
+      const toolsWithIssues = toolsConfig.tools.filter((t: Tool) => t.issues && t.issues.length > 0);
       if (toolsWithIssues.length > 0) {
         suggestions.push('Fix tool issues: npx carla-nextjs fix');
       }

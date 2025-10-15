@@ -7,4 +7,4 @@
  * Provides commands for scanning, syncing, and managing Carla tools.
  */
 
-require('../dist/cli/index.js');
+import('../dist/cli/index.js');
