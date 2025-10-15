@@ -32,6 +32,12 @@ export class Logger {
     this.spinner = ora(text).start();
   }
 
+  updateSpinnerText(text: string): void {
+    if (this.spinner) {
+      this.spinner.text = text;
+    }
+  }
+
   succeedSpinner(text: string): void {
     if (this.spinner) {
       this.spinner.succeed(text);
@@ -61,6 +67,10 @@ export class Logger {
     items.forEach(item => {
       console.log('  •', item);
     });
+  }
+
+  code(code: string): void {
+    console.log(chalk.gray(code));
   }
 }
 
