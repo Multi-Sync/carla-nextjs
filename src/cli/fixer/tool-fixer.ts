@@ -4,7 +4,7 @@
  * Auto-fixes common issues in tool definitions
  */
 
-import { Tool } from '../../types';
+import { Tool } from '../../types/index.js';
 
 export interface FixResult {
   tool: Tool;
@@ -130,10 +130,11 @@ export class ToolFixer {
     const properties = { ...tool.parameters.properties };
 
     for (const [name, prop] of Object.entries(properties)) {
-      if (!prop.description || prop.description.trim() === '' || prop.description === `The ${name} parameter`) {
+      const typedProp = prop as { type: string; description: string };
+      if (!typedProp.description || typedProp.description.trim() === '' || typedProp.description === `The ${name} parameter`) {
         properties[name] = {
-          ...prop,
-          description: this.generateParameterDescription(name, prop.type, tool),
+          ...typedProp,
+          description: this.generateParameterDescription(name, typedProp.type, tool),
         };
         count++;
       }
@@ -257,14 +258,14 @@ export class ToolFixer {
 
     // Check if parameter issues are resolved
     const allParamsHaveDescriptions = Object.values(tool.parameters.properties).every(
-      prop => prop.description && prop.description.trim() !== ''
+      prop => (prop as { type: string; description: string }).description && (prop as { type: string; description: string }).description.trim() !== ''
     );
     if (allParamsHaveDescriptions) {
       resolvedIssues.add('missing_parameter_descriptions');
     }
 
     // Filter out resolved issues
-    return tool.issues.filter(issue => !resolvedIssues.has(issue));
+    return tool.issues.filter((issue: string) => !resolvedIssues.has(issue));
   }
 
   /**

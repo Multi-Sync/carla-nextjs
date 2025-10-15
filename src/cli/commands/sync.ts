@@ -5,25 +5,23 @@
  */
 
 import { Command } from 'commander';
-import { logger } from '../utils/logger';
-import { ConfigManager } from '../utils/config';
-import { InterworkyAPI } from '../api/interworky';
+import { logger } from '../utils/logger.js';
+import { ConfigManager } from '../utils/config.js';
+import { InterworkyAPI } from '../api/interworky.js';
+import { Tool } from '../../types/index.js';
+import { getApiKeyFromEnv, decodeApiKey } from '../../utils/decode-api-key.js';
 
 export interface SyncOptions {
   force?: boolean;
-  enabledOnly?: boolean;
 }
 
 export async function syncCommand(options: SyncOptions): Promise<void> {
   const configManager = new ConfigManager();
 
   try {
-    // Check if initialized
-    const credentials = configManager.getCredentials();
-    if (!credentials) {
-      logger.error('Not initialized. Run: npx carla-nextjs init');
-      process.exit(1);
-    }
+    // Get API key from environment
+    const apiKey = getApiKeyFromEnv();
+    const { orgId } = decodeApiKey(apiKey);
 
     // Check if tools exist
     const toolsConfig = configManager.loadTools();
@@ -34,13 +32,14 @@ export async function syncCommand(options: SyncOptions): Promise<void> {
 
     logger.section('🔄 Syncing Tools to Interworky');
 
-    // Filter tools if needed
-    let toolsToSync = toolsConfig.tools;
-    if (options.enabledOnly) {
-      toolsToSync = toolsToSync.filter(t => t.enabled);
-      logger.info(`Syncing ${toolsToSync.length} enabled tools (${toolsConfig.tools.length - toolsToSync.length} disabled)`);
+    // Filter disabled tools (always filter by default for security)
+    let toolsToSync = toolsConfig.tools.filter((t: Tool) => t.enabled);
+    const disabledCount = toolsConfig.tools.length - toolsToSync.length;
+
+    if (disabledCount > 0) {
+      logger.info(`Syncing ${toolsToSync.length} enabled tools (${disabledCount} disabled tools excluded)`);
     } else {
-      logger.info(`Syncing ${toolsToSync.length} tools`);
+      logger.info(`Syncing ${toolsToSync.length} enabled tools`);
     }
 
     if (toolsToSync.length === 0) {
@@ -50,7 +49,7 @@ export async function syncCommand(options: SyncOptions): Promise<void> {
 
     // Initialize API client
     logger.startSpinner('Connecting to Interworky...');
-    const api = new InterworkyAPI(credentials.apiKey, credentials.apiUrl);
+    const api = new InterworkyAPI(orgId);
 
     try {
       // Sync tools
@@ -101,8 +100,7 @@ export async function syncCommand(options: SyncOptions): Promise<void> {
 export function registerSyncCommand(program: Command): void {
   program
     .command('sync')
-    .description('Sync tools to Interworky')
+    .description('Sync enabled tools to Interworky (disabled tools are excluded)')
     .option('-f, --force', 'Force sync even if already synced')
-    .option('--enabled-only', 'Only sync enabled tools')
     .action(syncCommand);
 }

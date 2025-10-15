@@ -4,8 +4,8 @@
  * Converts scanned API routes into tool definitions
  */
 
-import { RouteInfo, MethodInfo } from '../scanner/api-routes';
-import { Tool, Recommendation } from '../../types';
+import { RouteInfo, MethodInfo } from '../scanner/api-routes.js';
+import { Tool, Recommendation } from '../../types/index.js';
 
 export interface GenerateResult {
   tools: Tool[];
