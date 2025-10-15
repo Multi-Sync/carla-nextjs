@@ -6,13 +6,12 @@
 
 import { Command } from 'commander';
 import inquirer from 'inquirer';
-import { logger } from '../utils/logger';
-import { ConfigManager } from '../utils/config';
-import { InterworkyAPI } from '../api/interworky';
+import { logger } from '../utils/logger.js';
+import { ConfigManager } from '../utils/config.js';
+import { InterworkyAPI } from '../api/interworky.js';
 
 export interface InitOptions {
   apiKey?: string;
-  apiUrl?: string;
 }
 
 export async function initCommand(options: InitOptions): Promise<void> {
@@ -38,67 +37,60 @@ export async function initCommand(options: InitOptions): Promise<void> {
       }
     }
 
-    // Get API key
-    let apiKey = options.apiKey;
+    // Check environment variable first
+    let apiKey = options.apiKey || process.env.INTERWORKY_API_KEY;
     if (!apiKey) {
       const answers = await inquirer.prompt([
         {
           type: 'password',
           name: 'apiKey',
-          message: 'Enter your Interworky API key:',
+          message: 'Enter your Next.js API key from Interworky:',
           validate: (input: string) => {
             if (!input || input.trim().length === 0) {
               return 'API key is required';
             }
-            return true;
+            // Validate it's a valid base64 string
+            try {
+              Buffer.from(input, 'base64').toString('utf-8');
+              return true;
+            } catch (error) {
+              return 'Invalid API key format';
+            }
           },
         },
       ]);
       apiKey = answers.apiKey;
     }
 
-    // Get API URL (with default)
-    let apiUrl = options.apiUrl;
-    if (!apiUrl) {
-      const answers = await inquirer.prompt([
-        {
-          type: 'input',
-          name: 'apiUrl',
-          message: 'Interworky API URL:',
-          default: 'https://api.interworky.com',
-        },
-      ]);
-      apiUrl = answers.apiUrl;
-    }
-
-    // Validate API key
-    logger.startSpinner('Validating API key...');
-    const api = new InterworkyAPI(apiKey!, apiUrl!);
+    logger.startSpinner('Validating credentials...');
 
     try {
-      const orgInfo = await api.validateApiKey();
-      logger.succeedSpinner('API key validated');
+      // Decode and validate API key
+      const decoded = Buffer.from(apiKey!, 'base64').toString('utf-8');
+      const [organizationId, accessToken] = decoded.split('$$');
 
-      // Save configuration
-      configManager.saveCredentials({
-        apiKey: apiKey!,
-        apiUrl: apiUrl!,
-        organizationId: orgInfo.organizationId,
-        organizationName: orgInfo.organizationName,
-      });
+      if (!organizationId || !accessToken) {
+        throw new Error('Invalid API key format');
+      }
+
+      // Save API key
+      configManager.saveApiKey(apiKey!);
+
+      logger.succeedSpinner('Configuration saved');
 
       logger.section('✅ Initialization Complete');
-      logger.success(`Organization: ${orgInfo.organizationName}`);
-      logger.success(`API URL: ${apiUrl}`);
+      logger.success(`Organization ID: ${organizationId}`);
+      logger.success(`API URL: https://interworky.com/api-core/api`);
 
       logger.section('📝 Next Steps');
       logger.list([
         'Scan your API routes: npx carla-nextjs scan',
         'Review generated tools: cat carla-tools.json',
         'Sync to Interworky: npx carla-nextjs sync',
+        'Install Carla widget: npx carla-nextjs install',
       ]);
     } catch (error) {
-      logger.failSpinner('API key validation failed');
+      logger.failSpinner('Initialization failed');
       if (error instanceof Error) {
         logger.error(error.message);
       }
@@ -119,7 +111,6 @@ export function registerInitCommand(program: Command): void {
   program
     .command('init')
     .description('Initialize and authenticate with Interworky')
-    .option('-k, --api-key <key>', 'Interworky API key')
-    .option('-u, --api-url <url>', 'Interworky API URL', 'https://api.interworky.com')
+    .option('-k, --api-key <key>', 'Next.js API key from Interworky')
     .action(initCommand);
 }

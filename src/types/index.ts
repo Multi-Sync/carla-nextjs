@@ -61,10 +61,7 @@ export interface ToolsConfig {
 }
 
 export interface CarlaConfig {
-  organizationId: string;
-  organizationName: string;
-  apiKey: string;
-  apiUrl: string;
+  apiKey: string; // Next.js API key (Base64 encoded organizationId$$accessToken)
   lastSync: string | null;
 }
 

@@ -6,11 +6,20 @@
  * Main entry point for the command line interface
  */
 
+import { loadNextjsEnv } from './utils/env-loader.js';
+
+// Load environment variables from Next.js project .env files
+// This must happen before any other imports that might read env vars
+loadNextjsEnv();
+
 import { Command } from 'commander';
-import { registerInitCommand } from './commands/init';
-import { registerScanCommand } from './commands/scan';
-import { registerSyncCommand } from './commands/sync';
-import { registerStatusCommand } from './commands/status';
+import { registerScanCommand } from './commands/scan.js';
+import { registerSyncCommand } from './commands/sync.js';
+import { registerStatusCommand } from './commands/status.js';
+import { registerFixCommand } from './commands/fix.js';
+import { registerInteractiveCommand } from './commands/interactive.js';
+import { registerGenerateMCPCommand } from './commands/generate-mcp.js';
+import { registerInstallCommand } from './commands/install.js';
 import chalk from 'chalk';
 
 const program = new Command();
@@ -33,10 +42,13 @@ const banner = `
 console.log(banner);
 
 // Register commands
-registerInitCommand(program);
 registerScanCommand(program);
 registerSyncCommand(program);
 registerStatusCommand(program);
+registerFixCommand(program);
+registerInteractiveCommand(program);
+registerGenerateMCPCommand(program);
+registerInstallCommand(program);
 
 // Handle natural language input (future)
 const args = process.argv.slice(2);
