@@ -1,145 +1,180 @@
-# carla-nextjs
+# Carla Next.js
 
-Next.js plugin for Carla AI assistant with automatic API route scanning and intelligent tool generation.
+[![npm version](https://badge.fury.io/js/carla-nextjs.svg)](https://www.npmjs.com/package/carla-nextjs)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Node.js Version](https://img.shields.io/node/v/carla-nextjs)](https://nodejs.org)
+[![Next.js](https://img.shields.io/badge/Next.js-14%2B-black)](https://nextjs.org)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.3%2B-blue)](https://www.typescriptlang.org/)
+
+> Automatically turn your Next.js API routes into AI-powered tools for the Interworky assistant.
 
 ## Features
 
-- 🔍 **Automatic API Scanning** - Scans your Next.js API routes and generates tools automatically
-- 🤖 **AI-Native Development** - MCP server integration for Cursor, Claude Desktop, and VS Code
-- 🚀 **Zero Config** - Works out of the box with sensible defaults
-- 📝 **Natural Language CLI** - Control via simple commands
-- 🔄 **Realtime API** - Built for OpenAI's Realtime API (text & voice)
-- 🛠️ **Auto-Fix** - Automatically fixes common issues with tool definitions
-- 🔐 **Secure** - Tools stored in Interworky's organization methods system
-
-## Installation
-
-```bash
-npm install carla-nextjs
-```
+- 🔍 **Auto-discovery** - Scans API routes and generates tool definitions
+- 🤖 **AI-Ready** - Works with OpenAI Realtime API (text & voice)
+- 📦 **Zero Config** - One command to install widget
+- 🔄 **Smart Sync** - Push tools to Interworky dashboard
+- 🛠️ **Auto-Fix** - Detects and fixes common issues
+- 🎯 **Type-Safe** - Full TypeScript support
 
 ## Quick Start
 
-### 1. Initialize
+### 1. Install Widget
 
 ```bash
-npx carla-nextjs init
+# Add your API key to .env.local
+NEXT_PUBLIC_CARLA_API_KEY="your-api-key-here"
+
+# Install the Interworky widget
+npx carla-nextjs install
 ```
 
-### 2. Scan Your API Routes
+This adds the Carla assistant widget to your Next.js app.
+
+### 2. Scan & Sync Tools
 
 ```bash
+# Scan your API routes
 npx carla-nextjs scan
-```
 
-### 3. Review & Sync
-
-```bash
-# Review the generated tools
-cat carla-tools.json
+# Review generated tools
+npx carla-nextjs status
 
 # Sync to Interworky
 npx carla-nextjs sync
 ```
 
-### 4. Add to Your App
+That's it! Your assistant now has access to your API routes.
 
-```tsx
-// app/layout.tsx
-import { CarlaProvider } from 'carla-nextjs';
-
-export default function RootLayout({ children }) {
-  return (
-    <html>
-      <body>
-        <CarlaProvider apiKey={process.env.NEXT_PUBLIC_CARLA_API_KEY}>
-          {children}
-        </CarlaProvider>
-      </body>
-    </html>
-  );
-}
-```
-
-### 5. Deploy! 🎉
-
-That's it! Your Carla assistant now knows about all your API endpoints.
-
-## AI-Native Development
-
-### MCP Server (for Cursor, Claude Desktop)
-
-Add to your MCP config:
-
-```json
-{
-  "carla-nextjs": {
-    "command": "npx",
-    "args": ["carla-nextjs", "mcp"],
-    "cwd": "/path/to/your/project"
-  }
-}
-```
-
-Now your AI assistant can:
-- Scan your APIs automatically
-- Fix tool issues
-- Sync changes to Interworky
-- Generate integration code
-
-### Natural Language CLI
+## Installation Options
 
 ```bash
-npx carla-nextjs "scan my project"
-npx carla-nextjs "what tools do I have?"
-npx carla-nextjs "fix the broken tools"
-npx carla-nextjs "disable all DELETE methods"
+# Interactive setup (recommended)
+npx carla-nextjs interactive
+
+# Install widget on specific pages
+npx carla-nextjs install --pages "/,/products,/pricing"
+
+# Install with custom delay
+npx carla-nextjs install --delay 2000
+
+# Install with landing page mode
+npx carla-nextjs install --landing
 ```
 
 ## Commands
 
-- `init` - Initialize and authenticate with Interworky
-- `scan` - Scan API routes and generate tools
-- `sync` - Sync tools to Interworky
-- `status` - Show current tool status
-- `fix` - Auto-fix common issues
-- `interactive` - Interactive setup wizard
-- `mcp` - Start MCP server for AI assistants
+| Command | Description |
+|---------|-------------|
+| `install` | Install Carla widget in your app |
+| `scan` | Scan API routes and generate tools |
+| `sync` | Sync enabled tools to Interworky |
+| `status` | Show current sync status |
+| `fix` | Auto-fix tool issues |
+| `interactive` | Interactive setup wizard |
+| `mcp` | Start MCP server for AI editors |
 
-## Documentation
+## Environment Variables
 
-- [Getting Started](docs/getting-started.md)
-- [CLI Reference](docs/cli-reference.md)
-- [API Reference](docs/api-reference.md)
-- [MCP Integration](docs/mcp-integration.md)
-- [Troubleshooting](docs/troubleshooting.md)
+Add to your `.env.local`, `.env.development`, or `.env`:
+
+```bash
+NEXT_PUBLIC_CARLA_API_KEY="your-api-key-here"
+```
+
+Get your API key from the [Interworky Dashboard](https://interworky.com/dashboard/integrations).
 
 ## How It Works
 
-1. **Scan**: CLI scans your `app/api/` routes using TypeScript AST
-2. **Generate**: Creates tool definitions with parameters, descriptions
-3. **Store**: Syncs to Interworky's organization_methods database
-4. **Load**: Carla fetches tools at runtime via API key
-5. **Execute**: Tools attached to RealtimeAgent, executed on user queries
+```
+┌─────────────┐    ┌──────────────┐    ┌─────────────┐
+│  Next.js    │───▶│ carla-nextjs │───▶│ Interworky  │
+│  API Routes │    │   CLI Tool   │    │  Dashboard  │
+└─────────────┘    └──────────────┘    └─────────────┘
+      │                                        │
+      │            ┌──────────────┐            │
+      └───────────▶│ Carla Widget │◀───────────┘
+                   │  (Frontend)  │
+                   └──────────────┘
+```
+
+1. **Scan** - CLI analyzes your API routes using TypeScript AST
+2. **Generate** - Creates tool definitions with types and descriptions
+3. **Sync** - Pushes enabled tools to Interworky
+4. **Execute** - Carla assistant can call your APIs in real-time
+
+## JavaScript & TypeScript Support
+
+Carla Next.js automatically detects your project type and generates the appropriate files:
+
+- **TypeScript projects** → `.tsx` components
+- **JavaScript projects** → `.jsx` components
+
+## Widget Features
+
+The installed widget component:
+- ✅ Loads asynchronously (non-blocking)
+- ✅ 1.5s delay for optimal performance
+- ✅ Proper cleanup on unmount
+- ✅ Route-based conditional loading
+- ✅ Error handling and fallbacks
 
 ## Examples
 
-See the [examples](examples/) directory for complete projects:
+### Scan Specific Directory
 
-- [E-commerce Store](examples/ecommerce)
-- [Blog Platform](examples/blog)
-- [SaaS Dashboard](examples/saas)
+```bash
+npx carla-nextjs scan --path ./src/app/api
+```
 
-## Contributing
+### Sync with Force Rescan
 
-We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md).
+```bash
+npx carla-nextjs scan --force
+npx carla-nextjs sync
+```
 
-## License
+### Check Tool Status
 
-MIT
+```bash
+npx carla-nextjs status --verbose
+```
+
+## MCP Server Integration
+
+Use with AI editors like Cursor or Claude Desktop:
+
+```json
+{
+  "mcpServers": {
+    "carla-nextjs": {
+      "command": "npx",
+      "args": ["carla-nextjs", "mcp"],
+      "cwd": "/path/to/your/nextjs/project"
+    }
+  }
+}
+```
+
+Now your AI editor can scan, fix, and sync tools automatically.
+
+## Requirements
+
+- Node.js 18+
+- Next.js 14+
+- React 18+
 
 ## Support
 
-- 📧 Email: hello@interworky.com
-- 💬 Discord: [Join our community](https://discord.gg/interworky)
-- 📚 Docs: [docs.interworky.com](https://docs.interworky.com)
+- 📧 **Email**: [hello@interworky.com](mailto:hello@interworky.com)
+- 📚 **Docs**: [interworky.com/docs](https://interworky.com/docs)
+- 🐛 **Issues**: [GitHub Issues](https://github.com/Multi-Sync/carla-nextjs/issues)
+- 💬 **Discord**: [Join Community](https://discord.gg/interworky)
+
+## License
+
+MIT © [Interworky](https://interworky.com)
+
+---
+
+**Made with ❤️ by the Interworky team**
