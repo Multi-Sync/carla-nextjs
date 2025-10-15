@@ -9,10 +9,10 @@ import inquirer from 'inquirer';
 import { logger } from '../utils/logger.js';
 import { ConfigManager } from '../utils/config.js';
 import { Tool } from '../../types/index.js';
-import { initCommand } from './init.js';
 import { scanCommand } from './scan.js';
 import { fixCommand } from './fix.js';
 import { syncCommand } from './sync.js';
+import { getApiKeyFromEnv, decodeApiKey } from '../../utils/decode-api-key.js';
 
 export async function interactiveCommand(): Promise<void> {
   try {
@@ -20,26 +20,16 @@ export async function interactiveCommand(): Promise<void> {
 
     const configManager = new ConfigManager();
 
-    // Step 1: Check initialization
-    const credentials = configManager.getCredentials();
-    let needsInit = !credentials;
-
-    if (!needsInit) {
-      logger.success(`Already initialized for organization: ${configManager.loadConfig()?.organizationId}`);
-      const { reinit } = await inquirer.prompt([
-        {
-          type: 'confirm',
-          name: 'reinit',
-          message: 'Re-initialize with different credentials?',
-          default: false,
-        },
-      ]);
-      needsInit = reinit;
-    }
-
-    if (needsInit) {
-      logger.section('Step 1: Initialize');
-      await initCommand({});
+    // Step 1: Check API key
+    try {
+      const apiKey = getApiKeyFromEnv();
+      const { orgId } = decodeApiKey(apiKey);
+      logger.success(`API key configured for organization: ${orgId}`);
+    } catch (error) {
+      logger.error('API key not configured');
+      logger.info('Please add NEXT_PUBLIC_CARLA_API_KEY to your .env.local file');
+      logger.info('Get your API key from: https://interworky.com/dashboard/integrations');
+      process.exit(1);
     }
 
     // Step 2: Scan API routes

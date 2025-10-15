@@ -1,7 +1,10 @@
 /**
  * Generate MCP Command
  *
- * Generates /api/_mcp/route.ts for Model Context Protocol support
+ * Generates HTTP MCP routes for Model Context Protocol support
+ * Creates:
+ * - GET /api/mcp/tools - Tool catalog
+ * - POST /api/mcp/call - Tool execution proxy
  */
 
 import { Command } from 'commander';
@@ -24,17 +27,23 @@ export async function generateMCPCommand(options: GenerateMCPOptions): Promise<v
       process.exit(1);
     }
 
-    logger.section('🔌 Generating MCP Endpoint');
+    logger.section('🔌 Generating MCP Routes');
+
+    // Detect project type
+    const isTypeScript = configManager.isTypeScriptProject();
+    const fileType = isTypeScript ? 'TypeScript' : 'JavaScript';
+    logger.info(`Detected ${fileType} project`);
 
     // Initialize generator
     const generator = new MCPRouteGenerator({
       projectRoot: configManager.getProjectRoot(),
       toolsConfig,
+      isTypeScript,
     });
 
     // Check if already exists
     if (generator.routeExists() && !options.force) {
-      logger.warn('MCP route already exists at /api/_mcp/route.ts');
+      logger.warn('MCP routes already exist');
       logger.info('Use --force to regenerate');
       return;
     }
@@ -43,43 +52,47 @@ export async function generateMCPCommand(options: GenerateMCPOptions): Promise<v
     const enabledTools = toolsConfig.tools.filter(t => t.enabled);
     const disabledCount = toolsConfig.tools.length - enabledTools.length;
 
-    logger.startSpinner('Generating MCP route...');
+    logger.startSpinner('Generating MCP routes...');
 
-    // Generate the route
-    const routeFilePath = await generator.generate();
+    // Generate the routes
+    const routeFilePaths = await generator.generate();
 
-    logger.succeedSpinner('MCP route generated');
+    logger.succeedSpinner('MCP routes generated');
 
     // Display results
     logger.section('✅ Success');
-    logger.success(`Created: ${routeFilePath.replace(configManager.getProjectRoot(), '.')}`);
+    routeFilePaths.forEach(filePath => {
+      logger.success(`Created: ${filePath.replace(configManager.getProjectRoot(), '.')}`);
+    });
     logger.info(`Exposed ${enabledTools.length} enabled tools`);
 
     if (disabledCount > 0) {
       logger.info(`Excluded ${disabledCount} disabled tools`);
     }
 
-    logger.section('📋 MCP Endpoint');
-    logger.info('Local:  http://localhost:3000/api/_mcp');
-    logger.info('Production: https://yourapp.com/api/_mcp');
+    logger.section('📋 MCP Endpoints');
+    logger.info('Tool Catalog:  GET  /api/mcp/tools');
+    logger.info('Execute Tool:  POST /api/mcp/call');
 
-    logger.section('🤖 Usage with AI Agents');
-    logger.info('Add to your MCP configuration:');
-    logger.code(`{
-  "mcpServers": {
-    "my-nextjs-app": {
-      "url": "http://localhost:3000/api/_mcp"
-    }
-  }
-}`);
+    logger.section('🔧 Usage Example');
+    logger.code(`// Get available tools
+fetch('http://localhost:3000/api/mcp/tools')
+
+// Execute a tool
+fetch('http://localhost:3000/api/mcp/call', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    tool: 'get_users',
+    args: { limit: 10 }
+  })
+})`);
 
     logger.section('✅ Next Steps');
     logger.list([
-      'Start your dev server: npm run dev',
-      'Configure your AI agent (Cursor, Claude Desktop, etc.)',
-      'Test with: curl -X POST http://localhost:3000/api/_mcp \\',
-      '  -H "Content-Type: application/json" \\',
-      '  -d \'{"method":"tools/list"}\'',
+      'Start dev server: npm run dev',
+      'Test endpoints: curl http://localhost:3000/api/mcp/tools',
+      'Integrate with your AI agent or application',
     ]);
   } catch (error) {
     logger.stopSpinner();
@@ -94,7 +107,7 @@ export async function generateMCPCommand(options: GenerateMCPOptions): Promise<v
 export function registerGenerateMCPCommand(program: Command): void {
   program
     .command('generate-mcp')
-    .description('Generate MCP endpoint at /api/_mcp')
+    .description('Generate HTTP MCP routes at /api/mcp')
     .option('-f, --force', 'Force regenerate even if exists')
     .action(generateMCPCommand);
 }

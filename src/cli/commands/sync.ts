@@ -9,6 +9,7 @@ import { logger } from '../utils/logger.js';
 import { ConfigManager } from '../utils/config.js';
 import { InterworkyAPI } from '../api/interworky.js';
 import { Tool } from '../../types/index.js';
+import { getApiKeyFromEnv, decodeApiKey } from '../../utils/decode-api-key.js';
 
 export interface SyncOptions {
   force?: boolean;
@@ -18,12 +19,9 @@ export async function syncCommand(options: SyncOptions): Promise<void> {
   const configManager = new ConfigManager();
 
   try {
-    // Check if initialized
-    const credentials = configManager.getCredentials();
-    if (!credentials) {
-      logger.error('Not initialized. Run: npx carla-nextjs init');
-      process.exit(1);
-    }
+    // Get API key from environment
+    const apiKey = getApiKeyFromEnv();
+    const { orgId } = decodeApiKey(apiKey);
 
     // Check if tools exist
     const toolsConfig = configManager.loadTools();
@@ -51,12 +49,12 @@ export async function syncCommand(options: SyncOptions): Promise<void> {
 
     // Initialize API client
     logger.startSpinner('Connecting to Interworky...');
-    const api = new InterworkyAPI(credentials.accessToken, credentials.apiUrl);
+    const api = new InterworkyAPI(orgId);
 
     try {
       // Sync tools
       logger.updateSpinnerText('Syncing tools...');
-      const result = await api.syncTools(toolsToSync, credentials.organizationId);
+      const result = await api.syncTools(toolsToSync);
 
       logger.succeedSpinner('Sync complete');
 

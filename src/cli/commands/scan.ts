@@ -62,7 +62,7 @@ export async function scanCommand(options: ScanOptions): Promise<void> {
       generatedAt: new Date().toISOString(),
       tools,
       settings: {
-        mcpEndpoint: '/api/_carla/mcp',
+        mcpEndpoint: '/api/mcp',
       },
     };
 

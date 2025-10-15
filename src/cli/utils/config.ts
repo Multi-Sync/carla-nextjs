@@ -109,39 +109,69 @@ export class ConfigManager {
    */
   hasCredentials(): boolean {
     const config = this.loadConfig();
-    return config !== null && !!config.accessToken;
+    return config !== null && !!config.apiKey;
   }
 
   /**
-   * Save credentials
+   * Save API key
    */
-  saveCredentials(credentials: {
-    accessToken: string;
-    apiUrl: string;
-    organizationId: string;
-  }): void {
+  saveApiKey(apiKey: string): void {
     const config: CarlaConfig = {
-      accessToken: credentials.accessToken,
-      apiUrl: credentials.apiUrl,
-      organizationId: credentials.organizationId,
+      apiKey,
       lastSync: null,
     };
     this.saveConfig(config);
   }
 
   /**
-   * Get credentials
+   * Get API key
    */
-  getCredentials(): { accessToken: string; apiUrl: string; organizationId: string } | null {
+  getApiKey(): string | null {
     const config = this.loadConfig();
-    if (!config || !config.accessToken) {
+    if (!config || !config.apiKey) {
       return null;
     }
-    return {
-      accessToken: config.accessToken,
-      apiUrl: config.apiUrl,
-      organizationId: config.organizationId,
-    };
+    return config.apiKey;
+  }
+
+  /**
+   * Legacy support: Save credentials (deprecated)
+   */
+  saveCredentials(credentials: {
+    accessToken: string;
+    apiUrl?: string;
+    organizationId: string;
+  }): void {
+    // Encode as Next.js API key format
+    const apiKey = Buffer.from(`${credentials.organizationId}$$${credentials.accessToken}`).toString('base64');
+    this.saveApiKey(apiKey);
+  }
+
+  /**
+   * Legacy support: Get credentials (deprecated)
+   */
+  getCredentials(): { accessToken: string; apiUrl: string; organizationId: string } | null {
+    const apiKey = this.getApiKey();
+    if (!apiKey) {
+      return null;
+    }
+
+    try {
+      const decoded = Buffer.from(apiKey, 'base64').toString('utf-8');
+      const [organizationId, accessToken] = decoded.split('$$');
+
+      if (!organizationId || !accessToken) {
+        return null;
+      }
+
+      return {
+        accessToken,
+        apiUrl: 'https://interworky.com/api-core/api', // Default API URL
+        organizationId,
+      };
+    } catch (error) {
+      return null;
+    }
   }
 
   /**
@@ -161,5 +191,45 @@ export class ConfigManager {
   getLastSync(): string | null {
     const config = this.loadConfig();
     return config?.lastSync || null;
+  }
+
+  /**
+   * Detect if project uses TypeScript or JavaScript
+   */
+  isTypeScriptProject(): boolean {
+    // Check for tsconfig.json
+    const tsconfigPath = path.join(this.projectRoot, 'tsconfig.json');
+    if (fs.existsSync(tsconfigPath)) {
+      return true;
+    }
+
+    // Check for TypeScript files in app/api or pages/api
+    const apiDirs = [
+      path.join(this.projectRoot, 'app', 'api'),
+      path.join(this.projectRoot, 'src', 'app', 'api'),
+      path.join(this.projectRoot, 'pages', 'api'),
+      path.join(this.projectRoot, 'src', 'pages', 'api'),
+    ];
+
+    for (const dir of apiDirs) {
+      if (fs.existsSync(dir)) {
+        const files = fs.readdirSync(dir, { recursive: true });
+        const hasTsFiles = files.some((file: any) =>
+          typeof file === 'string' && (file.endsWith('.ts') || file.endsWith('.tsx'))
+        );
+        if (hasTsFiles) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  /**
+   * Get file extension for the project (.ts or .js)
+   */
+  getFileExtension(): 'ts' | 'js' {
+    return this.isTypeScriptProject() ? 'ts' : 'js';
   }
 }

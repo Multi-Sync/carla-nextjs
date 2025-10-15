@@ -9,6 +9,8 @@ import { logger } from '../utils/logger.js';
 import { ConfigManager } from '../utils/config.js';
 import { InterworkyAPI } from '../api/interworky.js';
 import { Tool } from '../../types/index.js';
+import { getApiKeyFromEnv, decodeApiKey } from '../../utils/decode-api-key.js';
+import { INTERWORKY_API_URL } from '../../config/auth.js';
 
 export interface StatusOptions {
   verbose?: boolean;
@@ -20,18 +22,23 @@ export async function statusCommand(options: StatusOptions): Promise<void> {
   try {
     logger.section('📊 Carla NextJS Status');
 
-    // Check initialization
-    const credentials = configManager.getCredentials();
-    const config = configManager.loadConfig();
+    // Get API key and decode
+    let apiKey: string;
+    let orgId: string;
 
-    if (!credentials || !config) {
-      logger.error('Not initialized');
-      logger.info('Run: npx carla-nextjs init');
+    try {
+      apiKey = getApiKeyFromEnv();
+      const decoded = decodeApiKey(apiKey);
+      orgId = decoded.orgId;
+
+      logger.success(`Organization ID: ${orgId}`);
+      logger.info(`API URL: ${INTERWORKY_API_URL}`);
+    } catch (error) {
+      logger.error('API key not configured');
+      logger.info('Add NEXT_PUBLIC_CARLA_API_KEY to your .env.local file');
+      logger.info('Get your API key from: https://interworky.com/dashboard/integrations');
       return;
     }
-
-    logger.success(`Organization ID: ${config.organizationId}`);
-    logger.info(`API URL: ${config.apiUrl}`);
 
     // Check local tools
     const toolsConfig = configManager.loadTools();
@@ -89,45 +96,32 @@ export async function statusCommand(options: StatusOptions): Promise<void> {
     logger.startSpinner('Checking connection...');
 
     try {
-      const api = new InterworkyAPI(credentials.accessToken, credentials.apiUrl);
+      const api = new InterworkyAPI(orgId);
+      const remoteMethods = await api.getTools();
       logger.succeedSpinner('Connection valid');
 
-      // Optionally fetch remote tools if verbose
       if (options.verbose) {
-        logger.startSpinner('Fetching remote tools...');
-        try {
-          // Note: We need organization_id to fetch tools, which we don't have stored
-          // For now, skip remote tool fetching until we can get org ID from JWT
-          logger.succeedSpinner('Skipping remote tool fetch (need org ID)');
-          const remoteMethods: any[] = [];
-          logger.succeedSpinner(`Remote tools: ${remoteMethods.length}`);
+        logger.success(`Remote tools: ${remoteMethods.length}`);
 
-          // Compare with local
-          if (toolsConfig) {
-            const localCount = toolsConfig.tools.length;
-            const diff = remoteMethods.length - localCount;
+        // Compare with local
+        if (toolsConfig) {
+          const localCount = toolsConfig.tools.length;
+          const diff = remoteMethods.length - localCount;
 
-            if (diff > 0) {
-              logger.info(`Remote has ${diff} more tools than local`);
-            } else if (diff < 0) {
-              logger.info(`Local has ${Math.abs(diff)} more tools than remote`);
-            } else {
-              logger.success('Local and remote tool counts match');
-            }
-          }
-        } catch (error) {
-          logger.failSpinner('Failed to fetch remote tools');
-          if (error instanceof Error) {
-            logger.error(error.message);
+          if (diff > 0) {
+            logger.info(`Remote has ${diff} more tools than local`);
+          } else if (diff < 0) {
+            logger.info(`Local has ${Math.abs(diff)} more tools than remote`);
+          } else {
+            logger.success('Local and remote tool counts match');
           }
         }
       }
     } catch (error) {
-      logger.failSpinner('API key invalid');
+      logger.failSpinner('API connection failed');
       if (error instanceof Error) {
         logger.error(error.message);
       }
-      logger.info('Run: npx carla-nextjs init');
     }
 
     // Next steps

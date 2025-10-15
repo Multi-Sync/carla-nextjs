@@ -11,9 +11,7 @@ import { ConfigManager } from '../utils/config.js';
 import { InterworkyAPI } from '../api/interworky.js';
 
 export interface InitOptions {
-  accessToken?: string;
-  apiUrl?: string;
-  organizationId?: string;
+  apiKey?: string;
 }
 
 export async function initCommand(options: InitOptions): Promise<void> {
@@ -23,7 +21,7 @@ export async function initCommand(options: InitOptions): Promise<void> {
     logger.section('🚀 Initialize Carla NextJS');
 
     // Check if already initialized
-    if (configManager.hasCredentials() && !options.accessToken) {
+    if (configManager.hasCredentials() && !options.apiKey) {
       const { reinit } = await inquirer.prompt([
         {
           type: 'confirm',
@@ -40,85 +38,63 @@ export async function initCommand(options: InitOptions): Promise<void> {
     }
 
     // Check environment variable first
-    let accessToken = options.accessToken || process.env.INTERWORKY_ACCESS_TOKEN;
-    if (!accessToken) {
+    let apiKey = options.apiKey || process.env.INTERWORKY_API_KEY;
+    if (!apiKey) {
       const answers = await inquirer.prompt([
         {
           type: 'password',
-          name: 'accessToken',
-          message: 'Enter your Interworky access token (JWT):',
+          name: 'apiKey',
+          message: 'Enter your Next.js API key from Interworky:',
           validate: (input: string) => {
             if (!input || input.trim().length === 0) {
-              return 'Access token is required';
+              return 'API key is required';
             }
-            return true;
+            // Validate it's a valid base64 string
+            try {
+              Buffer.from(input, 'base64').toString('utf-8');
+              return true;
+            } catch (error) {
+              return 'Invalid API key format';
+            }
           },
         },
       ]);
-      accessToken = answers.accessToken;
-    }
-
-    // Get organization ID
-    let organizationId = options.organizationId || process.env.INTERWORKY_ORGANIZATION_ID;
-    if (!organizationId) {
-      const answers = await inquirer.prompt([
-        {
-          type: 'input',
-          name: 'organizationId',
-          message: 'Enter your organization ID:',
-          validate: (input: string) => {
-            if (!input || input.trim().length === 0) {
-              return 'Organization ID is required';
-            }
-            return true;
-          },
-        },
-      ]);
-      organizationId = answers.organizationId;
-    }
-
-    // Get API URL (with default)
-    let apiUrl = options.apiUrl || process.env.INTERWORKY_API_URL;
-    if (!apiUrl) {
-      const answers = await inquirer.prompt([
-        {
-          type: 'input',
-          name: 'apiUrl',
-          message: 'Interworky API URL:',
-          default: 'http://localhost:8080/api',
-        },
-      ]);
-      apiUrl = answers.apiUrl;
+      apiKey = answers.apiKey;
     }
 
     logger.startSpinner('Validating credentials...');
 
     try {
-      // Save configuration
-      configManager.saveCredentials({
-        accessToken: accessToken!,
-        apiUrl: apiUrl!,
-        organizationId: organizationId!,
-      });
+      // Decode and validate API key
+      const decoded = Buffer.from(apiKey!, 'base64').toString('utf-8');
+      const [organizationId, accessToken] = decoded.split('$$');
+
+      if (!organizationId || !accessToken) {
+        throw new Error('Invalid API key format');
+      }
+
+      // Save API key
+      configManager.saveApiKey(apiKey!);
 
       logger.succeedSpinner('Configuration saved');
 
       logger.section('✅ Initialization Complete');
       logger.success(`Organization ID: ${organizationId}`);
-      logger.success(`API URL: ${apiUrl}`);
+      logger.success(`API URL: https://interworky.com/api-core/api`);
 
       logger.section('📝 Next Steps');
       logger.list([
         'Scan your API routes: npx carla-nextjs scan',
         'Review generated tools: cat carla-tools.json',
         'Sync to Interworky: npx carla-nextjs sync',
+        'Install Carla widget: npx carla-nextjs install',
       ]);
     } catch (error) {
       logger.failSpinner('Initialization failed');
       if (error instanceof Error) {
         logger.error(error.message);
       }
-      logger.info('Please check your credentials and try again');
+      logger.info('Please check your API key and try again');
       process.exit(1);
     }
   } catch (error) {
@@ -135,8 +111,6 @@ export function registerInitCommand(program: Command): void {
   program
     .command('init')
     .description('Initialize and authenticate with Interworky')
-    .option('-t, --access-token <token>', 'Interworky access token (JWT)')
-    .option('-o, --organization-id <id>', 'Organization ID')
-    .option('-u, --api-url <url>', 'Interworky API URL', 'http://localhost:3015/api')
+    .option('-k, --api-key <key>', 'Next.js API key from Interworky')
     .action(initCommand);
 }
