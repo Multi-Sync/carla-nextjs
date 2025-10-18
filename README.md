@@ -1,8 +1,8 @@
 # Carla Next.js
 
-[![npm version](https://badge.fury.io/js/carla-nextjs.svg)](https://www.npmjs.com/package/carla-nextjs)
+[![npm version](https://badge.fury.io/js/%40interworky%2Fcarla-nextjs.svg)](https://www.npmjs.com/package/@interworky/carla-nextjs)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Node.js Version](https://img.shields.io/node/v/carla-nextjs)](https://nodejs.org)
+[![Node.js Version](https://img.shields.io/node/v/@interworky/carla-nextjs)](https://nodejs.org)
 [![Next.js](https://img.shields.io/badge/Next.js-14%2B-black)](https://nextjs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.3%2B-blue)](https://www.typescriptlang.org/)
 
@@ -26,7 +26,7 @@
 NEXT_PUBLIC_CARLA_API_KEY="your-api-key-here"
 
 # Install the Interworky widget
-npx carla-nextjs install
+npx @interworky/carla-nextjs install
 ```
 
 This adds the Carla assistant widget to your Next.js app.
@@ -35,13 +35,13 @@ This adds the Carla assistant widget to your Next.js app.
 
 ```bash
 # Scan your API routes
-npx carla-nextjs scan
+npx @interworky/carla-nextjs scan
 
 # Review generated tools
-npx carla-nextjs status
+npx @interworky/carla-nextjs status
 
 # Sync to Interworky
-npx carla-nextjs sync
+npx @interworky/carla-nextjs sync
 ```
 
 That's it! Your assistant now has access to your API routes.
@@ -50,16 +50,16 @@ That's it! Your assistant now has access to your API routes.
 
 ```bash
 # Interactive setup (recommended)
-npx carla-nextjs interactive
+npx @interworky/carla-nextjs interactive
 
 # Install widget on specific pages
-npx carla-nextjs install --pages "/,/products,/pricing"
+npx @interworky/carla-nextjs install --pages "/,/products,/pricing"
 
 # Install with custom delay
-npx carla-nextjs install --delay 2000
+npx @interworky/carla-nextjs install --delay 2000
 
 # Install with landing page mode
-npx carla-nextjs install --landing
+npx @interworky/carla-nextjs install --landing
 ```
 
 ## Commands
@@ -126,30 +126,30 @@ The installed widget component:
 ### Scan Specific Directory
 
 ```bash
-npx carla-nextjs scan --path ./src/app/api
+npx @interworky/carla-nextjs scan --path ./src/app/api
 ```
 
 ### Sync with Force Rescan
 
 ```bash
-npx carla-nextjs scan --force
-npx carla-nextjs sync
+npx @interworky/carla-nextjs scan --force
+npx @interworky/carla-nextjs sync
 ```
 
 ### Check Tool Status
 
 ```bash
-npx carla-nextjs status --verbose
+npx @interworky/carla-nextjs status --verbose
 ```
 
 ### Generate MCP Routes
 
 ```bash
 # Generate HTTP MCP routes for AI integration
-npx carla-nextjs generate-mcp
+npx @interworky/carla-nextjs generate-mcp
 
 # Force regenerate if routes already exist
-npx carla-nextjs generate-mcp --force
+npx @interworky/carla-nextjs generate-mcp --force
 ```
 
 ## MCP HTTP Routes
