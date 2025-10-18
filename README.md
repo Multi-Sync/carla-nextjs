@@ -5,8 +5,9 @@
 [![Node.js Version](https://img.shields.io/node/v/@interworky/carla-nextjs)](https://nodejs.org)
 [![Next.js](https://img.shields.io/badge/Next.js-14%2B-black)](https://nextjs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.3%2B-blue)](https://www.typescriptlang.org/)
+[![Discord](https://img.shields.io/discord/1234567890?color=7289da&label=Discord&logo=discord&logoColor=white)](https://discord.com/invite/YHmsekzMV5)
 
-> Automatically turn your Next.js API routes into AI-powered tools for the Interworky assistant.
+> Automatically turn your Next.js API routes into AI-powered tools for Carla, the AI Agent for websites (Customer Support + Analytics + Performance Monitoring + Bug Fixes).
 
 ## Features
 
@@ -29,7 +30,7 @@ NEXT_PUBLIC_CARLA_API_KEY="your-api-key-here"
 npx @interworky/carla-nextjs install
 ```
 
-This adds the Carla assistant widget to your Next.js app.
+This adds the Carla widget to your Next.js app.
 
 ### 2. Scan & Sync Tools
 
@@ -44,7 +45,7 @@ npx @interworky/carla-nextjs status
 npx @interworky/carla-nextjs sync
 ```
 
-That's it! Your assistant now has access to your API routes.
+That's it! Carla now has access to your API routes.
 
 ## Installation Options
 
@@ -83,7 +84,11 @@ Add to your `.env.local`, `.env.development`, or `.env`:
 NEXT_PUBLIC_CARLA_API_KEY="your-api-key-here"
 ```
 
-Get your API key from the [Interworky Dashboard](https://interworky.com/dashboard/integrations).
+**Getting your API key:**
+1. Go to [interworky.com](https://interworky.com)
+2. Create an account (or sign in)
+3. Navigate to the **Integrations** page from the sidebar
+4. Copy your API key
 
 ## How It Works
 
@@ -102,7 +107,7 @@ Get your API key from the [Interworky Dashboard](https://interworky.com/dashboar
 1. **Scan** - CLI analyzes your API routes using TypeScript AST
 2. **Generate** - Creates tool definitions with types and descriptions
 3. **Sync** - Pushes enabled tools to Interworky
-4. **Execute** - Carla assistant can call your APIs in real-time
+4. **Execute** - Carla can call your APIs in real-time
 
 ## JavaScript & TypeScript Support
 
@@ -211,7 +216,7 @@ Now your AI editor can scan, fix, and sync tools automatically.
 - 📧 **Email**: [hello@interworky.com](mailto:hello@interworky.com)
 - 📚 **Docs**: [interworky.com/docs](https://interworky.com/docs)
 - 🐛 **Issues**: [GitHub Issues](https://github.com/Multi-Sync/carla-nextjs/issues)
-- 💬 **Discord**: [Join Community](https://discord.gg/interworky)
+- 💬 **Discord**: [Join Community](https://discord.com/invite/YHmsekzMV5)
 
 ## License
 
