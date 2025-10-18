@@ -2,12 +2,15 @@
 
 [![npm version](https://badge.fury.io/js/%40interworky%2Fcarla-nextjs.svg)](https://www.npmjs.com/package/@interworky/carla-nextjs)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Documentation](https://img.shields.io/badge/docs-online-brightgreen)](https://multi-sync.github.io/carla-nextjs/)
 [![Node.js Version](https://img.shields.io/node/v/@interworky/carla-nextjs)](https://nodejs.org)
 [![Next.js](https://img.shields.io/badge/Next.js-14%2B-black)](https://nextjs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.3%2B-blue)](https://www.typescriptlang.org/)
 [![Discord](https://img.shields.io/discord/1234567890?color=7289da&label=Discord&logo=discord&logoColor=white)](https://discord.com/invite/YHmsekzMV5)
 
 > Automatically turn your Next.js API routes into AI-powered tools for Carla, the AI Agent for websites (Customer Support + Analytics + Performance Monitoring + Bug Fixes).
+
+📚 **[Read the full documentation →](https://multi-sync.github.io/carla-nextjs/)**
 
 ## Features
 
@@ -213,10 +216,10 @@ Now your AI editor can scan, fix, and sync tools automatically.
 
 ## Support
 
-- 📧 **Email**: [hello@interworky.com](mailto:hello@interworky.com)
-- 📚 **Docs**: [interworky.com/docs](https://interworky.com/docs)
-- 🐛 **Issues**: [GitHub Issues](https://github.com/Multi-Sync/carla-nextjs/issues)
+- 📚 **Documentation**: [Full Documentation](https://multi-sync.github.io/carla-nextjs/)
 - 💬 **Discord**: [Join Community](https://discord.com/invite/YHmsekzMV5)
+- 🐛 **Issues**: [GitHub Issues](https://github.com/Multi-Sync/carla-nextjs/issues)
+- 📧 **Email**: [hello@interworky.com](mailto:hello@interworky.com)
 
 ## License
 
