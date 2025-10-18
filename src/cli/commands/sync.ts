@@ -15,7 +15,7 @@ export interface SyncOptions {
   force?: boolean;
 }
 
-export async function syncCommand(options: SyncOptions): Promise<void> {
+export async function syncCommand(_options: SyncOptions): Promise<void> {
   const configManager = new ConfigManager();
 
   try {
@@ -33,11 +33,13 @@ export async function syncCommand(options: SyncOptions): Promise<void> {
     logger.section('🔄 Syncing Tools to Interworky');
 
     // Filter disabled tools (always filter by default for security)
-    let toolsToSync = toolsConfig.tools.filter((t: Tool) => t.enabled);
+    const toolsToSync = toolsConfig.tools.filter((t: Tool) => t.enabled);
     const disabledCount = toolsConfig.tools.length - toolsToSync.length;
 
     if (disabledCount > 0) {
-      logger.info(`Syncing ${toolsToSync.length} enabled tools (${disabledCount} disabled tools excluded)`);
+      logger.info(
+        `Syncing ${toolsToSync.length} enabled tools (${disabledCount} disabled tools excluded)`
+      );
     } else {
       logger.info(`Syncing ${toolsToSync.length} enabled tools`);
     }

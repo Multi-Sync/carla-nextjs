@@ -143,7 +143,9 @@ export class ConfigManager {
     organizationId: string;
   }): void {
     // Encode as Next.js API key format
-    const apiKey = Buffer.from(`${credentials.organizationId}$$${credentials.accessToken}`).toString('base64');
+    const apiKey = Buffer.from(
+      `${credentials.organizationId}$$${credentials.accessToken}`
+    ).toString('base64');
     this.saveApiKey(apiKey);
   }
 
@@ -214,8 +216,8 @@ export class ConfigManager {
     for (const dir of apiDirs) {
       if (fs.existsSync(dir)) {
         const files = fs.readdirSync(dir, { recursive: true });
-        const hasTsFiles = files.some((file: any) =>
-          typeof file === 'string' && (file.endsWith('.ts') || file.endsWith('.tsx'))
+        const hasTsFiles = files.some(
+          (file: any) => typeof file === 'string' && (file.endsWith('.ts') || file.endsWith('.tsx'))
         );
         if (hasTsFiles) {
           return true;

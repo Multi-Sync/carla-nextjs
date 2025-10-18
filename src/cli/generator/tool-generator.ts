@@ -112,7 +112,7 @@ export class ToolGenerator {
     name = name.replace(/^\//, '');
 
     // Replace slashes and special chars with underscores
-    name = name.replace(/[\/:\-]/g, '_');
+    name = name.replace(/[/:-]/g, '_');
 
     // Add method prefix
     const methodPrefix = method.toLowerCase();
@@ -188,7 +188,7 @@ export class ToolGenerator {
    */
   private extractResourceName(endpoint: string): string {
     // Remove /api prefix
-    let name = endpoint.replace(/^\/api/, '');
+    const name = endpoint.replace(/^\/api/, '');
 
     // Get the last meaningful segment (before :id)
     const segments = name.split('/').filter(s => s && !s.startsWith(':'));

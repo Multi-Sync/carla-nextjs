@@ -1,5 +1,5 @@
 {
-  "name": "carla-nextjs",
+  "name": "@interworky/carla-nextjs",
   "version": "1.0.0",
   "description": "Next.js plugin for Carla AI assistant with automatic API route scanning and tool generation",
   "type": "module",

@@ -131,7 +131,11 @@ export class ToolFixer {
 
     for (const [name, prop] of Object.entries(properties)) {
       const typedProp = prop as { type: string; description: string };
-      if (!typedProp.description || typedProp.description.trim() === '' || typedProp.description === `The ${name} parameter`) {
+      if (
+        !typedProp.description ||
+        typedProp.description.trim() === '' ||
+        typedProp.description === `The ${name} parameter`
+      ) {
         properties[name] = {
           ...typedProp,
           description: this.generateParameterDescription(name, typedProp.type, tool),
@@ -258,7 +262,9 @@ export class ToolFixer {
 
     // Check if parameter issues are resolved
     const allParamsHaveDescriptions = Object.values(tool.parameters.properties).every(
-      prop => (prop as { type: string; description: string }).description && (prop as { type: string; description: string }).description.trim() !== ''
+      prop =>
+        (prop as { type: string; description: string }).description &&
+        (prop as { type: string; description: string }).description.trim() !== ''
     );
     if (allParamsHaveDescriptions) {
       resolvedIssues.add('missing_parameter_descriptions');
@@ -273,12 +279,10 @@ export class ToolFixer {
    */
   private extractResourceName(endpoint: string): string {
     // Remove /api prefix
-    let name = endpoint.replace(/^\/api/, '');
+    const name = endpoint.replace(/^\/api/, '');
 
     // Get the last meaningful segment (before :id or {id})
-    const segments = name
-      .split('/')
-      .filter(s => s && !s.startsWith(':') && !s.startsWith('{'));
+    const segments = name.split('/').filter(s => s && !s.startsWith(':') && !s.startsWith('{'));
 
     if (segments.length === 0) {
       return 'resource';

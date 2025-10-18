@@ -26,7 +26,7 @@ export class InterworkyAPI {
       baseURL: INTERWORKY_API_URL,
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${CARLA_ACCESS_TOKEN}`,
+        Authorization: `Bearer ${CARLA_ACCESS_TOKEN}`,
       },
       timeout: 30000,
     });
@@ -71,7 +71,9 @@ export class InterworkyAPI {
    */
   async getTools(): Promise<OrganizationMethod[]> {
     try {
-      const response = await this.client.get(`/organization-methods/organization/${this.organizationId}`);
+      const response = await this.client.get(
+        `/organization-methods/organization/${this.organizationId}`
+      );
       return response.data.methods || response.data || [];
     } catch (error) {
       if (axios.isAxiosError(error)) {

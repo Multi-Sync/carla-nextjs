@@ -37,10 +37,7 @@ export async function scanCommand(options: ScanOptions): Promise<void> {
     if (routes.length === 0) {
       logger.failSpinner('No API routes found');
       logger.warn('Make sure you have API routes in:');
-      logger.list([
-        'app/api/**/route.ts',
-        'pages/api/**/*.ts',
-      ]);
+      logger.list(['app/api/**/route.ts', 'pages/api/**/*.ts']);
       return;
     }
 

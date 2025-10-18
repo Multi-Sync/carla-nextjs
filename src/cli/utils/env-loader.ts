@@ -22,11 +22,7 @@ export function loadNextjsEnv(projectRoot?: string): void {
 
   // Files to load in priority order (last one wins for dotenv, but we reverse it)
   // We'll load in reverse order so higher priority files override lower priority ones
-  const envFiles = [
-    '.env',
-    `.env.${nodeEnv}`,
-    '.env.local',
-  ];
+  const envFiles = ['.env', `.env.${nodeEnv}`, '.env.local'];
 
   // Load each file if it exists
   for (const envFile of envFiles) {

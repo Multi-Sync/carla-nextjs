@@ -40,10 +40,13 @@ export interface Tool {
   endpoint: string;
   parameters: {
     type: 'object';
-    properties: Record<string, {
-      type: string;
-      description: string;
-    }>;
+    properties: Record<
+      string,
+      {
+        type: string;
+        description: string;
+      }
+    >;
     required: string[];
   };
   fixed_params?: FixedParam[];

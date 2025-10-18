@@ -50,7 +50,9 @@ export async function statusCommand(options: StatusOptions): Promise<void> {
     } else {
       const enabledCount = toolsConfig.tools.filter((t: Tool) => t.enabled).length;
       const disabledCount = toolsConfig.tools.length - enabledCount;
-      const toolsWithIssues = toolsConfig.tools.filter((t: Tool) => t.issues && t.issues.length > 0);
+      const toolsWithIssues = toolsConfig.tools.filter(
+        (t: Tool) => t.issues && t.issues.length > 0
+      );
 
       logger.success(`Total: ${toolsConfig.tools.length} tools`);
       logger.info(`  ✓ Enabled: ${enabledCount}`);
@@ -141,7 +143,9 @@ export async function statusCommand(options: StatusOptions): Promise<void> {
       }
     }
     if (toolsConfig) {
-      const toolsWithIssues = toolsConfig.tools.filter((t: Tool) => t.issues && t.issues.length > 0);
+      const toolsWithIssues = toolsConfig.tools.filter(
+        (t: Tool) => t.issues && t.issues.length > 0
+      );
       if (toolsWithIssues.length > 0) {
         suggestions.push('Fix tool issues: npx carla-nextjs fix');
       }
