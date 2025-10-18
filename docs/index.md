@@ -56,7 +56,6 @@ features:
 
 ## Quick Start
 
-::: code-group
 
 ```bash [npm]
 # Add your API key
