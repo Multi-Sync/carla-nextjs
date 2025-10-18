@@ -8,7 +8,6 @@ import { Command } from 'commander';
 import inquirer from 'inquirer';
 import { logger } from '../utils/logger.js';
 import { ConfigManager } from '../utils/config.js';
-import { InterworkyAPI } from '../api/interworky.js';
 
 export interface InitOptions {
   apiKey?: string;

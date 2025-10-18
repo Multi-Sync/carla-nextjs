@@ -122,7 +122,9 @@ export async function installCommand(options: InstallOptions): Promise<void> {
       const fileExtension = isTypeScript ? 'tsx' : 'jsx';
 
       // Determine component directory
-      const appDir = layoutPath.includes('src/app') ? path.join(projectRoot, 'src', 'app') : path.join(projectRoot, 'app');
+      const appDir = layoutPath.includes('src/app')
+        ? path.join(projectRoot, 'src', 'app')
+        : path.join(projectRoot, 'app');
       const componentsDir = path.join(appDir, 'components');
       const widgetPath = path.join(componentsDir, `InterworkyWidget.${fileExtension}`);
 
@@ -132,7 +134,10 @@ export async function installCommand(options: InstallOptions): Promise<void> {
       }
 
       // Read appropriate template
-      const templatePath = path.join(__dirname, `../../../templates/InterworkyWidget.${fileExtension}.template`);
+      const templatePath = path.join(
+        __dirname,
+        `../../../templates/InterworkyWidget.${fileExtension}.template`
+      );
       let widgetContent = fs.readFileSync(templatePath, 'utf-8');
 
       // Configure based on pages option
@@ -181,7 +186,8 @@ export async function installCommand(options: InstallOptions): Promise<void> {
             updatedContent.slice(insertPosition);
         } else {
           // Insert at the beginning
-          updatedContent = `import InterworkyWidget from './components/InterworkyWidget';\n` + updatedContent;
+          updatedContent =
+            `import InterworkyWidget from './components/InterworkyWidget';\n` + updatedContent;
         }
 
         // Find the body tag and inject widget component
@@ -191,9 +197,7 @@ export async function installCommand(options: InstallOptions): Promise<void> {
           const widgetElement = `\n        <InterworkyWidget />`;
 
           updatedContent =
-            updatedContent.slice(0, bodyIndex) +
-            widgetElement +
-            updatedContent.slice(bodyIndex);
+            updatedContent.slice(0, bodyIndex) + widgetElement + updatedContent.slice(bodyIndex);
         } else {
           throw new Error('Could not find <body> tag in layout file');
         }
@@ -237,7 +241,11 @@ export function registerInstallCommand(program: Command): void {
     .command('install')
     .description('Install Carla widget in your Next.js application')
     .option('-p, --pages <pages>', 'Pages to show Carla on (comma-separated routes or "all")')
-    .option('-d, --delay <ms>', 'Delay before loading script in milliseconds (default: 1500)', parseInt)
+    .option(
+      '-d, --delay <ms>',
+      'Delay before loading script in milliseconds (default: 1500)',
+      parseInt
+    )
     .option('-l, --landing', 'Add landing page flag to widget')
     .action(installCommand);
 }

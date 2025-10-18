@@ -24,10 +24,7 @@ import chalk from 'chalk';
 
 const program = new Command();
 
-program
-  .name('carla-nextjs')
-  .description('Next.js plugin for Carla AI assistant')
-  .version('1.0.0');
+program.name('carla-nextjs').description('Next.js plugin for Carla AI assistant').version('1.0.0');
 
 // ASCII art banner
 const banner = `

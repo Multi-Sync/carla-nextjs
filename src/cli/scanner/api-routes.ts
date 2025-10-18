@@ -79,12 +79,7 @@ export class ApiRouteScanner {
     }
 
     const source = fs.readFileSync(filePath, 'utf-8');
-    const sourceFile = ts.createSourceFile(
-      filePath,
-      source,
-      ts.ScriptTarget.Latest,
-      true
-    );
+    const sourceFile = ts.createSourceFile(filePath, source, ts.ScriptTarget.Latest, true);
 
     const methods = this.extractMethods(sourceFile, relativePath);
 
@@ -145,9 +140,7 @@ export class ApiRouteScanner {
       .replace(/\/index$/, '');
 
     // Remove app/api or pages/api prefix
-    endpoint = endpoint
-      .replace(/^(src\/)?app\/api\//, '/')
-      .replace(/^(src\/)?pages\/api\//, '/');
+    endpoint = endpoint.replace(/^(src\/)?app\/api\//, '/').replace(/^(src\/)?pages\/api\//, '/');
 
     // Convert [param] to :param
     endpoint = endpoint.replace(/\[([^\]]+)\]/g, ':$1');

@@ -64,15 +64,16 @@ npx carla-nextjs install --landing
 
 ## Commands
 
-| Command | Description |
-|---------|-------------|
-| `install` | Install Carla widget in your app |
-| `scan` | Scan API routes and generate tools |
-| `sync` | Sync enabled tools to Interworky |
-| `status` | Show current sync status |
-| `fix` | Auto-fix tool issues |
-| `interactive` | Interactive setup wizard |
-| `mcp` | Start MCP server for AI editors |
+| Command      | Description                          |
+|--------------|--------------------------------------|
+| `install`    | Install Carla widget in your app     |
+| `scan`       | Scan API routes and generate tools   |
+| `generate-mcp` | Generate HTTP MCP routes at /api/mcp |
+| `sync`       | Sync enabled tools to Interworky     |
+| `status`     | Show current sync status             |
+| `fix`        | Auto-fix tool issues                 |
+| `interactive`| Interactive setup wizard             |
+| `mcp`        | Start MCP server for AI editors      |
 
 ## Environment Variables
 
@@ -113,6 +114,7 @@ Carla Next.js automatically detects your project type and generates the appropri
 ## Widget Features
 
 The installed widget component:
+
 - ✅ Loads asynchronously (non-blocking)
 - ✅ 1.5s delay for optimal performance
 - ✅ Proper cleanup on unmount
@@ -138,6 +140,46 @@ npx carla-nextjs sync
 
 ```bash
 npx carla-nextjs status --verbose
+```
+
+### Generate MCP Routes
+
+```bash
+# Generate HTTP MCP routes for AI integration
+npx carla-nextjs generate-mcp
+
+# Force regenerate if routes already exist
+npx carla-nextjs generate-mcp --force
+```
+
+## MCP HTTP Routes
+
+The `generate-mcp` command creates HTTP endpoints that expose your API tools via the Model Context Protocol:
+
+### Generated Endpoints
+
+- **GET /api/mcp/tools** - Returns the catalog of available tools
+- **POST /api/mcp/call** - Executes a tool with provided arguments
+
+### Usage Example
+
+```javascript
+// Get available tools
+fetch('http://localhost:3000/api/mcp/tools')
+  .then(res => res.json())
+  .then(tools => console.log(tools));
+
+// Execute a tool
+fetch('http://localhost:3000/api/mcp/call', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    tool: 'get_users',
+    args: { limit: 10 }
+  })
+})
+  .then(res => res.json())
+  .then(result => console.log(result));
 ```
 
 ## MCP Server Integration

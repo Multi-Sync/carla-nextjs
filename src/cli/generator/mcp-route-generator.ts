@@ -324,10 +324,12 @@ ${functionSignature}
     const callRouteTs = path.join(mcpDir, 'call', 'route.ts');
     const callRouteJs = path.join(mcpDir, 'call', 'route.js');
 
-    return fs.existsSync(toolsRouteTs) ||
-           fs.existsSync(toolsRouteJs) ||
-           fs.existsSync(callRouteTs) ||
-           fs.existsSync(callRouteJs);
+    return (
+      fs.existsSync(toolsRouteTs) ||
+      fs.existsSync(toolsRouteJs) ||
+      fs.existsSync(callRouteTs) ||
+      fs.existsSync(callRouteJs)
+    );
   }
 
   /**

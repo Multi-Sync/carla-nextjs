@@ -54,8 +54,8 @@ export function getApiKeyFromEnv(): string {
   if (!apiKey) {
     throw new Error(
       'NEXT_PUBLIC_CARLA_API_KEY not found in environment variables.\n' +
-      'Please add it to your .env.local, .env.development, or .env file.\n' +
-      'You can get your API key from: https://interworky.com/dashboard/integrations'
+        'Please add it to your .env.local, .env.development, or .env file.\n' +
+        'You can get your API key from: https://interworky.com/dashboard/integrations'
     );
   }
 
