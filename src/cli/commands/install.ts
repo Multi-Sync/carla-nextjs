@@ -121,27 +121,17 @@ export async function installCommand(options: InstallOptions): Promise<void> {
       const isTypeScript = layoutPath.endsWith('.tsx') || layoutPath.endsWith('.ts');
       const fileExtension = isTypeScript ? 'tsx' : 'jsx';
 
-      // Determine component directory - check relative to project root
+      // Determine component directory - create outside app directory to avoid routing conflicts
       const relativePath = path.relative(projectRoot, layoutPath);
       const usesSrcDir = relativePath.startsWith('src');
 
-      const appDir = usesSrcDir
-        ? path.join(projectRoot, 'src', 'app')
-        : path.join(projectRoot, 'app');
-      const componentsDir = path.join(appDir, 'components');
+      // Create components directory outside of app to prevent Next.js treating it as a route
+      const componentsDir = usesSrcDir
+        ? path.join(projectRoot, 'src', 'components')
+        : path.join(projectRoot, 'components');
       const widgetPath = path.join(componentsDir, `InterworkyWidget.${fileExtension}`);
 
-      logger.info(`Using ${usesSrcDir ? 'src/' : ''}app/components for widget`);
-
-      // Safety check: Ensure we're not creating a conflicting app directory
-      if (usesSrcDir) {
-        const conflictingAppDir = path.join(projectRoot, 'app');
-        if (fs.existsSync(conflictingAppDir)) {
-          logger.warn(
-            `Warning: Both 'app' and 'src/app' directories exist. Using src/app as detected from layout.`
-          );
-        }
-      }
+      logger.info(`Using ${usesSrcDir ? 'src/' : ''}components for widget (outside app directory)`);
 
       // Create components directory if it doesn't exist
       if (!fs.existsSync(componentsDir)) {
@@ -190,8 +180,12 @@ export async function installCommand(options: InstallOptions): Promise<void> {
         // Add import at the top of the file
         const importMatch = layoutContent.match(/import\s+.*?from\s+['"].*?['"]/);
 
-        // Determine relative path from layout to widget
-        const widgetImportPath = './components/InterworkyWidget';
+        // Determine relative path from layout to widget (widget is outside app directory)
+        // Layout is in app/layout.tsx, widget is in components/InterworkyWidget.tsx
+        // So the import should be '../components/InterworkyWidget' or '../../components/InterworkyWidget'
+        const widgetImportPath = usesSrcDir
+          ? '../components/InterworkyWidget' // src/app/layout.tsx -> src/components/
+          : '../components/InterworkyWidget'; // app/layout.tsx -> components/
 
         if (importMatch) {
           const lastImportIndex = layoutContent.lastIndexOf(importMatch[0]);
