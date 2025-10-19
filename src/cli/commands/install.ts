@@ -203,8 +203,7 @@ export async function installCommand(options: InstallOptions): Promise<void> {
             updatedContent.slice(insertPosition);
         } else {
           // Insert at the beginning
-          updatedContent =
-            `import InterworkyWidget from '${widgetImportPath}';\n` + updatedContent;
+          updatedContent = `import InterworkyWidget from '${widgetImportPath}';\n` + updatedContent;
         }
 
         // Find the body tag and inject widget component
