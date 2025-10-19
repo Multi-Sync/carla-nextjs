@@ -3,7 +3,7 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
   title: 'Carla Next.js',
   description: 'Turn your Next.js API routes into AI-powered tools for Carla',
-  base: '/carla-nextjs/',
+  base: '/',
 
   themeConfig: {
     logo: '/logo.svg',
@@ -13,7 +13,7 @@ export default defineConfig({
       { text: 'Reference', link: '/reference/cli' },
       { text: 'Examples', link: '/examples/' },
       {
-        text: 'v1.0.3',
+        text: 'v1.0.4',
         items: [
           { text: 'Changelog', link: 'https://github.com/Multi-Sync/carla-nextjs/releases' },
           { text: 'Contributing', link: '/guide/contributing' }
@@ -96,12 +96,12 @@ export default defineConfig({
   },
 
   head: [
-    ['link', { rel: 'icon', href: '/carla-nextjs/favicon.ico' }],
+    ['link', { rel: 'icon', href: '/favicon.ico' }],
     ['meta', { name: 'theme-color', content: '#5f67ee' }],
     ['meta', { property: 'og:type', content: 'website' }],
     ['meta', { property: 'og:locale', content: 'en' }],
     ['meta', { property: 'og:title', content: 'Carla Next.js | AI Agent for Websites' }],
     ['meta', { property: 'og:site_name', content: 'Carla Next.js' }],
-    ['meta', { property: 'og:url', content: 'https://multi-sync.github.io/carla-nextjs/' }],
+    ['meta', { property: 'og:url', content: 'https://carla.interworky.com' }],
   ]
 })
