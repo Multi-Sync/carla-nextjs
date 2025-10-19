@@ -20,7 +20,7 @@ export default function InterworkyWidget() {
 
   useEffect(() => {
     // Only load the script after the page has fully loaded to not block rendering
-    let timeoutId: NodeJS.Timeout;
+    let timeoutId: NodeJS.Timeout | undefined;
 
     {{ROUTE_CONDITION}}
       // Delay script loading to prioritize core content rendering

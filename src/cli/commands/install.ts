@@ -121,16 +121,32 @@ export async function installCommand(options: InstallOptions): Promise<void> {
       const isTypeScript = layoutPath.endsWith('.tsx') || layoutPath.endsWith('.ts');
       const fileExtension = isTypeScript ? 'tsx' : 'jsx';
 
-      // Determine component directory
-      const appDir = layoutPath.includes('src/app')
+      // Determine component directory - check relative to project root
+      const relativePath = path.relative(projectRoot, layoutPath);
+      const usesSrcDir = relativePath.startsWith('src');
+
+      const appDir = usesSrcDir
         ? path.join(projectRoot, 'src', 'app')
         : path.join(projectRoot, 'app');
       const componentsDir = path.join(appDir, 'components');
       const widgetPath = path.join(componentsDir, `InterworkyWidget.${fileExtension}`);
 
+      logger.info(`Using ${usesSrcDir ? 'src/' : ''}app/components for widget`);
+
+      // Safety check: Ensure we're not creating a conflicting app directory
+      if (usesSrcDir) {
+        const conflictingAppDir = path.join(projectRoot, 'app');
+        if (fs.existsSync(conflictingAppDir)) {
+          logger.warn(
+            `Warning: Both 'app' and 'src/app' directories exist. Using src/app as detected from layout.`
+          );
+        }
+      }
+
       // Create components directory if it doesn't exist
       if (!fs.existsSync(componentsDir)) {
         fs.mkdirSync(componentsDir, { recursive: true });
+        logger.info(`Created directory: ${path.relative(projectRoot, componentsDir)}`);
       }
 
       // Read appropriate template
@@ -173,21 +189,22 @@ export async function installCommand(options: InstallOptions): Promise<void> {
       if (!hasWidgetImport) {
         // Add import at the top of the file
         const importMatch = layoutContent.match(/import\s+.*?from\s+['"].*?['"]/);
+
+        // Determine relative path from layout to widget
+        const widgetImportPath = './components/InterworkyWidget';
+
         if (importMatch) {
           const lastImportIndex = layoutContent.lastIndexOf(importMatch[0]);
           const insertPosition = layoutContent.indexOf('\n', lastImportIndex) + 1;
 
-          // Determine relative path from layout to widget
-          const relativePath = './components/InterworkyWidget';
-
           updatedContent =
             updatedContent.slice(0, insertPosition) +
-            `import InterworkyWidget from '${relativePath}';\n` +
+            `import InterworkyWidget from '${widgetImportPath}';\n` +
             updatedContent.slice(insertPosition);
         } else {
           // Insert at the beginning
           updatedContent =
-            `import InterworkyWidget from './components/InterworkyWidget';\n` + updatedContent;
+            `import InterworkyWidget from '${widgetImportPath}';\n` + updatedContent;
         }
 
         // Find the body tag and inject widget component

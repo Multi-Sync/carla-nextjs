@@ -11,7 +11,7 @@ export default function InterworkyWidget() {
 
   useEffect(() => {
     // Only load the script after the page has fully loaded to not block rendering
-    let timeoutId;
+    let timeoutId = undefined;
 
     {{ROUTE_CONDITION}}
       // Delay script loading to prioritize core content rendering
