@@ -20,6 +20,7 @@
 - 🔄 **Smart Sync** - Push tools to Interworky dashboard
 - 🛠️ **Auto-Fix** - Detects and fixes common issues
 - 🎯 **Type-Safe** - Full TypeScript support
+- 🧠 **MCP Server** - Works with Cursor, Claude Code, and other AI assistants
 
 ## Quick Start
 
@@ -49,6 +50,50 @@ npx @interworky/carla-nextjs sync
 ```
 
 That's it! Carla now has access to your API routes.
+
+## Use with Cursor, Claude Code & AI Assistants
+
+Carla Next.js includes an MCP (Model Context Protocol) server that works with AI coding assistants:
+
+```bash
+# Start MCP server
+npx @interworky/carla-nextjs mcp
+```
+
+### Cursor IDE Setup
+
+Add to `.cursor/mcp_config.json`:
+```json
+{
+  "mcpServers": {
+    "carla-nextjs": {
+      "command": "npx",
+      "args": ["@interworky/carla-nextjs", "mcp"]
+    }
+  }
+}
+```
+
+### Claude Desktop Setup
+
+Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
+```json
+{
+  "mcpServers": {
+    "carla-nextjs": {
+      "command": "npx",
+      "args": ["@interworky/carla-nextjs", "mcp"],
+      "cwd": "/absolute/path/to/your/nextjs/project"
+    }
+  }
+}
+```
+
+### Claude Code Setup
+
+We include a comprehensive `CLAUDE.md` with project context and instructions.
+
+**📖 [Full AI Assistant Setup Guide](https://carla.interworky.com/guide/ai-assistants)**
 
 ## Installation Options
 

@@ -41,6 +41,13 @@ export default defineConfig({
           ]
         },
         {
+          text: 'AI Integration',
+          items: [
+            { text: 'Cursor & Claude Code', link: '/guide/ai-assistants' },
+            { text: 'MCP Protocol', link: '/guide/mcp' },
+          ]
+        },
+        {
           text: 'Advanced',
           items: [
             { text: 'Configuration', link: '/guide/configuration' },

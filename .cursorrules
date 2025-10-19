@@ -1,0 +1,86 @@
+# Cursor Rules for Carla Next.js
+
+## Code Style
+
+- Use TypeScript for all new code
+- Prefer async/await over promises
+- Use explicit types for function parameters and return values
+- Follow existing patterns in the codebase
+
+## Error Handling
+
+- Always catch and handle errors gracefully
+- Provide clear, actionable error messages to users
+- Use chalk for colored terminal output (green for success, red for errors)
+- Include context in error messages (file paths, parameter values, etc.)
+
+## CLI Development
+
+- Use ora for loading spinners
+- Provide progress feedback for long-running operations
+- Exit with code 1 on errors, 0 on success
+- Test commands locally with `npm run build && node bin/cli.js <command>`
+
+## Testing
+
+- Build before testing: `npm run build`
+- Test CLI commands end-to-end
+- Verify error messages are helpful
+- Check that success messages include next steps
+
+## Documentation
+
+- Update docs/ when adding features
+- Include code examples in documentation
+- Add example prompts for AI assistants
+- Keep CLAUDE.md synchronized with project structure
+
+## Version Management
+
+- Follow semantic versioning (major.minor.patch)
+- Update version in both package.json and docs/.vitepress/config.ts
+- Document breaking changes in CHANGELOG.md
+- Test before publishing
+
+## MCP Integration
+
+- Keep MCP tools synchronized with API routes
+- Ensure tool descriptions are clear and AI-friendly
+- Test MCP server with: `carla-nextjs mcp`
+- Validate tool definitions in .carla/tools.json
+
+## Common Commands
+
+```bash
+# Development
+npm run dev          # Watch mode
+npm run build        # Build TypeScript
+npm run lint         # Check linting
+npm run format       # Format code
+
+# Testing
+npm test             # Run tests
+npm link             # Test CLI globally
+
+# Documentation
+npm run docs:dev     # Preview docs
+npm run docs:build   # Build docs
+```
+
+## File Locations
+
+- CLI commands: `src/cli/*.ts`
+- Scanner logic: `src/scanner/*.ts`
+- MCP server: `src/mcp/*.ts`
+- Templates: `templates/`
+- Documentation: `docs/`
+- Build output: `dist/` (gitignored)
+
+## When Adding Features
+
+1. Implement in TypeScript under src/
+2. Build: `npm run build`
+3. Test locally: `node bin/cli.js <your-command>`
+4. Update documentation in docs/
+5. Add to CLAUDE.md if it changes workflows
+6. Commit with conventional commit message (feat:, fix:, chore:, etc.)

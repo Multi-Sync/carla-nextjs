@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "carla-nextjs": {
+      "command": "npx",
+      "args": ["@interworky/carla-nextjs", "mcp"],
+      "env": {
+        "NEXT_PUBLIC_CARLA_API_KEY": "your-api-key-here"
+      }
+    }
+  }
+}
