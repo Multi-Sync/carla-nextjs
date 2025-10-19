@@ -13,7 +13,7 @@ export default defineConfig({
       { text: 'Reference', link: '/reference/cli' },
       { text: 'Examples', link: '/examples/' },
       {
-        text: 'v1.0.6',
+        text: 'v1.0.7',
         items: [
           { text: 'Changelog', link: 'https://github.com/Multi-Sync/carla-nextjs/releases' },
           { text: 'Contributing', link: '/guide/contributing' }

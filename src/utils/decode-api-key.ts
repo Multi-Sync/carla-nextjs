@@ -24,7 +24,23 @@ export interface DecodedApiKey {
  * - LM Studio: orgId:lmStudioUrl:modelName:systemMessage
  */
 export function decodeApiKey(apiKey: string): DecodedApiKey {
-  const decodedData = Buffer.from(apiKey, 'base64').toString('utf-8');
+  // Validate input
+  if (!apiKey || typeof apiKey !== 'string') {
+    throw new Error('API key is required and must be a string');
+  }
+
+  // Attempt to decode from Base64
+  let decodedData: string;
+  try {
+    decodedData = Buffer.from(apiKey, 'base64').toString('utf-8');
+  } catch (error) {
+    throw new Error(
+      'Failed to decode API key. Ensure it is a valid Base64-encoded string.\n' +
+        'Get your API key from: https://interworky.com/dashboard/integrations'
+    );
+  }
+
+  // Split by $$ first (new format), then fall back to : (old format)
   let parts = decodedData.split('$$');
 
   if (!parts || parts.length < 2) {
@@ -35,13 +51,30 @@ export function decodeApiKey(apiKey: string): DecodedApiKey {
   if (parts.length === 4) {
     // LM Studio API key: orgId:lmStudioUrl:modelName:systemMessage
     const [orgId, lmStudioUrl, modelName, systemMessage] = parts;
-    return { orgId, lmStudioUrl, modelName, systemMessage };
+
+    if (!orgId || orgId.trim().length === 0) {
+      throw new Error('Invalid API key: Organization ID is missing');
+    }
+
+    return { orgId: orgId.trim(), lmStudioUrl, modelName, systemMessage };
   } else if (parts.length === 2) {
-    // OpenAI API key: orgId:assistantId
+    // OpenAI API key: orgId$$assistantId or orgId:assistantId
     const [orgId, assistantId] = parts;
-    return { orgId, assistantId };
+
+    if (!orgId || orgId.trim().length === 0) {
+      throw new Error('Invalid API key: Organization ID is missing');
+    }
+
+    return { orgId: orgId.trim(), assistantId: assistantId?.trim() };
   } else {
-    throw new Error('Invalid API key format.');
+    throw new Error(
+      `Invalid API key format. Expected 2 or 4 parts, got ${parts.length}.\n` +
+        'Decoded value: ' +
+        decodedData.substring(0, 50) +
+        (decodedData.length > 50 ? '...' : '') +
+        '\n' +
+        'Please verify your API key at: https://interworky.com/dashboard/integrations'
+    );
   }
 }
 

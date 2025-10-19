@@ -43,14 +43,29 @@ export class InterworkyAPI {
    * Sync tools to Interworky
    */
   async syncTools(tools: Tool[]): Promise<SyncResponse> {
+    // Validate inputs
+    if (!this.organizationId) {
+      throw new Error('Organization ID is missing. Please check your API key.');
+    }
+
+    if (!Array.isArray(tools) || tools.length === 0) {
+      throw new Error('No tools to sync. Please run scan first.');
+    }
+
     try {
       // Convert tools to organization methods format
       const methods: OrganizationMethod[] = tools.map(tool => this.toolToMethod(tool));
+
+      console.log(`[DEBUG] Syncing to organization: ${this.organizationId}`);
+      console.log(`[DEBUG] Number of tools: ${tools.length}`);
+      console.log(`[DEBUG] API URL: ${INTERWORKY_API_URL}/organization-methods/bulk`);
 
       const response = await this.client.post('/organization-methods/bulk', {
         organization_id: this.organizationId,
         methods,
       });
+
+      console.log(`[DEBUG] Sync response status: ${response.status}`);
 
       return {
         success: true,
@@ -60,7 +75,46 @@ export class InterworkyAPI {
       };
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        throw new Error(error.response?.data?.message || 'Failed to sync tools');
+        // Enhanced error reporting
+        const status = error.response?.status;
+        const statusText = error.response?.statusText;
+        const message = error.response?.data?.message || error.message;
+
+        console.error(`[DEBUG] Sync failed - Status: ${status}, Message: ${message}`);
+
+        if (status === 401 || status === 403) {
+          throw new Error(
+            `Authentication failed (${status}): ${message}\n` +
+              'Your API key may be invalid or expired. Please check your credentials at:\n' +
+              'https://interworky.com/dashboard/integrations'
+          );
+        } else if (status === 404) {
+          throw new Error(
+            `API endpoint not found (${status}): ${message}\n` +
+              'The sync endpoint may have changed. Please update to the latest version:\n' +
+              'npm install @interworky/carla-nextjs@latest'
+          );
+        } else if (status === 422 || status === 400) {
+          throw new Error(
+            `Validation error (${status}): ${message}\n` +
+              'There may be an issue with your tool definitions. Please check your API routes.'
+          );
+        } else if (status && status >= 500) {
+          throw new Error(
+            `Server error (${status}): ${statusText}\n` +
+              'The Interworky API is experiencing issues. Please try again later.'
+          );
+        } else if (error.code === 'ENOTFOUND' || error.code === 'ECONNREFUSED') {
+          throw new Error(
+            `Network error: Cannot reach Interworky API\n` +
+              'Please check your internet connection and try again.'
+          );
+        } else {
+          throw new Error(
+            `Failed to sync tools: ${message}\n` +
+              `Status: ${status || 'unknown'}, Code: ${error.code || 'none'}`
+          );
+        }
       }
       throw error;
     }
