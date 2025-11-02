@@ -6,8 +6,8 @@ hero:
   text: AI Agent for Your Website
   tagline: Turn your Next.js API routes into AI-powered tools for Carla - Customer Support + Analytics + Performance Monitoring + Bug Fixes
   image:
-    src: /interworky-character.webp
-    alt: Carla - AI Agent for Websites
+    src: /carla-nextjs-icon.svg
+    alt: Carla Next.js - Customer Support + Analytics + Performance + Bug Fixes
   actions:
     - theme: brand
       text: Get Started
