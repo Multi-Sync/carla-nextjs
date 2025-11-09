@@ -6,7 +6,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
-    "carla-nextjs": "./bin/cli.js"
+    "carla-nextjs": "bin/cli.js"
   },
   "scripts": {
     "build": "tsc",
@@ -35,7 +35,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Multi-Sync/carla-nextjs.git"
+    "url": "git+https://github.com/Multi-Sync/carla-nextjs.git"
   },
   "bugs": {
     "url": "https://github.com/Multi-Sync/carla-nextjs/issues"
