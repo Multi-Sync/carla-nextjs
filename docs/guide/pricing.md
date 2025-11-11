@@ -328,4 +328,4 @@ Visit your [Dashboard Settings](https://interworky.com/dashboard/settings?tab=bi
 ### Questions?
 - 📧 Email: support@interworky.com
 - 💬 Discord: [Join our community](https://discord.com/invite/YHmsekzMV5)
-- 📖 Documentation: [Full Guides](./index.md)
+- 📖 Documentation: [Full Guides](https://carla.interworky.com)

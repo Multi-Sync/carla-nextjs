@@ -420,7 +420,7 @@ Carla tracks both client-side and server-side metrics:
 ## Next Steps
 
 - **[Analytics Guide](/guide/analytics)** - Track user behavior and insights
-- **[Error Tracking](/guide/error-tracking)** - Monitor and fix errors
+- **[Auto-Fix Guide](/guide/auto-fix)** - AI-powered error fixing with GitHub PRs
 - **[Configuration](/guide/configuration)** - Customize performance settings
 - **[Pricing](/guide/pricing)** - Learn about premium features
 
