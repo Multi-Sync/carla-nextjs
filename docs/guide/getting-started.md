@@ -8,20 +8,45 @@ Before you begin, make sure you have:
 
 - **Node.js 18+** installed on your machine
 - A **Next.js 14+** project (App Router or Pages Router)
-- An **Interworky account** ([sign up free at interworky.com](https://interworky.com))
+- An **Interworky account with API key** - Don't have one? See [Step 1](#step-1-create-your-account-get-api-key) below to create your free account
 
-::: tip Free Tier - No Credit Card Required
-The free tier includes performance monitoring, error tracking, and analytics with unlimited usage. You can upgrade to premium features ($19.99/month with 7-day free trial) later if you want AI-powered Auto-Fix or the Customer Support widget.
+::: tip 🆓 Free Forever - No Credit Card Required
+The free tier includes performance monitoring, error tracking, and analytics with **unlimited usage**. No credit card needed to get started. You can upgrade to premium features ($19.99/month with 7-day free trial) later if you want AI-powered Auto-Fix or the Customer Support widget.
 :::
 
 ## Quick Start
 
 ### Step 1: Create Your Account & Get API Key
 
-1. Visit [interworky.com](https://interworky.com) and sign up (no credit card required)
-2. Complete email verification
-3. Navigate to **Dashboard → Integrations**
-4. Copy your API key
+::: info 🎯 First Time Setup
+Before you can use Carla, you need to create a free account on Interworky and get your API key. This takes about 2 minutes and requires no credit card.
+:::
+
+**Create your account:**
+
+1. **Visit [interworky.com](https://interworky.com)**
+   - Click the **"Sign Up"** button in the top right
+   - Or go directly to the signup page: [interworky.com/signup](https://interworky.com/signup)
+
+2. **Complete registration**
+   - Enter your email address
+   - Create a password
+   - Agree to terms and click "Create Account"
+
+3. **Verify your email**
+   - Check your inbox for a verification email from Interworky
+   - Click the verification link
+   - You'll be redirected to the dashboard
+
+4. **Get your API key**
+   - Once logged in, navigate to **Dashboard → Integrations** (look in the left sidebar)
+   - Your API key will be displayed at the top of the page
+   - Click the **"Copy"** button to copy your API key
+   - Keep this key safe - you'll need it in the next step
+
+::: warning Keep Your API Key Safe
+Your API key is like a password - don't commit it to version control or share it publicly. The Carla CLI will automatically add it to your `.env.local` file (which should be in `.gitignore`).
+:::
 
 ### Step 2: Initialize Carla in Your Project
 
@@ -315,9 +340,8 @@ Now that you have Carla set up, explore these topics:
 - [Pricing & Features](/guide/pricing) - Learn about premium features
 
 ### For Premium Tier Users
-- [Auto-Fix Guide](/guide/auto-fix) - Configure AI-powered error fixing
+- [Auto-Fix Guide](/guide/auto-fix) - Configure AI-powered error fixing and GitHub PR automation
 - [Customer Support Widget](/guide/customer-support) - Set up the AI chat widget
-- [GitHub Integration](/guide/github-integration) - Advanced GitHub PR automation
 - [Tool Generation](/guide/tool-generation) - Learn about tool definitions
 - [Configuration](/guide/configuration) - Advanced configuration options
 

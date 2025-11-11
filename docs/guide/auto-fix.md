@@ -668,7 +668,6 @@ Auto-Fix is included in the premium tier:
 ## Next Steps
 
 - **[Customer Support Widget](/guide/customer-support)** - Set up AI chat widget
-- **[GitHub Integration](/guide/github-integration)** - Advanced GitHub features
 - **[Performance Monitoring](/guide/performance-monitoring)** - Track app performance
 - **[Pricing](/guide/pricing)** - Full pricing details
 

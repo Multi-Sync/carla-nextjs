@@ -608,8 +608,7 @@ Yes, all analytics support custom date ranges:
 
 ## Next Steps
 
-- **[Performance Monitoring](/guide/performance-monitoring)** - Track app performance
-- **[Error Tracking](/guide/error-tracking)** - Monitor and fix errors
+- **[Performance Monitoring](/guide/performance-monitoring)** - Track app performance and errors
 - **[Pricing](/guide/pricing)** - Learn about premium features
 - **[Configuration](/guide/configuration)** - Customize analytics settings
 
