@@ -8,48 +8,129 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.3%2B-blue)](https://www.typescriptlang.org/)
 [![Discord](https://img.shields.io/discord/1234567890?color=7289da&label=Discord&logo=discord&logoColor=white)](https://discord.com/invite/YHmsekzMV5)
 
-> Automatically turn your Next.js API routes into AI-powered tools for Carla, the AI Agent for websites (Customer Support + Analytics + Performance Monitoring + Bug Fixes).
+> Automatically turn your Next.js API routes into AI-powered tools for Carla, the AI Agent for Next.js applications.
 
-📚 **[Read the full documentation →](https://multi-sync.github.io/carla-nextjs/)**
+**Start Free:** Performance Monitoring + Error Tracking + Analytics
+**Premium ($19.99/mo):** AI-Powered Auto-Fix + AI Customer Support Widget
+**7-Day Free Trial** available for premium features
+
+📚 **[Read the full documentation →](https://carla.interworky.com)** | 💰 **[Pricing Details →](https://carla.interworky.com/guide/pricing)**
+
+## What is Carla?
+
+Carla is a comprehensive platform for Next.js applications that provides:
+
+- **Free Tier:** Essential monitoring, error tracking, and analytics - always free, no credit card required
+- **Premium Tier:** AI-powered automation (Auto-Fix with GitHub PRs) and AI Customer Support - $19.99/month with 7-day free trial
 
 ## Features
 
+### ✨ Always Free
+
+- 📊 **Performance Monitoring** - Real-time performance tracking and metrics
+- 🐛 **Error Detection** - Automatic error capture with stack traces
+- 📈 **Analytics & Insights** - Visitor tracking, page views, and user journeys
+- 📱 **10,000+ Device Awareness** - Comprehensive device and browser detection
 - 🔍 **Auto-discovery** - Scans API routes and generates tool definitions
-- 🤖 **AI-Ready** - Works with OpenAI Realtime API (text & voice)
-- 📦 **Zero Config** - One command to install widget
+- 📦 **Zero Config Widget** - One command to install
 - 🔄 **Smart Sync** - Push tools to Interworky dashboard
-- 🛠️ **Auto-Fix** - Detects and fixes common issues
+- 🛠️ **CLI Auto-Fix Tool** - Detects and fixes common configuration issues
 - 🎯 **Type-Safe** - Full TypeScript support
-- 🧠 **MCP Server** - Works with Cursor, Claude Code, and other AI assistants
+
+### 🚀 Premium Features ($19.99/month)
+
+> **7-Day Free Trial Available** - Try premium features free for 7 days. Credit card required. Cancel anytime during trial at no charge.
+
+- 🤖 **AI-Powered Auto-Fix** - AI detects errors and creates GitHub PRs with fixes automatically
+- 🔗 **GitHub Integration** - OAuth connection and automated PR creation
+- 💬 **AI Customer Support Widget** - Embeddable voice & text chat widget for your website
+- 🧠 **Full MCP Server** - Advanced Model Context Protocol features for AI assistants (Cursor, Claude Code, etc.)
+
+**Learn more:** [Pricing & Feature Comparison →](https://carla.interworky.com/guide/pricing)
+
+## Pricing
+
+| | Free Tier | Premium Tier |
+|---|---|---|
+| **Price** | **FREE forever** | **$19.99/month** |
+| **Credit Card** | ❌ Not required | ✅ Required |
+| **Trial** | N/A | ✅ 7 days free |
+| **Performance Monitoring** | ✅ Unlimited | ✅ Included |
+| **Error Tracking** | ✅ Unlimited | ✅ Included |
+| **Analytics** | ✅ Unlimited | ✅ Included |
+| **AI-Powered Auto-Fix** | ❌ | ✅ |
+| **GitHub PR Creation** | ❌ | ✅ |
+| **AI Customer Support Widget** | ❌ | ✅ |
+| **Voice Chat Support** | ❌ | ✅ |
+
+**Full details:** [View complete pricing guide →](https://carla.interworky.com/guide/pricing)
 
 ## Quick Start
 
-### 1. Install Widget
+### 1. Sign Up & Get Your API Key
+
+1. Visit [interworky.com](https://interworky.com)
+2. Create a free account (no credit card required)
+3. Navigate to the **Integrations** page
+4. Copy your API key
+
+### 2. Initialize Carla in Your Next.js Project
 
 ```bash
-# Add your API key to .env.local
-NEXT_PUBLIC_CARLA_API_KEY="your-api-key-here"
-
-# Install the Interworky widget
-npx @interworky/carla-nextjs install
+# Initialize and authenticate
+npx @interworky/carla-nextjs init
 ```
 
-This adds the Carla widget to your Next.js app.
+This will:
+- Authenticate with your API key
+- Create `.carla/` configuration directory
+- Add `NEXT_PUBLIC_CARLA_API_KEY` to your `.env.local`
 
-### 2. Scan & Sync Tools
+### 3. Choose Your Integration Path
+
+You'll be guided to choose between two options:
+
+#### Option A: Manual Integration (Free Tier)
+- Install widget component manually
+- Get immediate access to performance monitoring, error tracking, and analytics
+- No trial or credit card required
+- Perfect for getting started
 
 ```bash
+# Install the widget component
+npx @interworky/carla-nextjs install
+
 # Scan your API routes
 npx @interworky/carla-nextjs scan
 
-# Review generated tools
-npx @interworky/carla-nextjs status
-
-# Sync to Interworky
+# Sync to dashboard
 npx @interworky/carla-nextjs sync
 ```
 
-That's it! Carla now has access to your API routes.
+#### Option B: GitHub Integration (Premium - 7-Day Free Trial)
+- Connect GitHub via OAuth
+- Enables AI-Powered Auto-Fix with PR creation
+- Includes AI Customer Support Widget
+- Requires credit card for trial ($19.99/month after 7 days)
+
+```bash
+# Start premium trial and connect GitHub
+# Follow the dashboard prompts to:
+# 1. Start 7-day free trial
+# 2. Connect GitHub OAuth
+# 3. Install widget component
+```
+
+### 4. Start Monitoring
+
+Once integrated, access your dashboard to:
+- View real-time performance metrics
+- Track errors with stack traces
+- Analyze visitor data and user journeys
+- **(Premium)** Receive automated PR fixes for detected errors
+- **(Premium)** Enable AI customer support chat widget
+
+**Next steps:** [Complete setup guide →](https://carla.interworky.com/guide/getting-started)
 
 ## Use with Cursor, Claude Code & AI Assistants
 
