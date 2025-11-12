@@ -18,12 +18,14 @@ Auto-Fix provides:
 ## Requirements
 
 ### Subscription
+
 - ✅ **Active premium subscription** ($19.99/month) OR
 - ✅ **Active 7-day free trial**
 
 [Start your free trial →](https://interworky.com/checkout?feature=auto_fix)
 
 ### Technical Requirements
+
 - **GitHub account** with repository access
 - **Next.js 14+** application
 - **Git repository** hosted on GitHub
@@ -41,6 +43,7 @@ If you're on the free tier, you'll need to upgrade:
 4. Complete checkout
 
 **Trial details:**
+
 - Free for first 7 days
 - $19.99/month after trial
 - Cancel anytime during trial at no charge
@@ -117,6 +120,7 @@ Carla's AI analyzes the error:
 - **Generates a fix** that addresses the underlying issue
 
 **AI Analysis Example:**
+
 ```
 Analysis:
   Root Cause: Accessing property 'name' on potentially undefined user object
@@ -134,12 +138,13 @@ Analysis:
 AI generates the code fix:
 
 **Before (Broken Code):**
+
 ```tsx
 // components/UserProfile.tsx
 export default function UserProfile({ user }) {
   return (
     <div className="profile">
-      <h1>{user.name}</h1>  {/* Error here: user might be undefined */}
+      <h1>{user.name}</h1> {/* Error here: user might be undefined */}
       <p>{user.email}</p>
     </div>
   );
@@ -147,6 +152,7 @@ export default function UserProfile({ user }) {
 ```
 
 **After (AI-Generated Fix):**
+
 ```tsx
 // components/UserProfile.tsx
 export default function UserProfile({ user }) {
@@ -173,6 +179,7 @@ Carla automatically:
 3. Commits the changes with a descriptive message
 
 **Commit message example:**
+
 ```
 Fix: Add null check for user prop in UserProfile component
 
@@ -191,11 +198,13 @@ Location: components/UserProfile.tsx:42
 A pull request is automatically created:
 
 #### PR Title
+
 ```
 🤖 Auto-Fix: Handle undefined user in UserProfile component
 ```
 
 #### PR Description
+
 ```markdown
 ## Error Fixed
 
@@ -293,6 +302,7 @@ Trigger Auto-Fix when error occurs:
 Configure which files Auto-Fix should modify:
 
 **Include patterns:**
+
 ```
 src/**/*.{ts,tsx,js,jsx}
 components/**/*.{ts,tsx}
@@ -301,6 +311,7 @@ app/**/*.{ts,tsx}
 ```
 
 **Exclude patterns:**
+
 ```
 node_modules/**
 .next/**
@@ -319,19 +330,23 @@ Exclude test files from Auto-Fix. Tests should be manually updated to reflect th
 Customize pull request behavior:
 
 **Auto-merge:** ⚠️ Not recommended
+
 - Automatically merge PRs that pass CI checks
 - High risk - only enable if you have comprehensive test coverage
 
 **Draft PRs:** ✅ Recommended
+
 - Create PRs as drafts for review before marking ready
 - Safer option for production repositories
 
 **PR Labels:**
+
 - `auto-fix` (automatically added)
 - `bug` (automatically added)
 - Custom labels (optional)
 
 **Reviewers:**
+
 - Automatically request reviews from specified team members
 - Useful for requiring human approval before merge
 
@@ -343,11 +358,11 @@ View all errors and Auto-Fix activity:
 
 #### Recent Auto-Fixes
 
-| Error | Status | PR | Created | Merged |
-|-------|--------|----|---------| -------|
-| TypeError in UserProfile | ✅ Merged | #42 | 2h ago | 1h ago |
-| ReferenceError in Dashboard | 🔄 Open | #43 | 1h ago | - |
-| Logic error in checkout | ❌ Closed | #44 | 3h ago | - |
+| Error                       | Status    | PR  | Created | Merged |
+| --------------------------- | --------- | --- | ------- | ------ |
+| TypeError in UserProfile    | ✅ Merged | #42 | 2h ago  | 1h ago |
+| ReferenceError in Dashboard | 🔄 Open   | #43 | 1h ago  | -      |
+| Logic error in checkout     | ❌ Closed | #44 | 3h ago  | -      |
 
 #### Auto-Fix Statistics
 
@@ -379,6 +394,7 @@ Some errors require changes across multiple files. Auto-Fix handles this:
 **Example:** Import missing component
 
 **Files changed:**
+
 1. `components/Dashboard.tsx` - Import statement added
 2. `components/index.ts` - Export added
 3. `types/dashboard.ts` - Type definition updated
@@ -392,6 +408,7 @@ Auto-Fix can update package dependencies when needed:
 **Example:** Outdated library causing errors
 
 **Changes:**
+
 1. `package.json` - Update dependency version
 2. `package-lock.json` - Lock file updated
 3. `components/Chart.tsx` - Update import/usage to match new API
@@ -401,11 +418,13 @@ Auto-Fix can update package dependencies when needed:
 Auto-Fix tracks if a fix introduces new errors:
 
 **Scenario:**
+
 1. Auto-Fix creates PR #42 to fix TypeError
 2. PR #42 is merged
 3. New ReferenceError appears in the same component
 
 **Action:**
+
 - Dashboard shows warning: "PR #42 may have introduced new error"
 - Auto-Fix creates PR #43 to address the new issue
 - You're notified to review both PRs
@@ -415,6 +434,7 @@ Auto-Fix tracks if a fix introduces new errors:
 ### 1. Start with Strict Settings
 
 Begin conservatively:
+
 - Higher error occurrence threshold (5+)
 - Limit to TypeError and ReferenceError only
 - Use draft PRs
@@ -425,11 +445,13 @@ Begin conservatively:
 ### 2. Monitor PR Quality
 
 Regularly review Auto-Fix PRs:
+
 - Are fixes correct?
 - Do they address root causes?
 - Are there better solutions?
 
 Provide feedback by:
+
 - ✅ Merging good PRs quickly
 - 💬 Commenting on PRs that need changes
 - ❌ Closing incorrect PRs
@@ -460,6 +482,7 @@ jobs:
 ### 4. Review Before Merging
 
 Even with high AI confidence, always:
+
 - Read the changes
 - Understand what the fix does
 - Consider edge cases
@@ -484,6 +507,7 @@ For production repositories:
 ### Auto-Fix Not Creating PRs
 
 **Check:**
+
 1. ✅ Premium subscription is active (Dashboard → Settings → Billing)
 2. ✅ Auto-Fix is enabled (Dashboard → Home → Auto-Fix)
 3. ✅ GitHub is connected and authorized
@@ -494,6 +518,7 @@ For production repositories:
 ### PRs Not Appearing in GitHub
 
 **Possible causes:**
+
 1. **Branch protection rules** preventing PR creation
    - **Fix:** Add Carla's GitHub app to bypass protections
 2. **Repository permissions** insufficient
@@ -549,11 +574,13 @@ Your 7-day trial includes full Auto-Fix access:
 ### After Trial
 
 **If you keep subscription:**
+
 - $19.99/month charged automatically
 - Auto-Fix remains active
 - Cancel anytime (month-to-month)
 
 **If you cancel:**
+
 - Auto-Fix disabled immediately
 - Existing PRs remain open
 - Can re-subscribe anytime to re-enable
@@ -573,17 +600,20 @@ Already on free tier? Upgrade to add Auto-Fix:
 ### Does Auto-Fix work for server-side errors?
 
 **Yes!** Auto-Fix works for both:
+
 - Client-side errors (browser errors)
 - Server-side errors (API route errors, server component errors)
 
 ### Can I disable Auto-Fix temporarily?
 
 **Yes:**
+
 1. Dashboard → Home → Auto-Fix
 2. Click "Disable Auto-Fix"
 3. Re-enable anytime
 
 Useful when:
+
 - Performing major refactoring
 - Expecting temporary errors
 - Testing new features
@@ -591,15 +621,18 @@ Useful when:
 ### What if I don't want Auto-Fix for a specific error?
 
 **Option 1: Close the PR**
+
 - Closing a PR tells AI not to create fixes for this specific error pattern
 
 **Option 2: Add to ignore list**
+
 - Dashboard → Auto-Fix → Settings → "Ignored Errors"
 - Add error message or file pattern to ignore
 
 ### Does Auto-Fix modify my code directly?
 
 **No.** Auto-Fix:
+
 - ✅ Creates a separate branch
 - ✅ Opens a pull request
 - ❌ Never commits directly to main/master
@@ -610,6 +643,7 @@ Useful when:
 ### Can I use Auto-Fix with private repositories?
 
 **Yes!** Auto-Fix works with:
+
 - Public repositories
 - Private repositories
 - Organization repositories
@@ -619,6 +653,7 @@ Just ensure Carla has appropriate access permissions.
 ### How does AI understand my codebase?
 
 Carla's AI:
+
 1. Reads the error stack trace
 2. Examines files mentioned in stack trace
 3. Reviews nearby code for context
@@ -627,6 +662,7 @@ Carla's AI:
 6. Generates fix based on comprehensive understanding
 
 **Note:** AI doesn't have access to:
+
 - Private environment variables
 - External databases
 - Business requirements documents
@@ -637,10 +673,12 @@ Carla's AI:
 Auto-Fix creates separate PRs:
 
 **Example:**
+
 - Error 1: TypeError in UserProfile.tsx → PR #42
 - Error 2: ReferenceError in UserProfile.tsx → PR #43
 
 You can:
+
 - Merge them separately
 - Merge one, let Auto-Fix adjust the other
 - Close both and fix manually
@@ -655,13 +693,13 @@ Currently, Auto-Fix is fully automatic based on detected errors. Manual fix requ
 
 Auto-Fix is included in the premium tier:
 
-| | Free Tier | Premium Tier |
-|---|---|---|
-| **Price** | FREE | **$19.99/month** |
-| **Trial** | N/A | ✅ 7 days free |
-| **Auto-Fix** | ❌ | ✅ Unlimited |
-| **GitHub Integration** | ⚠️ OAuth only | ✅ Full (OAuth + PRs) |
-| **AI Customer Support** | ❌ | ✅ Included |
+|                         | Free Tier     | Premium Tier          |
+| ----------------------- | ------------- | --------------------- |
+| **Price**               | FREE          | **$19.99/month**      |
+| **Trial**               | N/A           | ✅ 7 days free        |
+| **Auto-Fix**            | ❌            | ✅ Unlimited          |
+| **GitHub Integration**  | ⚠️ OAuth only | ✅ Full (OAuth + PRs) |
+| **AI Customer Support** | ❌            | ✅ Included           |
 
 **[View full pricing comparison →](/guide/pricing)**
 

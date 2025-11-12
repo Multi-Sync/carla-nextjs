@@ -25,8 +25,8 @@ Instead of just answering questions, Carla can actually use your application's f
 ```typescript
 // Your existing API route: /api/orders/[id]/route.ts
 export async function GET(req: Request, { params }: { params: { id: string } }) {
-  const order = await getOrderById(params.id)
-  return Response.json(order)
+  const order = await getOrderById(params.id);
+  return Response.json(order);
 }
 ```
 
@@ -34,7 +34,7 @@ With Carla Next.js, this API becomes a tool that Carla can use:
 
 **User**: "What's the status of my order #12345?"
 
-**Carla**: *Calls `/api/orders/12345`* → "Your order is currently being prepared and will ship tomorrow. Expected delivery is Dec 15th."
+**Carla**: _Calls `/api/orders/12345`_ → "Your order is currently being prepared and will ship tomorrow. Expected delivery is Dec 15th."
 
 ## Key Capabilities
 
@@ -99,16 +99,16 @@ This package (`@interworky/carla-nextjs`) bridges the gap between your Next.js a
 
 ## Comparison
 
-| Feature | Traditional Chatbot | Carla with Next.js |
-|---------|-------------------|-------------------|
-| Answer FAQs | ✅ | ✅ |
-| Access real-time data | ❌ | ✅ |
-| Perform actions | ❌ | ✅ |
-| Use your APIs | ❌ | ✅ |
-| Monitor performance | ❌ | ✅ |
-| Track analytics | Basic | Advanced |
-| TypeScript support | ❌ | ✅ |
-| Auto-sync with backend | ❌ | ✅ |
+| Feature                | Traditional Chatbot | Carla with Next.js |
+| ---------------------- | ------------------- | ------------------ |
+| Answer FAQs            | ✅                  | ✅                 |
+| Access real-time data  | ❌                  | ✅                 |
+| Perform actions        | ❌                  | ✅                 |
+| Use your APIs          | ❌                  | ✅                 |
+| Monitor performance    | ❌                  | ✅                 |
+| Track analytics        | Basic               | Advanced           |
+| TypeScript support     | ❌                  | ✅                 |
+| Auto-sync with backend | ❌                  | ✅                 |
 
 ## Getting Started
 

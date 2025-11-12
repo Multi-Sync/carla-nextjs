@@ -56,6 +56,7 @@ Monitor your Next.js API route performance:
 - Error rate per endpoint
 
 **Example:**
+
 ```
 /api/users      - Avg 45ms  (✓ Good)
 /api/products   - Avg 1.2s  (⚠️ Slow)
@@ -119,11 +120,11 @@ Analyze performance changes over time:
 
 Identifies pages with performance issues:
 
-| Page | Avg Load Time | Visits | Score |
-|------|---------------|--------|-------|
-| /checkout | 4.2s | 1,234 | 45 ⚠️ |
-| /dashboard | 1.8s | 5,678 | 78 ✓ |
-| /products | 1.2s | 12,345 | 92 ✓ |
+| Page       | Avg Load Time | Visits | Score |
+| ---------- | ------------- | ------ | ----- |
+| /checkout  | 4.2s          | 1,234  | 45 ⚠️ |
+| /dashboard | 1.8s          | 5,678  | 78 ✓  |
+| /products  | 1.2s          | 12,345 | 92 ✓  |
 
 Click any page to see detailed metrics and recommendations.
 
@@ -137,6 +138,7 @@ Set up alerts for performance degradation:
 - Email or dashboard notifications
 
 **Example:**
+
 ```
 ⚠️ Alert: /api/users response time increased to 2.1s (threshold: 500ms)
 Triggered: Nov 10, 2025 at 2:45 PM
@@ -147,17 +149,20 @@ Triggered: Nov 10, 2025 at 2:45 PM
 Understand how your app performs across devices:
 
 ### Mobile Performance
+
 - Typically slower due to network constraints
 - Focus on optimizing critical rendering path
 - Reduce JavaScript bundle size
 - Lazy load images and components
 
 ### Desktop Performance
+
 - Usually faster, more processing power
 - Watch for memory leaks in long sessions
 - Monitor CPU usage during heavy interactions
 
 ### Tablet Performance
+
 - Sits between mobile and desktop
 - Consider responsive design impact
 - Test both portrait and landscape orientations
@@ -172,6 +177,7 @@ Geographic performance insights:
 - Plan infrastructure improvements
 
 **Example:**
+
 ```
 🇺🇸 United States  - Avg 1.2s (✓ Good)
 🇬🇧 United Kingdom - Avg 1.8s (✓ Good)
@@ -186,12 +192,14 @@ Geographic performance insights:
 ### Identifying Bottlenecks
 
 **Slow Page Loads:**
+
 1. Check LCP - Is main content loading slowly?
 2. Review Network tab - Are there large resources?
 3. Check TTI - Is JavaScript blocking?
 4. Analyze CLS - Are elements shifting?
 
 **Slow API Responses:**
+
 1. Identify slow endpoints in dashboard
 2. Check database query performance
 3. Look for N+1 query problems
@@ -207,6 +215,7 @@ Carla calculates an overall performance score (0-100) based on:
 - **10%** - Resource Efficiency
 
 **Score Ranges:**
+
 - **90-100** - Excellent performance
 - **75-89** - Good performance
 - **50-74** - Needs improvement
@@ -224,15 +233,9 @@ Based on performance data, Carla provides actionable recommendations:
    - Implement lazy loading
 
    ```tsx
-   import Image from 'next/image'
+   import Image from 'next/image';
 
-   <Image
-     src="/hero.jpg"
-     width={800}
-     height={600}
-     loading="lazy"
-     alt="Hero"
-   />
+   <Image src="/hero.jpg" width={800} height={600} loading="lazy" alt="Hero" />;
    ```
 
 2. **Code Splitting**
@@ -241,9 +244,9 @@ Based on performance data, Carla provides actionable recommendations:
    - Implement route-based code splitting
 
    ```tsx
-   import dynamic from 'next/dynamic'
+   import dynamic from 'next/dynamic';
 
-   const HeavyComponent = dynamic(() => import('./HeavyComponent'))
+   const HeavyComponent = dynamic(() => import('./HeavyComponent'));
    ```
 
 3. **API Optimization**
@@ -257,9 +260,9 @@ Based on performance data, Carla provides actionable recommendations:
    export async function GET(request: Request) {
      return NextResponse.json(data, {
        headers: {
-         'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=120'
-       }
-     })
+         'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=120',
+       },
+     });
    }
    ```
 
@@ -269,12 +272,12 @@ Based on performance data, Carla provides actionable recommendations:
    - Use font-display: swap
 
    ```tsx
-   import { Inter } from 'next/font/google'
+   import { Inter } from 'next/font/google';
 
    const inter = Inter({
      subsets: ['latin'],
      display: 'swap',
-   })
+   });
    ```
 
 ## Exporting Performance Data
@@ -287,6 +290,7 @@ Export performance data for further analysis:
 4. Choose format: CSV, JSON, or PDF report
 
 **Use cases:**
+
 - Share reports with stakeholders
 - Analyze trends in external tools
 - Archive historical data
@@ -311,6 +315,7 @@ Establish performance baselines for your application:
 4. Track improvements over time
 
 **Example Baselines:**
+
 ```
 Homepage Load Time: 1.2s (baseline)
   → Alert if exceeds: 1.5s
@@ -342,6 +347,7 @@ Monitor performance in your development pipeline:
 4. Automate performance testing
 
 **Example performance budget:**
+
 ```json
 {
   "timings": {
@@ -375,6 +381,7 @@ Real-time metrics are updated **every 30 seconds**. Historical data is aggregate
 ### Does the monitoring widget impact performance?
 
 The Carla widget is optimized for minimal performance impact:
+
 - Async loading with 1.5s delay
 - ~15KB gzipped bundle size
 - Non-blocking script execution
@@ -406,14 +413,14 @@ Carla tracks both client-side and server-side metrics:
 
 ### How does Carla compare to Google Analytics?
 
-| Feature | Carla | Google Analytics |
-|---------|-------|------------------|
-| Real-time metrics | ✅ Yes | ✅ Yes |
-| Core Web Vitals | ✅ Yes | ✅ Yes |
-| API monitoring | ✅ Yes | ❌ No |
-| Error tracking | ✅ Yes | ⚠️ Limited |
-| Next.js specific | ✅ Yes | ❌ No |
-| Free tier | ✅ Unlimited | ✅ Unlimited |
+| Feature           | Carla        | Google Analytics |
+| ----------------- | ------------ | ---------------- |
+| Real-time metrics | ✅ Yes       | ✅ Yes           |
+| Core Web Vitals   | ✅ Yes       | ✅ Yes           |
+| API monitoring    | ✅ Yes       | ❌ No            |
+| Error tracking    | ✅ Yes       | ⚠️ Limited       |
+| Next.js specific  | ✅ Yes       | ❌ No            |
+| Free tier         | ✅ Unlimited | ✅ Unlimited     |
 
 **Use both:** Carla for Next.js-specific insights, GA for broader analytics.
 

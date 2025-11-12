@@ -11,12 +11,14 @@ Common issues and their solutions.
 **Solutions:**
 
 1. **Check API key:**
+
    ```bash
    # Verify it's set
    echo $NEXT_PUBLIC_CARLA_API_KEY
    ```
 
 2. **Restart dev server:**
+
    ```bash
    # Environment variables require restart
    npm run dev
@@ -61,12 +63,14 @@ Common issues and their solutions.
 **Solutions:**
 
 1. **Check API directory:**
+
    ```bash
    # Verify the path
    npx @interworky/carla-nextjs scan --path ./app/api
    ```
 
 2. **Verify file structure:**
+
    ```
    app/api/
    └── route.ts  # ✓ Correct
@@ -76,13 +80,14 @@ Common issues and their solutions.
    ```
 
 3. **Check file exports:**
+
    ```typescript
    // ✓ Correct
-   export async function GET() { }
+   export async function GET() {}
 
    // ✗ Wrong
-   const handler = async () => { }
-   export default handler
+   const handler = async () => {};
+   export default handler;
    ```
 
 ### Incomplete Tool Definitions
@@ -92,15 +97,17 @@ Common issues and their solutions.
 **Solutions:**
 
 1. **Add TypeScript types:**
+
    ```typescript
    // Better type inference
    export async function POST(request: Request) {
-     const body: { name: string; email: string } = await request.json()
+     const body: { name: string; email: string } = await request.json();
      // ...
    }
    ```
 
 2. **Run fix command:**
+
    ```bash
    npx @interworky/carla-nextjs fix
    ```
@@ -119,18 +126,21 @@ Common issues and their solutions.
 **Solutions:**
 
 1. **Check API key:**
+
    ```bash
    # Verify it's set correctly
    grep CARLA_API_KEY .env.local
    ```
 
 2. **Check network:**
+
    ```bash
    # Test connectivity
    curl https://api.interworky.com/health
    ```
 
 3. **Verbose output:**
+
    ```bash
    # See detailed error
    npx @interworky/carla-nextjs sync --verbose
@@ -147,16 +157,18 @@ Common issues and their solutions.
 **Solutions:**
 
 1. **Force rescan:**
+
    ```bash
    npx @interworky/carla-nextjs scan --force
    npx @interworky/carla-nextjs sync
    ```
 
 2. **Check enabled status:**
+
    ```json
    {
      "name": "my_tool",
-     "enabled": true  // Must be true
+     "enabled": true // Must be true
    }
    ```
 
@@ -176,11 +188,13 @@ Common issues and their solutions.
 **Solutions:**
 
 1. **Update types:**
+
    ```bash
    npm install -D @types/node@latest
    ```
 
 2. **Check tsconfig.json:**
+
    ```json
    {
      "compilerOptions": {
@@ -202,13 +216,14 @@ Common issues and their solutions.
 **Solutions:**
 
 1. **Check widget loading:**
+
    ```typescript
    // Widget should load async
    useEffect(() => {
      setTimeout(() => {
        // Load script
-     }, 1500)
-   }, [])
+     }, 1500);
+   }, []);
    ```
 
 2. **Verify imports:**
@@ -224,18 +239,20 @@ Common issues and their solutions.
 **Solutions:**
 
 1. **Check API performance:**
+
    ```typescript
    export async function GET() {
-     const start = Date.now()
-     const data = await getData()
-     console.log(`Took ${Date.now() - start}ms`)
-     return Response.json(data)
+     const start = Date.now();
+     const data = await getData();
+     console.log(`Took ${Date.now() - start}ms`);
+     return Response.json(data);
    }
    ```
 
 2. **Add caching:**
+
    ```typescript
-   export const revalidate = 60 // Cache for 60s
+   export const revalidate = 60; // Cache for 60s
    ```
 
 3. **Optimize queries:**
@@ -250,6 +267,7 @@ Common issues and their solutions.
 **Solutions:**
 
 1. **Limit scan scope:**
+
    ```bash
    # Only scan necessary routes
    npx @interworky/carla-nextjs scan --path ./app/api/public
@@ -267,6 +285,7 @@ Common issues and their solutions.
 **Cause:** File or directory doesn't exist.
 
 **Solution:**
+
 ```bash
 # Make sure you're in the project root
 pwd
@@ -280,6 +299,7 @@ ls package.json
 **Cause:** Missing dependency.
 
 **Solution:**
+
 ```bash
 npm install
 ```
@@ -289,6 +309,7 @@ npm install
 **Cause:** API key is wrong or expired.
 
 **Solution:**
+
 1. Go to [interworky.com](https://interworky.com)
 2. Navigate to Integrations
 3. Generate new API key
@@ -299,6 +320,7 @@ npm install
 **Cause:** No write permissions.
 
 **Solution:**
+
 ```bash
 # On Linux/Mac
 chmod +w .carla/

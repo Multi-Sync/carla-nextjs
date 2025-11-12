@@ -5,6 +5,7 @@ Learn how to integrate Carla Next.js with Cursor, Claude Code, and other MCP-com
 ## Overview
 
 Carla Next.js includes a Model Context Protocol (MCP) server that allows AI assistants to:
+
 - Discover your Next.js API routes automatically
 - Read tool definitions and parameters
 - Understand your API structure
@@ -76,6 +77,7 @@ Then restart Cursor.
 ### Verify It's Working
 
 Open Cursor's AI chat and ask:
+
 ```
 What API routes are available in this project?
 ```
@@ -101,6 +103,7 @@ Add to `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS)
 **Important:** Use absolute path for `cwd`.
 
 Restart Claude Desktop, then test:
+
 ```
 Show me the API tools available via Carla
 ```
@@ -112,6 +115,7 @@ Claude Code uses `CLAUDE.md` for project context. We've already added comprehens
 Just make sure `CLAUDE.md` exists in your project root with Carla-specific information.
 
 **Test with:**
+
 ```
 Read CLAUDE.md and tell me about the Carla MCP server
 ```
@@ -154,12 +158,14 @@ The server will run until you stop it (Ctrl+C).
 The MCP server exposes all enabled tools from `.carla/tools.json`.
 
 **Example tools:**
+
 - `get_products` - GET /api/products
 - `create_order` - POST /api/orders
 - `get_user_profile` - GET /api/user
 - etc.
 
 **View your tools:**
+
 ```bash
 cat .carla/tools.json
 ```
@@ -169,21 +175,25 @@ cat .carla/tools.json
 ### With Cursor or Claude Desktop
 
 **Discover routes:**
+
 ```
 What API routes exist in this Next.js app?
 ```
 
 **Understand a route:**
+
 ```
 Explain what the /api/orders/[id] route does
 ```
 
 **Generate code:**
+
 ```
 Create a new API route for /api/products/search that accepts a query parameter
 ```
 
 **Debug:**
+
 ```
 Why isn't my /api/users route being detected by Carla?
 ```
@@ -191,16 +201,19 @@ Why isn't my /api/users route being detected by Carla?
 ### With Claude Code
 
 **Scan routes:**
+
 ```
 Run the Carla scan command and show me what was found
 ```
 
 **Add feature:**
+
 ```
 Add a new API route for user authentication and make sure Carla can detect it
 ```
 
 **Fix issues:**
+
 ```
 The scanner says my route is invalid. Can you help fix the TypeScript types?
 ```
@@ -216,13 +229,13 @@ Edit `.carla/tools.json` to control which routes are exposed to AI:
       "name": "delete_user",
       "method": "DELETE",
       "path": "/api/users/[id]",
-      "enabled": false  // ⬅ Disabled - AI won't see this
+      "enabled": false // ⬅ Disabled - AI won't see this
     },
     {
       "name": "get_products",
       "method": "GET",
       "path": "/api/products",
-      "enabled": true   // ⬅ Enabled - AI can use this
+      "enabled": true // ⬅ Enabled - AI can use this
     }
   ]
 }
@@ -248,11 +261,13 @@ npx @interworky/carla-nextjs mcp
 ### Tools Not Showing Up
 
 1. **Re-scan routes:**
+
    ```bash
    npx @interworky/carla-nextjs scan
    ```
 
 2. **Check tools.json exists:**
+
    ```bash
    cat .carla/tools.json
    ```
@@ -262,6 +277,7 @@ npx @interworky/carla-nextjs mcp
 ### Permission Errors
 
 Make sure your API key is set:
+
 ```bash
 echo 'NEXT_PUBLIC_CARLA_API_KEY="your-key"' >> .env.local
 ```
@@ -284,7 +300,7 @@ npx @interworky/carla-nextjs scan
     "carla-nextjs": {
       "command": "npx",
       "args": ["@interworky/carla-nextjs", "mcp"],
-      "transport": "sse"  // or "http"
+      "transport": "sse" // or "http"
     }
   }
 }
@@ -332,6 +348,7 @@ npx @interworky/carla-nextjs scan
 ### 1. Keep Tools Updated
 
 Re-scan after adding new routes:
+
 ```bash
 git pull
 npx @interworky/carla-nextjs scan
@@ -340,10 +357,11 @@ npx @interworky/carla-nextjs scan
 ### 2. Disable Sensitive Routes
 
 Don't expose dangerous operations:
+
 ```json
 {
   "name": "delete_all_users",
-  "enabled": false  // ⬅ Keep disabled!
+  "enabled": false // ⬅ Keep disabled!
 }
 ```
 
@@ -355,7 +373,7 @@ AI assistants use descriptions to understand intent:
 // Good - clear description
 export async function GET() {
   // Gets list of all products with prices and stock status
-  return Response.json(products)
+  return Response.json(products);
 }
 
 // Better - even more context
@@ -373,11 +391,13 @@ export async function GET(request: Request) {
 ### 4. Version Control MCP Config
 
 Add to `.gitignore`:
+
 ```
 .cursor/mcp_config.json  # Contains API keys
 ```
 
 But commit:
+
 ```
 .carla/tools.json        # Tool definitions (no secrets)
 .cursorrules             # Cursor rules
@@ -387,6 +407,7 @@ CLAUDE.md                # Claude Code instructions
 ## Security Considerations
 
 ⚠️ **Important:**
+
 - MCP server runs locally with your permissions
 - AI assistants can read tool definitions but can't execute them directly
 - API keys in MCP config are local to your machine
@@ -398,24 +419,28 @@ CLAUDE.md                # Claude Code instructions
 Here's a complete workflow using Cursor:
 
 1. **Create a new API route:**
+
    ```typescript
    // app/api/hello/route.ts
    export async function GET() {
-     return Response.json({ message: 'Hello!' })
+     return Response.json({ message: 'Hello!' });
    }
    ```
 
 2. **Scan for new route:**
+
    ```bash
    npx @interworky/carla-nextjs scan
    ```
 
 3. **Ask Cursor:**
+
    ```
    What's the new /api/hello route I just added?
    ```
 
 4. **Cursor responds:**
+
    ```
    I see you added GET /api/hello which returns a JSON
    object with a message property. Would you like me to:
@@ -425,16 +450,18 @@ Here's a complete workflow using Cursor:
    ```
 
 5. **Iterate:**
+
    ```
    Yes, add a name parameter to customize the greeting
    ```
 
 6. **Cursor updates the code:**
+
    ```typescript
    export async function GET(request: Request) {
-     const { searchParams } = new URL(request.url)
-     const name = searchParams.get('name') || 'World'
-     return Response.json({ message: `Hello, ${name}!` })
+     const { searchParams } = new URL(request.url);
+     const name = searchParams.get('name') || 'World';
+     return Response.json({ message: `Hello, ${name}!` });
    }
    ```
 
@@ -451,6 +478,7 @@ Now your AI assistant knows about the updated route!
 Share your MCP setup on [Discord](https://discord.com/invite/YHmsekzMV5)!
 
 See what others are building:
+
 - [Cursor + Carla Workflow Video](#)
 - [Claude Desktop Integration Guide](#)
 - [Best Prompts for API Development](#)

@@ -5,6 +5,7 @@ A complete example of integrating Carla with a Next.js e-commerce store.
 ## Overview
 
 This example shows how to enable Carla to help customers:
+
 - Browse and search products
 - Check order status and tracking
 - Manage shopping cart
@@ -37,24 +38,24 @@ app/
 
 ```typescript
 // app/api/products/route.ts
-import { NextRequest } from 'next/server'
-import { getProducts } from '@/lib/db'
+import { NextRequest } from 'next/server';
+import { getProducts } from '@/lib/db';
 
 export async function GET(request: NextRequest) {
-  const searchParams = request.nextUrl.searchParams
-  const category = searchParams.get('category')
-  const limit = parseInt(searchParams.get('limit') || '20')
+  const searchParams = request.nextUrl.searchParams;
+  const category = searchParams.get('category');
+  const limit = parseInt(searchParams.get('limit') || '20');
 
   const products = await getProducts({
     category,
     limit,
-    inStock: true
-  })
+    inStock: true,
+  });
 
   return Response.json({
     products,
-    total: products.length
-  })
+    total: products.length,
+  });
 }
 ```
 
@@ -63,20 +64,20 @@ export async function GET(request: NextRequest) {
 ```typescript
 // app/api/products/search/route.ts
 export async function POST(request: Request) {
-  const { query, category, minPrice, maxPrice, inStock } = await request.json()
+  const { query, category, minPrice, maxPrice, inStock } = await request.json();
 
   const products = await searchProducts({
     query,
     category,
     priceRange: { min: minPrice, max: maxPrice },
-    inStock
-  })
+    inStock,
+  });
 
   return Response.json({
     results: products,
     count: products.length,
-    query
-  })
+    query,
+  });
 }
 ```
 
@@ -84,29 +85,24 @@ export async function POST(request: Request) {
 
 > **User**: "Show me wireless headphones under $100"
 >
-> **Carla**: *Calls POST /api/products/search with query="wireless headphones", maxPrice=100*
+> **Carla**: _Calls POST /api/products/search with query="wireless headphones", maxPrice=100_
 >
 > "I found 8 wireless headphones under $100. Here are the top options:
+>
 > 1. SoundMax Pro - $79.99 ⭐ 4.5/5
 > 2. BeatWave Elite - $89.99 ⭐ 4.7/5
 > 3. AudioPro X1 - $99.99 ⭐ 4.3/5
-> Would you like details on any of these?"
+>    Would you like details on any of these?"
 
 ### Product Details
 
 ```typescript
 // app/api/products/[id]/route.ts
-export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
-  const product = await getProductById(params.id)
+export async function GET(request: Request, { params }: { params: { id: string } }) {
+  const product = await getProductById(params.id);
 
   if (!product) {
-    return Response.json(
-      { error: 'Product not found' },
-      { status: 404 }
-    )
+    return Response.json({ error: 'Product not found' }, { status: 404 });
   }
 
   return Response.json({
@@ -118,8 +114,8 @@ export async function GET(
     inStock: product.inventory > 0,
     rating: product.averageRating,
     reviews: product.totalReviews,
-    specs: product.specifications
-  })
+    specs: product.specifications,
+  });
 }
 ```
 
@@ -128,34 +124,31 @@ export async function GET(
 ```typescript
 // app/api/cart/add/route.ts
 export async function POST(request: Request) {
-  const { productId, quantity } = await request.json()
+  const { productId, quantity } = await request.json();
 
   // Validate product exists and is in stock
-  const product = await getProductById(productId)
+  const product = await getProductById(productId);
 
   if (!product || product.inventory < quantity) {
-    return Response.json(
-      { error: 'Product unavailable or insufficient stock' },
-      { status: 400 }
-    )
+    return Response.json({ error: 'Product unavailable or insufficient stock' }, { status: 400 });
   }
 
   // Add to cart (session-based or user-based)
   const cart = await addToCart({
     productId,
     quantity,
-    price: product.price
-  })
+    price: product.price,
+  });
 
   return Response.json({
     success: true,
     cart: {
       items: cart.items,
       total: cart.total,
-      itemCount: cart.itemCount
+      itemCount: cart.itemCount,
     },
-    message: `Added ${quantity}x ${product.name} to your cart`
-  })
+    message: `Added ${quantity}x ${product.name} to your cart`,
+  });
 }
 ```
 
@@ -163,7 +156,7 @@ export async function POST(request: Request) {
 
 > **User**: "Add 2 of the SoundMax Pro to my cart"
 >
-> **Carla**: *Calls POST /api/cart/add with productId="soundmax-pro", quantity=2*
+> **Carla**: _Calls POST /api/cart/add with productId="soundmax-pro", quantity=2_
 >
 > "Done! I've added 2x SoundMax Pro ($79.99 each) to your cart. Your cart total is now $159.98. Ready to checkout?"
 
@@ -172,11 +165,11 @@ export async function POST(request: Request) {
 ```typescript
 // app/api/orders/route.ts
 export async function POST(request: Request) {
-  const { items, shippingAddress, paymentMethod } = await request.json()
+  const { items, shippingAddress, paymentMethod } = await request.json();
 
   // Validate items and calculate total
-  const orderItems = await validateOrderItems(items)
-  const total = calculateTotal(orderItems)
+  const orderItems = await validateOrderItems(items);
+  const total = calculateTotal(orderItems);
 
   // Create order
   const order = await createOrder({
@@ -184,18 +177,18 @@ export async function POST(request: Request) {
     total,
     shippingAddress,
     paymentMethod,
-    status: 'pending'
-  })
+    status: 'pending',
+  });
 
   // Process payment (simplified)
   const payment = await processPayment({
     orderId: order.id,
     amount: total,
-    method: paymentMethod
-  })
+    method: paymentMethod,
+  });
 
   if (payment.success) {
-    await updateOrderStatus(order.id, 'confirmed')
+    await updateOrderStatus(order.id, 'confirmed');
 
     return Response.json({
       success: true,
@@ -203,16 +196,13 @@ export async function POST(request: Request) {
         id: order.id,
         total: order.total,
         estimatedDelivery: calculateDeliveryDate(),
-        trackingUrl: `https://yourstore.com/track/${order.id}`
+        trackingUrl: `https://yourstore.com/track/${order.id}`,
       },
-      message: 'Order placed successfully!'
-    })
+      message: 'Order placed successfully!',
+    });
   }
 
-  return Response.json(
-    { error: 'Payment failed' },
-    { status: 400 }
-  )
+  return Response.json({ error: 'Payment failed' }, { status: 400 });
 }
 ```
 
@@ -220,17 +210,11 @@ export async function POST(request: Request) {
 
 ```typescript
 // app/api/orders/[id]/route.ts
-export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
-  const order = await getOrder(params.id)
+export async function GET(request: Request, { params }: { params: { id: string } }) {
+  const order = await getOrder(params.id);
 
   if (!order) {
-    return Response.json(
-      { error: 'Order not found' },
-      { status: 404 }
-    )
+    return Response.json({ error: 'Order not found' }, { status: 404 });
   }
 
   return Response.json({
@@ -240,8 +224,8 @@ export async function GET(
     total: order.total,
     orderDate: order.createdAt,
     estimatedDelivery: order.estimatedDelivery,
-    shippingAddress: order.shippingAddress
-  })
+    shippingAddress: order.shippingAddress,
+  });
 }
 ```
 
@@ -249,9 +233,10 @@ export async function GET(
 
 > **User**: "What's the status of my order?"
 >
-> **Carla**: *Calls GET /api/orders/recent to find user's latest order*
+> **Carla**: _Calls GET /api/orders/recent to find user's latest order_
 >
 > "Your order #ORD-12345 (placed Oct 15) is currently out for delivery! It should arrive today by 8 PM. You ordered:
+>
 > - 2x SoundMax Pro Headphones
 > - 1x Charging Cable
 >
@@ -261,11 +246,8 @@ export async function GET(
 
 ```typescript
 // app/api/orders/[id]/tracking/route.ts
-export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
-  const tracking = await getTrackingInfo(params.id)
+export async function GET(request: Request, { params }: { params: { id: string } }) {
+  const tracking = await getTrackingInfo(params.id);
 
   return Response.json({
     orderId: params.id,
@@ -277,9 +259,9 @@ export async function GET(
       date: update.timestamp,
       location: update.location,
       status: update.status,
-      description: update.description
-    }))
-  })
+      description: update.description,
+    })),
+  });
 }
 ```
 
@@ -288,17 +270,14 @@ export async function GET(
 ```typescript
 // app/api/returns/route.ts
 export async function POST(request: Request) {
-  const { orderId, items, reason } = await request.json()
+  const { orderId, items, reason } = await request.json();
 
   // Validate order exists and is eligible for return
-  const order = await getOrder(orderId)
-  const isEligible = await checkReturnEligibility(order)
+  const order = await getOrder(orderId);
+  const isEligible = await checkReturnEligibility(order);
 
   if (!isEligible) {
-    return Response.json(
-      { error: 'Order not eligible for return' },
-      { status: 400 }
-    )
+    return Response.json({ error: 'Order not eligible for return' }, { status: 400 });
   }
 
   // Create return request
@@ -307,16 +286,17 @@ export async function POST(request: Request) {
     items,
     reason,
     status: 'pending',
-    refundAmount: calculateRefund(items)
-  })
+    refundAmount: calculateRefund(items),
+  });
 
   return Response.json({
     success: true,
     returnId: returnRequest.id,
     refundAmount: returnRequest.refundAmount,
     returnLabel: returnRequest.shippingLabel,
-    message: 'Return request created. You will receive a refund within 5-7 business days after we receive the items.'
-  })
+    message:
+      'Return request created. You will receive a refund within 5-7 business days after we receive the items.',
+  });
 }
 ```
 
@@ -324,7 +304,7 @@ export async function POST(request: Request) {
 
 > **User**: "I want to return the headphones from my last order"
 >
-> **Carla**: *Calls POST /api/returns with orderId and items*
+> **Carla**: _Calls POST /api/returns with orderId and items_
 >
 > "I've started a return for your SoundMax Pro Headphones from order #ORD-12345. You'll get a refund of $79.99. I'll email you a prepaid return label. Ship it back within 30 days and you'll receive your refund in 5-7 business days. Need anything else?"
 
@@ -403,9 +383,10 @@ Here's a complete customer journey:
 
 > **User**: "I need wireless headphones for the gym"
 >
-> **Carla**: "I'll find some great options for you!" *[searches products]*
+> **Carla**: "I'll find some great options for you!" _[searches products]_
 >
 > "For the gym, I recommend these sweat-resistant wireless headphones:
+>
 > 1. **SoundMax Pro** - $79.99 - Sweat-proof, 8hr battery, great reviews
 > 2. **FitBeats Sport** - $59.99 - Waterproof, secure fit, 6hr battery
 > 3. **AudioPro X1** - $99.99 - Premium sound, 10hr battery, noise-canceling
@@ -416,9 +397,10 @@ Here's a complete customer journey:
 
 > **User**: "Tell me more about the SoundMax"
 >
-> **Carla**: *[gets product details]*
+> **Carla**: _[gets product details]_
 >
 > "The SoundMax Pro has:
+>
 > - IPX7 waterproof rating
 > - 8-hour battery life
 > - Bluetooth 5.0
@@ -429,21 +411,22 @@ Here's a complete customer journey:
 >
 > **User**: "Yes, add 1"
 >
-> **Carla**: *[adds to cart]* "Added! Your cart total is $79.99. Ready to checkout?"
+> **Carla**: _[adds to cart]_ "Added! Your cart total is $79.99. Ready to checkout?"
 
 ### 3. Order Placement
 
 > **User**: "Yes, checkout"
 >
-> **Carla**: *[initiates checkout flow]*
+> **Carla**: _[initiates checkout flow]_
 >
 > "Great! I'll need your shipping address and payment method. Use your saved info or enter new details?"
 >
-> *[customer provides info]*
+> _[customer provides info]_
 >
-> **Carla**: *[creates order]*
+> **Carla**: _[creates order]_
 >
 > "Order confirmed! 🎉
+>
 > - Order #: ORD-12345
 > - Total: $79.99
 > - Ships: Today
@@ -453,9 +436,9 @@ Here's a complete customer journey:
 
 ### 4. Order Tracking
 
-> **User**: "Where's my order?" *(next day)*
+> **User**: "Where's my order?" _(next day)_
 >
-> **Carla**: *[checks order status]*
+> **Carla**: _[checks order status]_
 >
 > "Your SoundMax Pro shipped yesterday! It's currently in transit and will arrive tomorrow (Oct 20) by 8 PM. Track it here: [link]"
 
@@ -464,6 +447,7 @@ Here's a complete customer journey:
 > **User**: "How do I pair these with my phone?"
 >
 > **Carla**: "Easy! Here's how:
+>
 > 1. Hold power button for 3 seconds until LED flashes blue
 > 2. Go to Bluetooth settings on your phone
 > 3. Select 'SoundMax Pro' from the list
@@ -478,20 +462,17 @@ Here's a complete customer journey:
 For user-specific operations (cart, orders), implement proper authentication:
 
 ```typescript
-import { auth } from '@/lib/auth'
+import { auth } from '@/lib/auth';
 
 export async function GET(request: Request) {
-  const session = await auth(request)
+  const session = await auth(request);
 
   if (!session) {
-    return Response.json(
-      { error: 'Please sign in to view orders' },
-      { status: 401 }
-    )
+    return Response.json({ error: 'Please sign in to view orders' }, { status: 401 });
   }
 
-  const orders = await getUserOrders(session.userId)
-  return Response.json(orders)
+  const orders = await getUserOrders(session.userId);
+  return Response.json(orders);
 }
 ```
 
@@ -501,12 +482,15 @@ Provide clear, actionable error messages:
 
 ```typescript
 if (product.inventory < quantity) {
-  return Response.json({
-    error: 'Insufficient stock',
-    available: product.inventory,
-    requested: quantity,
-    message: `Only ${product.inventory} units available`
-  }, { status: 400 })
+  return Response.json(
+    {
+      error: 'Insufficient stock',
+      available: product.inventory,
+      requested: quantity,
+      message: `Only ${product.inventory} units available`,
+    },
+    { status: 400 }
+  );
 }
 ```
 
@@ -521,9 +505,9 @@ return Response.json({
   message: 'Human-readable success message',
   metadata: {
     timestamp: new Date().toISOString(),
-    requestId: generateId()
-  }
-})
+    requestId: generateId(),
+  },
+});
 ```
 
 ## Next Steps

@@ -38,6 +38,7 @@ src/pages/api/**/*.{ts,js,tsx,jsx}
 ### 2. TypeScript AST Parsing
 
 Each route file is parsed using TypeScript's compiler API to extract:
+
 - HTTP methods (GET, POST, PUT, DELETE, PATCH)
 - Path parameters from file structure
 - Request body parameters from code
@@ -47,6 +48,7 @@ Each route file is parsed using TypeScript's compiler API to extract:
 ### 3. Tool Definition Creation
 
 The generator creates structured tool definitions with:
+
 - Descriptive names and instructions
 - JSON Schema for parameters
 - Security annotations
@@ -58,24 +60,28 @@ Each generated tool follows this structure:
 
 ```typescript
 interface Tool {
-  id: string              // Unique identifier
-  name: string            // Tool name (e.g., "get_user")
-  description: string     // Human-readable description
-  instruction: string     // When AI should use this tool
-  source: string          // Source file path
-  enabled: boolean        // Whether tool is active
-  method: string          // HTTP method
-  endpoint: string        // API endpoint
-  parameters: {           // JSON Schema
-    type: "object"
-    properties: Record<string, {
-      type: string
-      description: string
-    }>
-    required: string[]
-  }
-  auth?: string          // "required" if auth detected
-  issues?: string[]      // Security/quality issues
+  id: string; // Unique identifier
+  name: string; // Tool name (e.g., "get_user")
+  description: string; // Human-readable description
+  instruction: string; // When AI should use this tool
+  source: string; // Source file path
+  enabled: boolean; // Whether tool is active
+  method: string; // HTTP method
+  endpoint: string; // API endpoint
+  parameters: {
+    // JSON Schema
+    type: 'object';
+    properties: Record<
+      string,
+      {
+        type: string;
+        description: string;
+      }
+    >;
+    required: string[];
+  };
+  auth?: string; // "required" if auth detected
+  issues?: string[]; // Security/quality issues
 }
 ```
 
@@ -85,13 +91,13 @@ Tool names are generated from endpoints using smart conventions:
 
 ### Pattern Rules
 
-| Endpoint | Method | Generated Name | Logic |
-|----------|--------|---------------|-------|
-| `/api/users` | GET | `get_users` | List operation |
-| `/api/users/:id` | GET | `get_user` | Singular (by ID) |
-| `/api/orders` | POST | `post_order` | Create (singular) |
-| `/api/products/:id` | PUT | `put_product` | Update by ID |
-| `/api/comments/:id` | DELETE | `delete_comment` | Delete by ID |
+| Endpoint            | Method | Generated Name   | Logic             |
+| ------------------- | ------ | ---------------- | ----------------- |
+| `/api/users`        | GET    | `get_users`      | List operation    |
+| `/api/users/:id`    | GET    | `get_user`       | Singular (by ID)  |
+| `/api/orders`       | POST   | `post_order`     | Create (singular) |
+| `/api/products/:id` | PUT    | `put_product`    | Update by ID      |
+| `/api/comments/:id` | DELETE | `delete_comment` | Delete by ID      |
 
 ### Name Transformation Process
 
@@ -112,11 +118,12 @@ Tool names are generated from endpoints using smart conventions:
 
 ::: tip
 The generator automatically handles:
+
 - Pluralization/singularization
 - Nested routes (`/api/users/:userId/posts` → `get_user_posts`)
 - Special characters (replaced with underscores)
 - Duplicate prevention
-:::
+  :::
 
 ## Parameter Extraction
 
@@ -126,15 +133,13 @@ Path parameters are extracted from the route file structure:
 
 ```typescript
 // File: app/api/products/[id]/route.ts
-export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: Request, { params }: { params: { id: string } }) {
   // ...
 }
 ```
 
 **Generated parameters:**
+
 ```json
 {
   "parameters": {
@@ -157,14 +162,14 @@ For POST/PUT/PATCH requests, the generator analyzes request body parsing:
 ```typescript
 // File: app/api/users/route.ts
 export async function POST(request: Request) {
-  const { name, email }: { name: string; email: string } =
-    await request.json()
+  const { name, email }: { name: string; email: string } = await request.json();
 
   // Create user...
 }
 ```
 
 **Generated parameters:**
+
 ```json
 {
   "parameters": {
@@ -197,6 +202,7 @@ Complex routes with multiple dynamic segments:
 ```
 
 **Generated parameters:**
+
 ```json
 {
   "parameters": {
@@ -224,22 +230,22 @@ Descriptions are generated based on HTTP method and resource:
 
 ```typescript
 // GET /api/users
-"List all users"
+'List all users';
 
 // GET /api/users/:id
-"Get user by ID"
+'Get user by ID';
 
 // POST /api/orders
-"Create a new order"
+'Create a new order';
 
 // PUT /api/products/:id
-"Update product by ID"
+'Update product by ID';
 
 // PATCH /api/settings/:id
-"Partially update setting by ID"
+'Partially update setting by ID';
 
 // DELETE /api/comments/:id
-"Delete comment by ID"
+'Delete comment by ID';
 ```
 
 ### AI Instructions
@@ -248,13 +254,13 @@ Instructions tell the AI assistant when to use each tool:
 
 ```typescript
 // GET /api/products/:id
-"Use this tool when the user asks about a specific product. Requires the ID."
+'Use this tool when the user asks about a specific product. Requires the ID.';
 
 // POST /api/orders
-"Use this tool when the user wants to create or add a new order."
+'Use this tool when the user wants to create or add a new order.';
 
 // DELETE /api/users/:id
-"⚠️ Destructive operation. Only use when user explicitly requests deletion of a user."
+'⚠️ Destructive operation. Only use when user explicitly requests deletion of a user.';
 ```
 
 ## Authentication Detection
@@ -265,19 +271,19 @@ The generator scans for common authentication patterns:
 
 ```typescript
 // NextAuth.js
-const session = await getServerSession(authOptions)
+const session = await getServerSession(authOptions);
 
 // Custom auth
-const token = request.headers.get('Authorization')
-await verifyToken(token)
+const token = request.headers.get('Authorization');
+await verifyToken(token);
 
 // Middleware
-await authenticate(request)
-await checkAuth(request)
-await requireAuth()
+await authenticate(request);
+await checkAuth(request);
+await requireAuth();
 
 // Headers
-const bearer = request.headers.get('Authorization')?.startsWith('Bearer')
+const bearer = request.headers.get('Authorization')?.startsWith('Bearer');
 ```
 
 ### Auth Annotation
@@ -334,6 +340,7 @@ The generator provides recommendations for security issues:
 ```
 
 Common security recommendations:
+
 - Missing authentication on mutations
 - Destructive operations (DELETE)
 - Public endpoints that should be protected
@@ -343,15 +350,17 @@ Common security recommendations:
 ### Example 1: Simple GET Endpoint
 
 **Input code:**
+
 ```typescript
 // app/api/products/route.ts
 export async function GET() {
-  const products = await db.products.findMany()
-  return Response.json(products)
+  const products = await db.products.findMany();
+  return Response.json(products);
 }
 ```
 
 **Generated tool:**
+
 ```json
 {
   "id": "get_products",
@@ -374,21 +383,22 @@ export async function GET() {
 ### Example 2: POST with Body Parameters
 
 **Input code:**
+
 ```typescript
 // app/api/users/route.ts
 export async function POST(request: Request) {
-  const { name, email }: { name: string; email: string } =
-    await request.json()
+  const { name, email }: { name: string; email: string } = await request.json();
 
   const user = await db.users.create({
-    data: { name, email }
-  })
+    data: { name, email },
+  });
 
-  return Response.json(user, { status: 201 })
+  return Response.json(user, { status: 201 });
 }
 ```
 
 **Generated tool:**
+
 ```json
 {
   "id": "post_user",
@@ -420,30 +430,29 @@ export async function POST(request: Request) {
 ### Example 3: Protected Dynamic Route
 
 **Input code:**
+
 ```typescript
 // app/api/orders/[id]/route.ts
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/lib/auth"
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 
-export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
-  const session = await getServerSession(authOptions)
+export async function GET(request: Request, { params }: { params: { id: string } }) {
+  const session = await getServerSession(authOptions);
 
   if (!session) {
-    return Response.json({ error: "Unauthorized" }, { status: 401 })
+    return Response.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   const order = await db.orders.findUnique({
-    where: { id: params.id }
-  })
+    where: { id: params.id },
+  });
 
-  return Response.json(order)
+  return Response.json(order);
 }
 ```
 
 **Generated tool:**
+
 ```json
 {
   "id": "get_order",
@@ -510,14 +519,14 @@ After scanning, you can manually enhance tool definitions in `.carla/tools.json`
 ```json
 {
   "name": "delete_user",
-  "enabled": true  // Manually enable after review
+  "enabled": true // Manually enable after review
 }
 ```
 
 ```json
 {
   "name": "internal_admin_tool",
-  "enabled": false  // Disable internal-only endpoints
+  "enabled": false // Disable internal-only endpoints
 }
 ```
 
@@ -549,7 +558,7 @@ Generated tools are saved to `.carla/tools.json`:
     {
       "id": "get_users",
       "name": "get_users",
-      "description": "List all users",
+      "description": "List all users"
       // ... more properties
     }
   ],
@@ -574,19 +583,14 @@ Or commit it to track tool definitions across your team.
 The scanner uses TypeScript's compiler API to analyze code:
 
 ```typescript
-const sourceFile = ts.createSourceFile(
-  filePath,
-  source,
-  ts.ScriptTarget.Latest,
-  true
-)
+const sourceFile = ts.createSourceFile(filePath, source, ts.ScriptTarget.Latest, true);
 
 // Find function declarations
-ts.forEachChild(sourceFile, (node) => {
+ts.forEachChild(sourceFile, node => {
   if (ts.isFunctionDeclaration(node)) {
     // Extract method info
   }
-})
+});
 ```
 
 ### Extending the Generator
@@ -598,7 +602,7 @@ You can fork and customize the generator for your needs:
 class CustomToolGenerator extends ToolGenerator {
   protected generateDescription(endpoint: string, method: string): string {
     // Your custom description logic
-    return `Custom: ${method} ${endpoint}`
+    return `Custom: ${method} ${endpoint}`;
   }
 }
 ```
@@ -611,12 +615,11 @@ TypeScript provides better type inference for parameters:
 
 ```typescript
 // ✅ Good - types are detected
-const { name, email }: { name: string; email: string } =
-  await request.json()
+const { name, email }: { name: string; email: string } = await request.json();
 
 // ❌ Bad - types not detected
-const data = await request.json()
-const name = data.name
+const data = await request.json();
+const name = data.name;
 ```
 
 ### 2. Add JSDoc Comments
@@ -628,10 +631,7 @@ JSDoc comments can improve generated descriptions:
  * Get user profile by ID
  * @param id - User's unique identifier
  */
-export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: Request, { params }: { params: { id: string } }) {
   // ...
 }
 ```
@@ -642,12 +642,12 @@ Clear route structure helps with naming:
 
 ```typescript
 // ✅ Good
-app/api/users/route.ts
-app/api/users/[id]/route.ts
+app / api / users / route.ts;
+app / api / users / [id] / route.ts;
 
 // ❌ Unclear
-app/api/u/route.ts
-app/api/fetch/route.ts
+app / api / u / route.ts;
+app / api / fetch / route.ts;
 ```
 
 ### 4. Implement Authentication
@@ -657,8 +657,8 @@ Always protect mutation operations:
 ```typescript
 // ✅ Good
 export async function POST(request: Request) {
-  const session = await getServerSession(authOptions)
-  if (!session) return Response.json({ error: "Unauthorized" }, { status: 401 })
+  const session = await getServerSession(authOptions);
+  if (!session) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
   // ... create resource
 }
@@ -689,6 +689,7 @@ npx @interworky/carla-nextjs sync
 **Problem:** Scanner finds no API routes
 
 **Solutions:**
+
 - Verify routes exist in `app/api/` or `pages/api/`
 - Check file naming: `route.ts` (App Router) or `*.ts` (Pages Router)
 - Run with `--force` flag
@@ -699,6 +700,7 @@ npx @interworky/carla-nextjs sync
 **Problem:** Parameters not detected in generated tools
 
 **Solutions:**
+
 - Add TypeScript type annotations
 - Use explicit destructuring
 - Check for parsing errors in route files
@@ -708,6 +710,7 @@ npx @interworky/carla-nextjs sync
 **Problem:** Generated names don't match expectations
 
 **Solutions:**
+
 - Manually edit tool names in `.carla/tools.json`
 - Restructure route file paths for better naming
 - Consider nested routes structure
@@ -717,6 +720,7 @@ npx @interworky/carla-nextjs sync
 **Problem:** Auth is implemented but not detected
 
 **Solutions:**
+
 - Use common patterns: `getServerSession`, `verifyToken`, etc.
 - Add `auth: "required"` manually in `.carla/tools.json`
 - Ensure auth code is in the same file as the route handler

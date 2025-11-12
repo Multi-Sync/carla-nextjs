@@ -1,4 +1,4 @@
-import { defineConfig } from 'vitepress'
+import { defineConfig } from 'vitepress';
 
 export default defineConfig({
   title: 'Carla Next.js',
@@ -16,9 +16,9 @@ export default defineConfig({
         text: 'v1.0.9',
         items: [
           { text: 'Changelog', link: 'https://github.com/Multi-Sync/carla-nextjs/releases' },
-          { text: 'Contributing', link: '/guide/contributing' }
-        ]
-      }
+          { text: 'Contributing', link: '/guide/contributing' },
+        ],
+      },
     ],
 
     sidebar: {
@@ -29,7 +29,7 @@ export default defineConfig({
             { text: 'What is Carla?', link: '/guide/what-is-carla' },
             { text: 'Getting Started', link: '/guide/getting-started' },
             { text: 'Installation', link: '/guide/installation' },
-          ]
+          ],
         },
         {
           text: 'Core Concepts',
@@ -38,14 +38,14 @@ export default defineConfig({
             { text: 'API Route Scanning', link: '/guide/api-scanning' },
             { text: 'Tool Generation', link: '/guide/tool-generation' },
             { text: 'Widget Integration', link: '/guide/widget' },
-          ]
+          ],
         },
         {
           text: 'AI Integration',
           items: [
             { text: 'Cursor & Claude Code', link: '/guide/ai-assistants' },
             { text: 'MCP Protocol', link: '/guide/mcp' },
-          ]
+          ],
         },
         {
           text: 'Advanced',
@@ -54,8 +54,8 @@ export default defineConfig({
             { text: 'MCP Integration', link: '/guide/mcp' },
             { text: 'Troubleshooting', link: '/guide/troubleshooting' },
             { text: 'Contributing', link: '/guide/contributing' },
-          ]
-        }
+          ],
+        },
       ],
       '/reference/': [
         {
@@ -65,8 +65,8 @@ export default defineConfig({
             { text: 'Configuration', link: '/reference/configuration' },
             { text: 'Environment Variables', link: '/reference/env-variables' },
             { text: 'API Reference', link: '/reference/api' },
-          ]
-        }
+          ],
+        },
       ],
       '/examples/': [
         {
@@ -77,29 +77,29 @@ export default defineConfig({
             { text: 'E-commerce Store', link: '/examples/ecommerce' },
             { text: 'SaaS Dashboard', link: '/examples/saas' },
             { text: 'Blog Platform', link: '/examples/blog' },
-          ]
-        }
-      ]
+          ],
+        },
+      ],
     },
 
     socialLinks: [
       { icon: 'github', link: 'https://github.com/Multi-Sync/carla-nextjs' },
-      { icon: 'discord', link: 'https://discord.com/invite/YHmsekzMV5' }
+      { icon: 'discord', link: 'https://discord.com/invite/YHmsekzMV5' },
     ],
 
     footer: {
       message: 'Released under the MIT License.',
-      copyright: 'Copyright © 2024-present Interworky'
+      copyright: 'Copyright © 2024-present Interworky',
     },
 
     search: {
-      provider: 'local'
+      provider: 'local',
     },
 
     editLink: {
       pattern: 'https://github.com/Multi-Sync/carla-nextjs/edit/main/docs/:path',
-      text: 'Edit this page on GitHub'
-    }
+      text: 'Edit this page on GitHub',
+    },
   },
 
   head: [
@@ -110,5 +110,5 @@ export default defineConfig({
     ['meta', { property: 'og:title', content: 'Carla Next.js | AI Agent for Websites' }],
     ['meta', { property: 'og:site_name', content: 'Carla Next.js' }],
     ['meta', { property: 'og:url', content: 'https://carla.interworky.com' }],
-  ]
-})
+  ],
+});

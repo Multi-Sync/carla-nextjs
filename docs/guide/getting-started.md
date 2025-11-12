@@ -57,6 +57,7 @@ npx @interworky/carla-nextjs init
 ```
 
 This will:
+
 - Prompt you to enter your API key
 - Create `.carla/` directory for configuration
 - Automatically add `NEXT_PUBLIC_CARLA_API_KEY` to your `.env.local`
@@ -75,6 +76,7 @@ In the dashboard, you'll see two options for plugin setup:
 **Best for:** Getting started quickly, trying out Carla, free monitoring
 
 **What you get:**
+
 - ✅ Performance monitoring (real-time)
 - ✅ Error detection with stack traces
 - ✅ Analytics and visitor insights
@@ -83,6 +85,7 @@ In the dashboard, you'll see two options for plugin setup:
 - ❌ No credit card required
 
 **Setup steps:**
+
 1. Click "Continue with Manual Setup" in the dashboard
 2. Run the widget installation command:
    ```bash
@@ -103,6 +106,7 @@ In the dashboard, you'll see two options for plugin setup:
 **Best for:** Teams wanting AI-powered Auto-Fix and Customer Support
 
 **What you get:**
+
 - ✅ Everything in Free Tier
 - ✅ AI-Powered Auto-Fix (AI detects errors and creates GitHub PRs)
 - ✅ GitHub OAuth integration
@@ -112,6 +116,7 @@ In the dashboard, you'll see two options for plugin setup:
 - 💰 $19.99/month after trial (cancel anytime)
 
 **Setup steps:**
+
 1. Click "Start Free Trial" in the dashboard
 2. Complete checkout (credit card required, **free for 7 days**)
 3. Connect your GitHub account via OAuth
@@ -123,10 +128,11 @@ In the dashboard, you'll see two options for plugin setup:
 6. Start your dev server and verify everything works
 
 ::: tip Which Should I Choose?
+
 - **Start with Manual (Free)** if you want to try Carla's monitoring features without commitment
 - **Choose GitHub (Premium Trial)** if you want AI to automatically fix errors and create PRs
 - You can **upgrade from Free to Premium anytime** from Dashboard → Settings → Billing
-:::
+  :::
 
 ## Detailed Setup: Manual Integration (Free)
 
@@ -137,12 +143,14 @@ npx @interworky/carla-nextjs install
 ```
 
 This will:
+
 - Detect whether you're using TypeScript or JavaScript
 - Detect whether you're using App Router or Pages Router
 - Generate the appropriate widget component
 - Add it to your layout or `_app` file
 
 The widget enables:
+
 - Performance monitoring dashboard
 - Error tracking in real-time
 - Analytics data collection
@@ -169,6 +177,7 @@ npx @interworky/carla-nextjs scan
 ```
 
 This will:
+
 - Analyze all your API routes using TypeScript AST
 - Extract parameters, request bodies, and response types
 - Generate tool definitions in `.carla/tools.json`
@@ -208,6 +217,7 @@ Only tools marked as `enabled: true` in `.carla/tools.json` will be synced. You 
 ### 4. Verify Installation
 
 1. Start your Next.js dev server:
+
    ```bash
    npm run dev
    ```
@@ -308,11 +318,13 @@ During your 7-day trial:
 ### After Trial
 
 **If you keep the subscription:**
+
 - Automatic charge of $19.99/month on day 8
 - Premium features remain active
 - Month-to-month billing (no long-term contract)
 
 **If you cancel during trial:**
+
 - Premium features disabled after trial ends
 - Free tier features remain active forever
 - No charges applied
@@ -333,6 +345,7 @@ If you started with the free tier and want premium features:
 Now that you have Carla set up, explore these topics:
 
 ### For Free Tier Users
+
 - [Performance Monitoring Guide](/guide/performance-monitoring) - Track your app's performance
 - [Analytics Guide](/guide/analytics) - Understand visitor behavior and insights
 - [How It Works](/guide/how-it-works) - Understand the architecture
@@ -340,6 +353,7 @@ Now that you have Carla set up, explore these topics:
 - [Pricing & Features](/guide/pricing) - Learn about premium features
 
 ### For Premium Tier Users
+
 - [Auto-Fix Guide](/guide/auto-fix) - Configure AI-powered error fixing and GitHub PR automation
 - [Customer Support Widget](/guide/customer-support) - Set up the AI chat widget
 - [Tool Generation](/guide/tool-generation) - Learn about tool definitions
