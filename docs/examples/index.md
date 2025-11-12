@@ -37,21 +37,21 @@ Enable Carla to handle common support requests:
 ```typescript
 // app/api/support/ticket/route.ts
 export async function POST(request: Request) {
-  const { subject, description, priority } = await request.json()
+  const { subject, description, priority } = await request.json();
 
   const ticket = await createSupportTicket({
     subject,
     description,
     priority,
-    status: 'open'
-  })
+    status: 'open',
+  });
 
-  return Response.json(ticket)
+  return Response.json(ticket);
 }
 ```
 
 **User**: "I need help with my order"
-**Carla**: *Creates support ticket* → "I've created ticket #12345 for you. Our team will respond within 24 hours."
+**Carla**: _Creates support ticket_ → "I've created ticket #12345 for you. Our team will respond within 24 hours."
 
 ### Order Management
 
@@ -59,17 +59,14 @@ Let customers check and manage orders:
 
 ```typescript
 // app/api/orders/[id]/route.ts
-export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
-  const order = await getOrder(params.id)
-  return Response.json(order)
+export async function GET(request: Request, { params }: { params: { id: string } }) {
+  const order = await getOrder(params.id);
+  return Response.json(order);
 }
 ```
 
 **User**: "What's the status of order #789?"
-**Carla**: *Calls GET /api/orders/789* → "Your order shipped yesterday and will arrive on Friday. Track it here: [link]"
+**Carla**: _Calls GET /api/orders/789_ → "Your order shipped yesterday and will arrive on Friday. Track it here: [link]"
 
 ### Product Search
 
@@ -78,21 +75,21 @@ Enable natural language product search:
 ```typescript
 // app/api/products/search/route.ts
 export async function POST(request: Request) {
-  const { query, category, priceRange } = await request.json()
+  const { query, category, priceRange } = await request.json();
 
   const products = await searchProducts({
     query,
     category,
     minPrice: priceRange?.min,
-    maxPrice: priceRange?.max
-  })
+    maxPrice: priceRange?.max,
+  });
 
-  return Response.json(products)
+  return Response.json(products);
 }
 ```
 
 **User**: "Show me blue shirts under $50"
-**Carla**: *Calls search API* → "I found 12 blue shirts in your price range. Here are the top matches..."
+**Carla**: _Calls search API_ → "I found 12 blue shirts in your price range. Here are the top matches..."
 
 ### Account Management
 
@@ -101,20 +98,20 @@ Allow users to manage their accounts via Carla:
 ```typescript
 // app/api/user/preferences/route.ts
 export async function PUT(request: Request) {
-  const { notifications, theme, language } = await request.json()
+  const { notifications, theme, language } = await request.json();
 
   await updateUserPreferences({
     notifications,
     theme,
-    language
-  })
+    language,
+  });
 
-  return Response.json({ success: true })
+  return Response.json({ success: true });
 }
 ```
 
 **User**: "Turn off email notifications"
-**Carla**: *Updates preferences* → "Done! I've disabled email notifications for your account."
+**Carla**: _Updates preferences_ → "Done! I've disabled email notifications for your account."
 
 ## Code Snippets
 
@@ -123,20 +120,14 @@ export async function PUT(request: Request) {
 ```typescript
 export async function POST(request: Request) {
   try {
-    const data = await request.json()
-    const result = await processData(data)
-    return Response.json(result)
+    const data = await request.json();
+    const result = await processData(data);
+    return Response.json(result);
   } catch (error) {
     if (error instanceof ValidationError) {
-      return Response.json(
-        { error: error.message },
-        { status: 400 }
-      )
+      return Response.json({ error: error.message }, { status: 400 });
     }
-    return Response.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    return Response.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 ```
@@ -146,20 +137,17 @@ Carla will handle errors gracefully and inform users appropriately.
 ### Authentication
 
 ```typescript
-import { auth } from '@/lib/auth'
+import { auth } from '@/lib/auth';
 
 export async function GET(request: Request) {
-  const session = await auth(request)
+  const session = await auth(request);
 
   if (!session) {
-    return Response.json(
-      { error: 'Unauthorized' },
-      { status: 401 }
-    )
+    return Response.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const data = await getUserData(session.userId)
-  return Response.json(data)
+  const data = await getUserData(session.userId);
+  return Response.json(data);
 }
 ```
 
@@ -168,18 +156,15 @@ Carla respects your authentication and only accesses authorized data.
 ### Rate Limiting
 
 ```typescript
-import { rateLimit } from '@/lib/rate-limit'
+import { rateLimit } from '@/lib/rate-limit';
 
 export async function POST(request: Request) {
-  const identifier = request.headers.get('x-forwarded-for') || 'anonymous'
+  const identifier = request.headers.get('x-forwarded-for') || 'anonymous';
 
-  const { success } = await rateLimit.check(identifier)
+  const { success } = await rateLimit.check(identifier);
 
   if (!success) {
-    return Response.json(
-      { error: 'Too many requests' },
-      { status: 429 }
-    )
+    return Response.json({ error: 'Too many requests' }, { status: 429 });
   }
 
   // Process request...
@@ -214,7 +199,7 @@ Your rate limiting applies to Carla's requests too.
       "name": "delete_product",
       "method": "DELETE",
       "path": "/api/products/[id]",
-      "enabled": false  // Disabled for safety
+      "enabled": false // Disabled for safety
     }
   ]
 }
@@ -288,14 +273,11 @@ Your rate limiting applies to Carla's requests too.
 ```typescript
 // ✅ Good
 export async function POST(request: Request) {
-  const body = await request.json()
+  const body = await request.json();
 
   // Validate input
   if (!body.email || !isValidEmail(body.email)) {
-    return Response.json(
-      { error: 'Valid email required' },
-      { status: 400 }
-    )
+    return Response.json({ error: 'Valid email required' }, { status: 400 });
   }
 
   // Process...
@@ -312,9 +294,9 @@ return Response.json({
   order: {
     id: '12345',
     total: 99.99,
-    estimatedDelivery: '2024-12-15'
-  }
-})
+    estimatedDelivery: '2024-12-15',
+  },
+});
 ```
 
 ## Full Examples

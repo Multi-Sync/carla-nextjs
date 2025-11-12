@@ -27,6 +27,7 @@ npx @interworky/carla-nextjs install
 ```
 
 That's it! The CLI will:
+
 - ✅ Detect your Next.js version (App Router or Pages Router)
 - ✅ Detect TypeScript or JavaScript
 - ✅ Generate the widget component
@@ -46,6 +47,7 @@ Visit your app and you'll see Carla's widget in the bottom-right corner!
 ### 1. Chat Widget
 
 A floating button that opens Carla's chat interface:
+
 - Voice and text support
 - Multilingual (100+ languages)
 - Mobile-responsive
@@ -58,16 +60,17 @@ If you have existing API routes, Carla can already use them! For example:
 ```typescript
 // app/api/hello/route.ts
 export async function GET() {
-  return Response.json({ message: 'Hello from Next.js!' })
+  return Response.json({ message: 'Hello from Next.js!' });
 }
 ```
 
 **User**: "Call the hello API"
-**Carla**: *Calls GET /api/hello* → "The API responded with: 'Hello from Next.js!'"
+**Carla**: _Calls GET /api/hello_ → "The API responded with: 'Hello from Next.js!'"
 
 ### 3. Dashboard Access
 
 Log in to your Interworky dashboard to:
+
 - View all conversations
 - See analytics
 - Customize Carla's appearance
@@ -80,13 +83,13 @@ Let's create a basic API route that Carla can use:
 ```typescript
 // app/api/time/route.ts
 export async function GET() {
-  const now = new Date()
+  const now = new Date();
 
   return Response.json({
     time: now.toLocaleTimeString(),
     date: now.toLocaleDateString(),
-    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
-  })
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+  });
 }
 ```
 
@@ -98,7 +101,7 @@ npx @interworky/carla-nextjs sync
 ```
 
 **User**: "What time is it?"
-**Carla**: *Calls GET /api/time* → "It's 3:45 PM (Pacific Time)"
+**Carla**: _Calls GET /api/time_ → "It's 3:45 PM (Pacific Time)"
 
 ## Customizing the Widget
 
@@ -138,15 +141,15 @@ With just the basic setup, users can already:
 
 ### Voice Support
 
-> **User**: *clicks microphone* "Hey Carla, can you help me?"
+> **User**: _clicks microphone_ "Hey Carla, can you help me?"
 >
-> **Carla**: *responds via voice* "Of course! I'm here to help. What do you need?"
+> **Carla**: _responds via voice_ "Of course! I'm here to help. What do you need?"
 
 ### API Interactions
 
 > **User**: "Show me the current time"
 >
-> **Carla**: *Calls your /api/time endpoint* "It's 3:45 PM, October 18, 2024 in Pacific Time"
+> **Carla**: _Calls your /api/time endpoint_ "It's 3:45 PM, October 18, 2024 in Pacific Time"
 
 ## Next Steps
 
@@ -155,6 +158,7 @@ With just the basic setup, users can already:
 Build out your app's functionality with API routes. Carla will be able to use them automatically!
 
 **Simple examples:**
+
 - `/api/weather` - Get weather information
 - `/api/status` - Check system status
 - `/api/search` - Search your content
@@ -172,6 +176,7 @@ Edit `.carla/tools.json` to enable/disable specific endpoints.
 ### 3. Explore Advanced Examples
 
 Check out these complete examples:
+
 - [E-commerce Store](/examples/ecommerce)
 - [SaaS Dashboard](/examples/saas)
 - [Blog Platform](/examples/blog)

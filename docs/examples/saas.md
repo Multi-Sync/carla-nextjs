@@ -5,6 +5,7 @@ A complete example of integrating Carla with a Next.js SaaS application.
 ## Overview
 
 This example shows how to enable Carla to help users with:
+
 - Account management and settings
 - Usage analytics and insights
 - Billing and subscription management
@@ -39,19 +40,16 @@ app/
 
 ```typescript
 // app/api/user/route.ts
-import { auth } from '@/lib/auth'
+import { auth } from '@/lib/auth';
 
 export async function GET(request: Request) {
-  const session = await auth(request)
+  const session = await auth(request);
 
   if (!session) {
-    return Response.json(
-      { error: 'Unauthorized' },
-      { status: 401 }
-    )
+    return Response.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const user = await getUserProfile(session.userId)
+  const user = await getUserProfile(session.userId);
 
   return Response.json({
     id: user.id,
@@ -60,8 +58,8 @@ export async function GET(request: Request) {
     avatar: user.avatar,
     role: user.role,
     plan: user.subscription.plan,
-    joinedAt: user.createdAt
-  })
+    joinedAt: user.createdAt,
+  });
 }
 ```
 
@@ -70,20 +68,20 @@ export async function GET(request: Request) {
 ```typescript
 // app/api/user/preferences/route.ts
 export async function PUT(request: Request) {
-  const session = await auth(request)
-  const { notifications, theme, language, timezone } = await request.json()
+  const session = await auth(request);
+  const { notifications, theme, language, timezone } = await request.json();
 
   await updateUserPreferences(session.userId, {
     notifications,
     theme,
     language,
-    timezone
-  })
+    timezone,
+  });
 
   return Response.json({
     success: true,
-    message: 'Preferences updated successfully'
-  })
+    message: 'Preferences updated successfully',
+  });
 }
 ```
 
@@ -91,7 +89,7 @@ export async function PUT(request: Request) {
 
 > **User**: "Turn off email notifications"
 >
-> **Carla**: *Calls PUT /api/user/preferences with notifications.email=false*
+> **Carla**: _Calls PUT /api/user/preferences with notifications.email=false_
 >
 > "Done! I've turned off email notifications. You'll still get in-app notifications. Want to change anything else?"
 
@@ -100,27 +98,27 @@ export async function PUT(request: Request) {
 ```typescript
 // app/api/user/usage/route.ts
 export async function GET(request: Request) {
-  const session = await auth(request)
-  const searchParams = new URL(request.url).searchParams
-  const period = searchParams.get('period') || '30d'
+  const session = await auth(request);
+  const searchParams = new URL(request.url).searchParams;
+  const period = searchParams.get('period') || '30d';
 
-  const usage = await getUserUsage(session.userId, period)
+  const usage = await getUserUsage(session.userId, period);
 
   return Response.json({
     period,
     apiCalls: {
       current: usage.apiCalls,
       limit: usage.apiCallsLimit,
-      percentUsed: (usage.apiCalls / usage.apiCallsLimit) * 100
+      percentUsed: (usage.apiCalls / usage.apiCallsLimit) * 100,
     },
     storage: {
       current: usage.storageGB,
       limit: usage.storageLimit,
-      percentUsed: (usage.storageGB / usage.storageLimit) * 100
+      percentUsed: (usage.storageGB / usage.storageLimit) * 100,
     },
     activeUsers: usage.activeUsers,
-    trend: usage.trend
-  })
+    trend: usage.trend,
+  });
 }
 ```
 
@@ -128,7 +126,7 @@ export async function GET(request: Request) {
 
 > **User**: "How much of my API quota have I used?"
 >
-> **Carla**: *Calls GET /api/user/usage*
+> **Carla**: _Calls GET /api/user/usage_
 >
 > "You've used 7,342 of your 10,000 API calls this month (73.4%). You're on track to stay within your limit. Your usage is up 12% from last month. Need to upgrade your plan?"
 
@@ -137,28 +135,28 @@ export async function GET(request: Request) {
 ```typescript
 // app/api/billing/route.ts
 export async function GET(request: Request) {
-  const session = await auth(request)
+  const session = await auth(request);
 
-  const billing = await getBillingInfo(session.userId)
+  const billing = await getBillingInfo(session.userId);
 
   return Response.json({
     subscription: {
       plan: billing.plan,
       status: billing.status,
       currentPeriodEnd: billing.currentPeriodEnd,
-      cancelAtPeriodEnd: billing.cancelAtPeriodEnd
+      cancelAtPeriodEnd: billing.cancelAtPeriodEnd,
     },
     paymentMethod: {
       type: billing.paymentMethod.type,
       last4: billing.paymentMethod.last4,
       expiryMonth: billing.paymentMethod.expiryMonth,
-      expiryYear: billing.paymentMethod.expiryYear
+      expiryYear: billing.paymentMethod.expiryYear,
     },
     nextInvoice: {
       amount: billing.nextInvoiceAmount,
-      date: billing.nextInvoiceDate
-    }
-  })
+      date: billing.nextInvoiceDate,
+    },
+  });
 }
 ```
 
@@ -166,7 +164,7 @@ export async function GET(request: Request) {
 
 > **User**: "When is my next bill?"
 >
-> **Carla**: *Calls GET /api/billing*
+> **Carla**: _Calls GET /api/billing_
 >
 > "Your next bill of $49.00 will be charged on November 15, 2024 to your Visa ending in 4242. Your Pro plan renews automatically. Want me to send you the upcoming invoice?"
 
@@ -175,35 +173,32 @@ export async function GET(request: Request) {
 ```typescript
 // app/api/billing/subscription/route.ts
 export async function PUT(request: Request) {
-  const session = await auth(request)
-  const { action, planId } = await request.json()
+  const session = await auth(request);
+  const { action, planId } = await request.json();
 
   if (action === 'upgrade' || action === 'downgrade') {
-    const result = await changePlan(session.userId, planId)
+    const result = await changePlan(session.userId, planId);
 
     return Response.json({
       success: true,
       message: `Successfully ${action}d to ${result.newPlan} plan`,
       newPlan: result.newPlan,
       effectiveDate: result.effectiveDate,
-      proratedAmount: result.proratedAmount
-    })
+      proratedAmount: result.proratedAmount,
+    });
   }
 
   if (action === 'cancel') {
-    await cancelSubscription(session.userId)
+    await cancelSubscription(session.userId);
 
     return Response.json({
       success: true,
       message: 'Subscription will be cancelled at the end of the billing period',
-      accessUntil: getBillingPeriodEnd(session.userId)
-    })
+      accessUntil: getBillingPeriodEnd(session.userId),
+    });
   }
 
-  return Response.json(
-    { error: 'Invalid action' },
-    { status: 400 }
-  )
+  return Response.json({ error: 'Invalid action' }, { status: 400 });
 }
 ```
 
@@ -211,7 +206,7 @@ export async function PUT(request: Request) {
 
 > **User**: "I want to upgrade to the Pro plan"
 >
-> **Carla**: *Calls PUT /api/billing/subscription with action="upgrade", planId="pro"*
+> **Carla**: _Calls PUT /api/billing/subscription with action="upgrade", planId="pro"_
 >
 > "Great choice! I've upgraded you to the Pro plan. Changes are effective immediately. You'll be charged a prorated amount of $23.45 today, and then $49/month starting next billing cycle. Your new features are already active!"
 
@@ -220,9 +215,9 @@ export async function PUT(request: Request) {
 ```typescript
 // app/api/billing/invoices/route.ts
 export async function GET(request: Request) {
-  const session = await auth(request)
+  const session = await auth(request);
 
-  const invoices = await getInvoices(session.userId)
+  const invoices = await getInvoices(session.userId);
 
   return Response.json({
     invoices: invoices.map(inv => ({
@@ -231,9 +226,9 @@ export async function GET(request: Request) {
       amount: inv.amount,
       status: inv.status,
       pdfUrl: inv.pdfUrl,
-      description: inv.description
-    }))
-  })
+      description: inv.description,
+    })),
+  });
 }
 ```
 
@@ -242,9 +237,9 @@ export async function GET(request: Request) {
 ```typescript
 // app/api/team/route.ts
 export async function GET(request: Request) {
-  const session = await auth(request)
+  const session = await auth(request);
 
-  const team = await getTeamMembers(session.userId)
+  const team = await getTeamMembers(session.userId);
 
   return Response.json({
     members: team.map(member => ({
@@ -253,10 +248,10 @@ export async function GET(request: Request) {
       email: member.email,
       role: member.role,
       status: member.status,
-      joinedAt: member.joinedAt
+      joinedAt: member.joinedAt,
     })),
-    invitations: await getPendingInvitations(session.userId)
-  })
+    invitations: await getPendingInvitations(session.userId),
+  });
 }
 ```
 
@@ -265,24 +260,24 @@ export async function GET(request: Request) {
 ```typescript
 // app/api/team/invite/route.ts
 export async function POST(request: Request) {
-  const session = await auth(request)
-  const { email, role } = await request.json()
+  const session = await auth(request);
+  const { email, role } = await request.json();
 
   // Check if user has permission to invite
-  const canInvite = await checkInvitePermission(session.userId)
+  const canInvite = await checkInvitePermission(session.userId);
 
   if (!canInvite) {
     return Response.json(
       { error: 'Insufficient permissions to invite team members' },
       { status: 403 }
-    )
+    );
   }
 
   const invitation = await inviteTeamMember({
     invitedBy: session.userId,
     email,
-    role
-  })
+    role,
+  });
 
   return Response.json({
     success: true,
@@ -291,9 +286,9 @@ export async function POST(request: Request) {
       id: invitation.id,
       email: invitation.email,
       role: invitation.role,
-      expiresAt: invitation.expiresAt
-    }
-  })
+      expiresAt: invitation.expiresAt,
+    },
+  });
 }
 ```
 
@@ -301,7 +296,7 @@ export async function POST(request: Request) {
 
 > **User**: "Invite john@example.com to the team as a developer"
 >
-> **Carla**: *Calls POST /api/team/invite with email and role*
+> **Carla**: _Calls POST /api/team/invite with email and role_
 >
 > "Done! I've sent an invitation to john@example.com with Developer access. They'll have 7 days to accept. I'll notify you when they join!"
 
@@ -310,23 +305,23 @@ export async function POST(request: Request) {
 ```typescript
 // app/api/analytics/route.ts
 export async function GET(request: Request) {
-  const session = await auth(request)
-  const searchParams = new URL(request.url).searchParams
+  const session = await auth(request);
+  const searchParams = new URL(request.url).searchParams;
 
-  const startDate = searchParams.get('startDate')
-  const endDate = searchParams.get('endDate')
-  const metrics = searchParams.get('metrics')?.split(',')
+  const startDate = searchParams.get('startDate');
+  const endDate = searchParams.get('endDate');
+  const metrics = searchParams.get('metrics')?.split(',');
 
   const analytics = await getAnalytics(session.userId, {
     startDate,
     endDate,
-    metrics
-  })
+    metrics,
+  });
 
   return Response.json({
     period: { startDate, endDate },
-    data: analytics
-  })
+    data: analytics,
+  });
 }
 ```
 
@@ -334,9 +329,10 @@ export async function GET(request: Request) {
 
 > **User**: "Show me my analytics for last week"
 >
-> **Carla**: *Calls GET /api/analytics with date range*
+> **Carla**: _Calls GET /api/analytics with date range_
 >
 > "Here's your analytics from Oct 10-17:
+>
 > - **Total Users**: 1,234 (↑ 15% from previous week)
 > - **API Calls**: 45,231 (↑ 8%)
 > - **Active Sessions**: 892 avg
@@ -349,8 +345,8 @@ export async function GET(request: Request) {
 ```typescript
 // app/api/support/tickets/route.ts
 export async function POST(request: Request) {
-  const session = await auth(request)
-  const { subject, description, priority, category } = await request.json()
+  const session = await auth(request);
+  const { subject, description, priority, category } = await request.json();
 
   const ticket = await createSupportTicket({
     userId: session.userId,
@@ -358,8 +354,8 @@ export async function POST(request: Request) {
     description,
     priority: priority || 'medium',
     category,
-    status: 'open'
-  })
+    status: 'open',
+  });
 
   return Response.json({
     success: true,
@@ -368,16 +364,16 @@ export async function POST(request: Request) {
       subject: ticket.subject,
       status: ticket.status,
       priority: ticket.priority,
-      createdAt: ticket.createdAt
+      createdAt: ticket.createdAt,
     },
-    message: 'Support ticket created. We typically respond within 24 hours.'
-  })
+    message: 'Support ticket created. We typically respond within 24 hours.',
+  });
 }
 
 export async function GET(request: Request) {
-  const session = await auth(request)
+  const session = await auth(request);
 
-  const tickets = await getUserTickets(session.userId)
+  const tickets = await getUserTickets(session.userId);
 
   return Response.json({
     tickets: tickets.map(t => ({
@@ -386,9 +382,9 @@ export async function GET(request: Request) {
       status: t.status,
       priority: t.priority,
       createdAt: t.createdAt,
-      lastUpdate: t.updatedAt
-    }))
-  })
+      lastUpdate: t.updatedAt,
+    })),
+  });
 }
 ```
 
@@ -400,7 +396,7 @@ export async function GET(request: Request) {
 >
 > **User**: "The authentication keeps failing with error 401"
 >
-> **Carla**: *Creates ticket*
+> **Carla**: _Creates ticket_
 >
 > "I've created ticket #SUPP-12345 for the API authentication issue. Our engineering team will investigate and respond within 24 hours. In the meantime, have you checked that your API key is active in Settings?"
 
@@ -497,6 +493,7 @@ export async function GET(request: Request) {
 > **User**: "Hi, I just signed up. What can I do?"
 >
 > **Carla**: "Welcome! 🎉 I'm Carla, your AI assistant. I can help you with:
+>
 > - Setting up your account
 > - Understanding your usage and billing
 > - Managing your team
@@ -512,6 +509,7 @@ export async function GET(request: Request) {
 > **User**: "What roles are available?"
 >
 > **Carla**: "We have these roles:
+>
 > - **Admin** - Full access to everything
 > - **Developer** - Access to API keys, integrations, team management
 > - **Analyst** - Read-only access to analytics and reports
@@ -527,14 +525,11 @@ Always verify user permissions before performing actions:
 
 ```typescript
 export async function POST(request: Request) {
-  const session = await auth(request)
-  const hasPermission = await checkPermission(session.userId, 'manage_billing')
+  const session = await auth(request);
+  const hasPermission = await checkPermission(session.userId, 'manage_billing');
 
   if (!hasPermission) {
-    return Response.json(
-      { error: 'You don\'t have permission to manage billing' },
-      { status: 403 }
-    )
+    return Response.json({ error: "You don't have permission to manage billing" }, { status: 403 });
   }
 
   // Proceed with action...
@@ -546,16 +541,19 @@ export async function POST(request: Request) {
 Implement and communicate usage limits clearly:
 
 ```typescript
-const usage = await getUserUsage(userId)
+const usage = await getUserUsage(userId);
 
 if (usage.apiCalls >= usage.apiCallsLimit) {
-  return Response.json({
-    error: 'API quota exceeded',
-    current: usage.apiCalls,
-    limit: usage.apiCallsLimit,
-    resetDate: usage.quotaResetDate,
-    upgradeUrl: '/billing/upgrade'
-  }, { status: 429 })
+  return Response.json(
+    {
+      error: 'API quota exceeded',
+      current: usage.apiCalls,
+      limit: usage.apiCallsLimit,
+      resetDate: usage.quotaResetDate,
+      upgradeUrl: '/billing/upgrade',
+    },
+    { status: 429 }
+  );
 }
 ```
 
@@ -568,8 +566,8 @@ await auditLog({
   userId: session.userId,
   action: 'subscription_upgraded',
   details: { from: 'basic', to: 'pro' },
-  timestamp: new Date()
-})
+  timestamp: new Date(),
+});
 ```
 
 ## Advanced Features
@@ -580,13 +578,13 @@ Carla can proactively notify users about important events:
 
 ```typescript
 // Carla detects approaching quota limit
-"⚠️ Heads up! You've used 90% of your API quota this month. You have 1,000 calls remaining until your limit resets on Nov 1. Want to upgrade to avoid interruptions?"
+"⚠️ Heads up! You've used 90% of your API quota this month. You have 1,000 calls remaining until your limit resets on Nov 1. Want to upgrade to avoid interruptions?";
 
 // Carla notices unusual activity
-"📊 Your API usage spiked 300% today compared to your average. Everything okay? This might affect your quota."
+'📊 Your API usage spiked 300% today compared to your average. Everything okay? This might affect your quota.';
 
 // Carla reminds about expiring payment method
-"💳 Your payment method ending in 4242 expires next month. Want me to help you update it?"
+'💳 Your payment method ending in 4242 expires next month. Want me to help you update it?';
 ```
 
 ## Related Examples

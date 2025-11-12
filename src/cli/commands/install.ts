@@ -225,10 +225,16 @@ export async function installCommand(options: InstallOptions): Promise<void> {
 
       logger.section('📝 Next Steps');
       logger.list([
-        'Run your development server: npm run dev',
-        'Visit your app and test Carla',
-        'Customize the widget in your Interworky dashboard',
+        'Test locally first: npm run dev',
+        'Deploy your app to staging/production (e.g., Vercel, Netlify)',
+        'Visit your deployed website to verify the plugin is working',
+        'Continue setup in your Interworky dashboard to customize the widget',
       ]);
+
+      logger.info('');
+      logger.info(
+        '💡 Tip: The plugin needs to be deployed to work properly with Interworky services'
+      );
     } catch (error) {
       logger.failSpinner('Installation failed');
       if (error instanceof Error) {

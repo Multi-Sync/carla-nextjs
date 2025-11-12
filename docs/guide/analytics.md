@@ -48,6 +48,7 @@ Track who's visiting your application:
 - **Bounce Rate** - Percentage leaving after one page
 
 **Example Dashboard:**
+
 ```
 Today's Metrics:
 👥 Visitors: 1,234 (↑ 12% vs yesterday)
@@ -61,14 +62,15 @@ Today's Metrics:
 
 Understand which pages are most popular:
 
-| Page | Views | Unique | Avg Time | Bounce % |
-|------|-------|--------|----------|----------|
-| / | 5,234 | 3,456 | 1m 24s | 38% |
-| /products | 2,345 | 1,890 | 3m 12s | 24% |
-| /pricing | 1,234 | 987 | 2m 45s | 56% |
-| /blog | 876 | 654 | 5m 32s | 18% |
+| Page      | Views | Unique | Avg Time | Bounce % |
+| --------- | ----- | ------ | -------- | -------- |
+| /         | 5,234 | 3,456  | 1m 24s   | 38%      |
+| /products | 2,345 | 1,890  | 3m 12s   | 24%      |
+| /pricing  | 1,234 | 987    | 2m 45s   | 56%      |
+| /blog     | 876   | 654    | 5m 32s   | 18%      |
 
 **Insights:**
+
 - **High bounce on /pricing** - May need clearer pricing or CTA
 - **Long time on /blog** - Content is engaging
 - **/products has good engagement** - Low bounce, decent time
@@ -100,11 +102,13 @@ Common User Paths:
 Comprehensive device detection covering 10,000+ devices:
 
 #### Device Type
+
 - **Desktop:** 52% (↑ 3%)
 - **Mobile:** 42% (↓ 2%)
 - **Tablet:** 6% (↔ 0%)
 
 #### Operating Systems
+
 - **Windows:** 35%
 - **macOS:** 17%
 - **iOS:** 28%
@@ -112,6 +116,7 @@ Comprehensive device detection covering 10,000+ devices:
 - **Other:** 2%
 
 #### Browsers
+
 - **Chrome:** 58%
 - **Safari:** 24%
 - **Firefox:** 10%
@@ -119,6 +124,7 @@ Comprehensive device detection covering 10,000+ devices:
 - **Other:** 2%
 
 #### Screen Resolutions
+
 - **1920x1080** - 32%
 - **1366x768** - 18%
 - **375x667** (iPhone) - 14%
@@ -132,6 +138,7 @@ Comprehensive device detection covering 10,000+ devices:
 Track visitor locations worldwide:
 
 #### Top Countries
+
 ```
 🇺🇸 United States    - 45% (2,345 visitors)
 🇬🇧 United Kingdom   - 18% (934 visitors)
@@ -141,6 +148,7 @@ Track visitor locations worldwide:
 ```
 
 #### Top Cities
+
 ```
 🏙️ New York, US      - 8% (415 visitors)
 🏙️ London, GB        - 6% (312 visitors)
@@ -149,13 +157,16 @@ Track visitor locations worldwide:
 ```
 
 #### Geographic Heatmap
+
 Interactive map showing:
+
 - Visitor concentration by region
 - Click-through rates by location
 - Conversion rates by geography
 - Performance metrics by region
 
 **Business insights:**
+
 - Focus marketing on high-converting regions
 - Identify expansion opportunities
 - Optimize CDN for top locations
@@ -183,6 +194,7 @@ Recent Activity:
 ```
 
 **Use cases:**
+
 - Monitor launch events
 - Track campaign traffic in real-time
 - Identify sudden traffic spikes
@@ -208,6 +220,7 @@ Recent Events:
 Set up conversion goals and track completion:
 
 #### Example Goals:
+
 1. **Signup Conversion**
    - Goal: User completes signup
    - Current Rate: 3.2%
@@ -252,6 +265,7 @@ Watch recorded sessions to understand user behavior:
 **Privacy:** Sensitive data (passwords, credit cards) automatically masked.
 
 **Example use case:**
+
 ```
 Session #12345 (3m 45s):
   1. Landed on homepage (0:00)
@@ -271,32 +285,32 @@ Track custom events specific to your application:
 
 ```tsx
 // Track custom events in your Next.js app
-import { trackEvent } from '@interworky/carla-nextjs'
+import { trackEvent } from '@interworky/carla-nextjs';
 
 // Button click
 trackEvent('button_click', {
   button: 'Start Free Trial',
-  location: 'hero_section'
-})
+  location: 'hero_section',
+});
 
 // Feature usage
 trackEvent('feature_used', {
   feature: 'export_data',
-  format: 'csv'
-})
+  format: 'csv',
+});
 
 // Error encountered
 trackEvent('error_encountered', {
   error_type: 'payment_failed',
-  error_message: 'Card declined'
-})
+  error_message: 'Card declined',
+});
 
 // Purchase completed
 trackEvent('purchase', {
   product_id: '123',
   amount: 49.99,
-  currency: 'USD'
-})
+  currency: 'USD',
+});
 ```
 
 View custom events in the dashboard under **Analytics → Custom Events**.
@@ -306,6 +320,7 @@ View custom events in the dashboard under **Analytics → Custom Events**.
 Group users by behavior and track retention:
 
 #### Example Cohorts:
+
 1. **Users who signed up in October**
    - Week 1 retention: 85%
    - Week 2 retention: 62%
@@ -378,6 +393,7 @@ Track how users interact with your content:
 - **Form Completion** - Field-by-field completion rates
 
 **Example:**
+
 ```
 Page: /products
   Avg Scroll Depth: 68%
@@ -393,18 +409,21 @@ Action: Move pricing higher on page
 Identify your best and worst performing content:
 
 #### Top Performing Pages
+
 - High time on page
 - Low bounce rate
 - High conversion rate
 - Strong engagement metrics
 
 #### Underperforming Pages
+
 - Low time on page
 - High bounce rate
 - Low conversion rate
 - Weak engagement
 
 **Optimization strategy:**
+
 1. Analyze top performers to understand what works
 2. Apply successful patterns to underperforming pages
 3. Consider deprecating or heavily revising worst pages
@@ -422,6 +441,7 @@ Export data for external analysis or reporting:
    - **PDF** - For stakeholder reports
 
 **Example exports:**
+
 - Monthly traffic reports for executives
 - Campaign performance for marketing team
 - User behavior data for product decisions
@@ -434,18 +454,21 @@ Export data for external analysis or reporting:
 Create custom views for different roles:
 
 **For Marketing Team:**
+
 - Traffic sources
 - Campaign performance
 - Conversion rates
 - Geographic data
 
 **For Product Team:**
+
 - User journeys
 - Feature usage
 - Session replays
 - Error rates
 
 **For Executive Team:**
+
 - High-level metrics (visitors, revenue, conversion)
 - Trends over time
 - Goal completion
@@ -464,6 +487,7 @@ Alert Examples:
 ```
 
 Configure delivery:
+
 - Email notifications
 - Dashboard notifications
 - Slack integration (coming soon)
@@ -473,6 +497,7 @@ Configure delivery:
 Carla is designed with privacy in mind:
 
 ### GDPR Compliance
+
 - ✅ Cookie consent integration
 - ✅ Data anonymization options
 - ✅ Right to deletion
@@ -500,11 +525,11 @@ Integrate with cookie consent managers:
 
 ```tsx
 // Only track after consent
-import { initAnalytics } from '@interworky/carla-nextjs'
+import { initAnalytics } from '@interworky/carla-nextjs';
 
 function handleConsent() {
   if (userConsented) {
-    initAnalytics()
+    initAnalytics();
   }
 }
 ```
@@ -514,6 +539,7 @@ function handleConsent() {
 ### 1. Set Clear Goals
 
 Define what success looks like:
+
 - Conversion rate targets
 - Engagement benchmarks
 - Traffic growth goals
@@ -527,6 +553,7 @@ Define what success looks like:
 ### 3. Act on Insights
 
 Don't just collect data—use it:
+
 - Fix high-bounce pages
 - Optimize conversion funnels
 - Improve mobile experience
@@ -535,6 +562,7 @@ Don't just collect data—use it:
 ### 4. A/B Test Changes
 
 Use analytics to validate improvements:
+
 - Test headline changes
 - Compare button placements
 - Experiment with page layouts
@@ -545,6 +573,7 @@ Use analytics to validate improvements:
 ### How accurate is the device detection?
 
 Carla's device database covers **10,000+ devices** with 99%+ accuracy, including:
+
 - All major smartphones and tablets
 - Desktop configurations
 - Browsers and operating systems
@@ -553,6 +582,7 @@ Carla's device database covers **10,000+ devices** with 99%+ accuracy, including
 ### Does analytics tracking affect performance?
 
 Minimal impact:
+
 - Analytics bundle: ~12KB gzipped
 - Async loading, non-blocking
 - Batched event sending
@@ -560,15 +590,15 @@ Minimal impact:
 
 ### How does Carla compare to Google Analytics?
 
-| Feature | Carla | Google Analytics |
-|---------|-------|------------------|
-| Real-time analytics | ✅ Yes | ✅ Yes |
-| Session replay | ✅ Yes | ❌ No (requires GA4 + debugging) |
-| Device detection | ✅ 10,000+ | ⚠️ Limited |
-| Next.js integration | ✅ Native | ⚠️ Manual setup |
-| Custom events | ✅ Unlimited | ✅ Unlimited |
-| Free tier limits | ✅ None | ✅ None |
-| Privacy-focused | ✅ Yes | ⚠️ Google-owned |
+| Feature             | Carla        | Google Analytics                 |
+| ------------------- | ------------ | -------------------------------- |
+| Real-time analytics | ✅ Yes       | ✅ Yes                           |
+| Session replay      | ✅ Yes       | ❌ No (requires GA4 + debugging) |
+| Device detection    | ✅ 10,000+   | ⚠️ Limited                       |
+| Next.js integration | ✅ Native    | ⚠️ Manual setup                  |
+| Custom events       | ✅ Unlimited | ✅ Unlimited                     |
+| Free tier limits    | ✅ None      | ✅ None                          |
+| Privacy-focused     | ✅ Yes       | ⚠️ Google-owned                  |
 
 **Recommendation:** Use both for comprehensive insights.
 
@@ -577,18 +607,19 @@ Minimal impact:
 Yes! Track logged-in users with custom IDs:
 
 ```tsx
-import { identifyUser } from '@interworky/carla-nextjs'
+import { identifyUser } from '@interworky/carla-nextjs';
 
 // After user login
 identifyUser({
   userId: '12345',
   email: 'user@example.com',
   name: 'John Doe',
-  plan: 'premium'
-})
+  plan: 'premium',
+});
 ```
 
 This enables:
+
 - User-specific journey tracking
 - Segmentation by user properties
 - Personalized insights
@@ -601,6 +632,7 @@ This enables:
 ### Can I filter by date range?
 
 Yes, all analytics support custom date ranges:
+
 - Today / Yesterday
 - Last 7 / 30 / 90 days
 - Custom date range picker

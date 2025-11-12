@@ -34,7 +34,9 @@ carla-nextjs/
 ## Architecture Patterns
 
 ### CLI Commands
+
 Each command is in `src/cli/<command>.ts`:
+
 - `scan.ts` - Scans Next.js project for API routes
 - `sync.ts` - Syncs tools to Interworky API
 - `install.ts` - Installs widget component
@@ -43,14 +45,18 @@ Each command is in `src/cli/<command>.ts`:
 - `fix.ts` - Auto-fixes common issues
 
 ### Route Scanning
+
 The scanner (`src/scanner/`) uses TypeScript AST to:
+
 1. Find all route.ts/route.js files in app/api or pages/api
 2. Extract HTTP methods (GET, POST, PUT, DELETE, etc.)
 3. Infer parameters from route params and request body
 4. Generate JSON schema for OpenAI function calling
 
 ### MCP Server
+
 The MCP server (`src/mcp/`) implements the Model Context Protocol:
+
 - Exposes scanned routes as MCP tools
 - Allows AI assistants to discover and call your API routes
 - Supports both SSE and HTTP transports
@@ -109,26 +115,30 @@ carla-nextjs --help
 ## Coding Guidelines
 
 ### TypeScript
+
 - Use explicit types for function parameters and return values
 - Prefer interfaces over type aliases for objects
 - Use const assertions where appropriate
 - Avoid `any` - use `unknown` and type guards instead
 
 ### Error Handling
+
 ```typescript
 // Good - specific error types
-throw new Error(`Failed to scan route ${filePath}: ${error.message}`)
+throw new Error(`Failed to scan route ${filePath}: ${error.message}`);
 
 // Bad - generic errors
-throw new Error('Something went wrong')
+throw new Error('Something went wrong');
 ```
 
 ### Async/Await
+
 - Always use try/catch for async operations
 - Provide meaningful error context
 - Use Promise.all() for parallel operations
 
 ### CLI Feedback
+
 - Use `ora` for spinners during long operations
 - Use `chalk` for colored output (success = green, errors = red)
 - Show clear progress indicators
@@ -137,34 +147,36 @@ throw new Error('Something went wrong')
 ## Adding a New CLI Command
 
 1. Create `src/cli/mycommand.ts`:
+
 ```typescript
-import { Command } from 'commander'
-import ora from 'ora'
-import chalk from 'chalk'
+import { Command } from 'commander';
+import ora from 'ora';
+import chalk from 'chalk';
 
 export function registerMyCommand(program: Command) {
   program
     .command('mycommand')
     .description('Description of what this does')
     .action(async () => {
-      const spinner = ora('Doing something...').start()
+      const spinner = ora('Doing something...').start();
 
       try {
         // Your logic here
-        spinner.succeed(chalk.green('Success!'))
+        spinner.succeed(chalk.green('Success!'));
       } catch (error) {
-        spinner.fail(chalk.red(`Failed: ${error.message}`))
-        process.exit(1)
+        spinner.fail(chalk.red(`Failed: ${error.message}`));
+        process.exit(1);
       }
-    })
+    });
 }
 ```
 
 2. Register in `src/cli/index.ts`:
+
 ```typescript
-import { registerMyCommand } from './cli/mycommand'
+import { registerMyCommand } from './cli/mycommand';
 // ...
-registerMyCommand(program)
+registerMyCommand(program);
 ```
 
 ## MCP Integration
@@ -172,12 +184,15 @@ registerMyCommand(program)
 The MCP server allows AI assistants to discover and use your Next.js API routes.
 
 ### Starting the MCP Server
+
 ```bash
 carla-nextjs mcp
 ```
 
 ### Cursor Configuration
+
 Add to `.cursor/mcp_config.json`:
+
 ```json
 {
   "mcpServers": {
@@ -193,7 +208,9 @@ Add to `.cursor/mcp_config.json`:
 ```
 
 ### Claude Desktop Configuration
+
 Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
+
 ```json
 {
   "mcpServers": {
@@ -208,6 +225,7 @@ Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
 ## Common Workflows
 
 ### Publishing a New Version
+
 1. Update version in `package.json` (semantic versioning)
 2. Update version in `docs/.vitepress/config.ts` nav
 3. Commit: `git commit -m "chore: bump version to X.Y.Z"`
@@ -215,6 +233,7 @@ Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
 5. GitHub Actions automatically publishes to npm
 
 ### Adding a New Feature
+
 1. Create feature branch (optional)
 2. Implement feature with TypeScript
 3. Add tests if applicable
@@ -223,6 +242,7 @@ Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
 6. Submit PR or push to main
 
 ### Updating Documentation
+
 1. Edit files in `docs/`
 2. Test locally: `npm run docs:dev`
 3. Commit and push
@@ -231,17 +251,22 @@ Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
 ## Key Technical Details
 
 ### Environment Variables
+
 - `NEXT_PUBLIC_CARLA_API_KEY` - API key for Interworky dashboard
 - `CARLA_API_URL` - Optional custom API URL (defaults to production)
 
 ### Configuration Files
+
 The CLI creates:
+
 - `.carla/tools.json` - Tool definitions and enabled state
 - `.carla/config.json` - Project configuration
 - `src/components/CarlaWidget.tsx` (or .js) - Widget component
 
 ### Widget Integration
+
 The widget is a simple script tag:
+
 ```typescript
 <script
   src="https://storage.googleapis.com/multisync/interworky/production/interworky.js"
@@ -252,6 +277,7 @@ The widget is a simple script tag:
 ## Debugging Tips
 
 ### Scanner Issues
+
 ```bash
 # Enable verbose logging
 DEBUG=carla:* carla-nextjs scan
@@ -261,6 +287,7 @@ carla-nextjs scan --verbose
 ```
 
 ### MCP Issues
+
 ```bash
 # Test MCP server connection
 carla-nextjs mcp --debug

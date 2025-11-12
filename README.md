@@ -50,18 +50,18 @@ Carla is a comprehensive platform for Next.js applications that provides:
 
 ## Pricing
 
-| | Free Tier | Premium Tier |
-|---|---|---|
-| **Price** | **FREE forever** | **$19.99/month** |
-| **Credit Card** | ❌ Not required | ✅ Required |
-| **Trial** | N/A | ✅ 7 days free |
-| **Performance Monitoring** | ✅ Unlimited | ✅ Included |
-| **Error Tracking** | ✅ Unlimited | ✅ Included |
-| **Analytics** | ✅ Unlimited | ✅ Included |
-| **AI-Powered Auto-Fix** | ❌ | ✅ |
-| **GitHub PR Creation** | ❌ | ✅ |
-| **AI Customer Support Widget** | ❌ | ✅ |
-| **Voice Chat Support** | ❌ | ✅ |
+|                                | Free Tier        | Premium Tier     |
+| ------------------------------ | ---------------- | ---------------- |
+| **Price**                      | **FREE forever** | **$19.99/month** |
+| **Credit Card**                | ❌ Not required  | ✅ Required      |
+| **Trial**                      | N/A              | ✅ 7 days free   |
+| **Performance Monitoring**     | ✅ Unlimited     | ✅ Included      |
+| **Error Tracking**             | ✅ Unlimited     | ✅ Included      |
+| **Analytics**                  | ✅ Unlimited     | ✅ Included      |
+| **AI-Powered Auto-Fix**        | ❌               | ✅               |
+| **GitHub PR Creation**         | ❌               | ✅               |
+| **AI Customer Support Widget** | ❌               | ✅               |
+| **Voice Chat Support**         | ❌               | ✅               |
 
 **Full details:** [View complete pricing guide →](https://carla.interworky.com/guide/pricing)
 
@@ -82,6 +82,7 @@ npx @interworky/carla-nextjs init
 ```
 
 This will:
+
 - Authenticate with your API key
 - Create `.carla/` configuration directory
 - Add `NEXT_PUBLIC_CARLA_API_KEY` to your `.env.local`
@@ -91,6 +92,7 @@ This will:
 You'll be guided to choose between two options:
 
 #### Option A: Manual Integration (Free Tier)
+
 - Install widget component manually
 - Get immediate access to performance monitoring, error tracking, and analytics
 - No trial or credit card required
@@ -108,6 +110,7 @@ npx @interworky/carla-nextjs sync
 ```
 
 #### Option B: GitHub Integration (Premium - 7-Day Free Trial)
+
 - Connect GitHub via OAuth
 - Enables AI-Powered Auto-Fix with PR creation
 - Includes AI Customer Support Widget
@@ -124,6 +127,7 @@ npx @interworky/carla-nextjs sync
 ### 4. Start Monitoring
 
 Once integrated, access your dashboard to:
+
 - View real-time performance metrics
 - Track errors with stack traces
 - Analyze visitor data and user journeys
@@ -144,6 +148,7 @@ npx @interworky/carla-nextjs mcp
 ### Cursor IDE Setup
 
 Add to `.cursor/mcp_config.json`:
+
 ```json
 {
   "mcpServers": {
@@ -158,6 +163,7 @@ Add to `.cursor/mcp_config.json`:
 ### Claude Desktop Setup
 
 Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
+
 ```json
 {
   "mcpServers": {
@@ -194,16 +200,16 @@ npx @interworky/carla-nextjs install --landing
 
 ## Commands
 
-| Command      | Description                          |
-|--------------|--------------------------------------|
-| `install`    | Install Carla widget in your app     |
-| `scan`       | Scan API routes and generate tools   |
+| Command        | Description                          |
+| -------------- | ------------------------------------ |
+| `install`      | Install Carla widget in your app     |
+| `scan`         | Scan API routes and generate tools   |
 | `generate-mcp` | Generate HTTP MCP routes at /api/mcp |
-| `sync`       | Sync enabled tools to Interworky     |
-| `status`     | Show current sync status             |
-| `fix`        | Auto-fix tool issues                 |
-| `interactive`| Interactive setup wizard             |
-| `mcp`        | Start MCP server for AI editors      |
+| `sync`         | Sync enabled tools to Interworky     |
+| `status`       | Show current sync status             |
+| `fix`          | Auto-fix tool issues                 |
+| `interactive`  | Interactive setup wizard             |
+| `mcp`          | Start MCP server for AI editors      |
 
 ## Environment Variables
 
@@ -214,6 +220,7 @@ NEXT_PUBLIC_CARLA_API_KEY="your-api-key-here"
 ```
 
 **Getting your API key:**
+
 1. Go to [interworky.com](https://interworky.com)
 2. Create an account (or sign in)
 3. Navigate to the **Integrations** page from the sidebar
@@ -309,8 +316,8 @@ fetch('http://localhost:3000/api/mcp/call', {
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
     tool: 'get_users',
-    args: { limit: 10 }
-  })
+    args: { limit: 10 },
+  }),
 })
   .then(res => res.json())
   .then(result => console.log(result));

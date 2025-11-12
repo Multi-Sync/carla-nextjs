@@ -20,6 +20,7 @@ npx @interworky/carla-nextjs scan
 ```
 
 This will:
+
 1. Find all API route files
 2. Parse and analyze each file
 3. Generate tool definitions
@@ -37,6 +38,7 @@ src/app/api/**/route.{ts,js,tsx,jsx}
 ```
 
 **Examples:**
+
 ```
 app/api/users/route.ts
 app/api/products/[id]/route.ts
@@ -51,6 +53,7 @@ src/pages/api/**/*.{ts,js,tsx,jsx}
 ```
 
 **Examples:**
+
 ```
 pages/api/users.ts
 pages/api/products/[id].ts
@@ -73,10 +76,10 @@ const patterns = [
   'src/app/api/**/route.{ts,js,tsx,jsx}',
   'pages/api/**/*.{ts,js,tsx,jsx}',
   'src/pages/api/**/*.{ts,js,tsx,jsx}',
-]
+];
 
 for (const pattern of patterns) {
-  const files = await glob(pattern, { cwd: projectRoot })
+  const files = await glob(pattern, { cwd: projectRoot });
   // Process each file...
 }
 ```
@@ -86,15 +89,10 @@ for (const pattern of patterns) {
 Each file is parsed into an Abstract Syntax Tree:
 
 ```typescript
-import * as ts from 'typescript'
+import * as ts from 'typescript';
 
-const source = fs.readFileSync(filePath, 'utf-8')
-const sourceFile = ts.createSourceFile(
-  filePath,
-  source,
-  ts.ScriptTarget.Latest,
-  true
-)
+const source = fs.readFileSync(filePath, 'utf-8');
+const sourceFile = ts.createSourceFile(filePath, source, ts.ScriptTarget.Latest, true);
 ```
 
 ### 3. Method Extraction
@@ -103,16 +101,17 @@ The scanner looks for exported HTTP method functions:
 
 ```typescript
 // These functions are detected
-export async function GET(request: Request) { }
-export async function POST(request: Request) { }
-export async function PUT(request: Request) { }
-export async function DELETE(request: Request) { }
-export async function PATCH(request: Request) { }
+export async function GET(request: Request) {}
+export async function POST(request: Request) {}
+export async function PUT(request: Request) {}
+export async function DELETE(request: Request) {}
+export async function PATCH(request: Request) {}
 ```
 
 ### 4. Metadata Extraction
 
 For each method, the scanner extracts:
+
 - **Endpoint path** (from file structure)
 - **Path parameters** (from `[param]` segments)
 - **Body parameters** (from `request.json()` calls)
@@ -124,24 +123,24 @@ The scanner produces a `RouteInfo` object for each file:
 
 ```typescript
 interface RouteInfo {
-  filePath: string        // Absolute path to file
-  relativePath: string    // Path relative to project root
-  methods: MethodInfo[]   // Detected HTTP methods
+  filePath: string; // Absolute path to file
+  relativePath: string; // Path relative to project root
+  methods: MethodInfo[]; // Detected HTTP methods
 }
 
 interface MethodInfo {
-  method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'
-  endpoint: string        // API endpoint (e.g., "/api/users/:id")
-  params: ParamInfo[]     // Path parameters
-  bodyParams: ParamInfo[] // Request body parameters
-  hasAuth: boolean        // Whether auth was detected
+  method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
+  endpoint: string; // API endpoint (e.g., "/api/users/:id")
+  params: ParamInfo[]; // Path parameters
+  bodyParams: ParamInfo[]; // Request body parameters
+  hasAuth: boolean; // Whether auth was detected
 }
 
 interface ParamInfo {
-  name: string            // Parameter name
-  type: string            // TypeScript type
-  required: boolean       // Whether parameter is required
-  description?: string    // Auto-generated description
+  name: string; // Parameter name
+  type: string; // TypeScript type
+  required: boolean; // Whether parameter is required
+  description?: string; // Auto-generated description
 }
 ```
 
@@ -151,44 +150,42 @@ The scanner converts file paths to API endpoints:
 
 ### App Router Examples
 
-| File Path | Converted Endpoint |
-|-----------|-------------------|
-| `app/api/users/route.ts` | `/api/users` |
-| `app/api/users/[id]/route.ts` | `/api/users/:id` |
+| File Path                                  | Converted Endpoint            |
+| ------------------------------------------ | ----------------------------- |
+| `app/api/users/route.ts`                   | `/api/users`                  |
+| `app/api/users/[id]/route.ts`              | `/api/users/:id`              |
 | `app/api/posts/[postId]/comments/route.ts` | `/api/posts/:postId/comments` |
-| `src/app/api/products/route.ts` | `/api/products` |
+| `src/app/api/products/route.ts`            | `/api/products`               |
 
 ### Pages Router Examples
 
-| File Path | Converted Endpoint |
-|-----------|-------------------|
-| `pages/api/users.ts` | `/api/users` |
-| `pages/api/users/[id].ts` | `/api/users/:id` |
-| `pages/api/orders/index.ts` | `/api/orders` |
+| File Path                   | Converted Endpoint |
+| --------------------------- | ------------------ |
+| `pages/api/users.ts`        | `/api/users`       |
+| `pages/api/users/[id].ts`   | `/api/users/:id`   |
+| `pages/api/orders/index.ts` | `/api/orders`      |
 
 ### Conversion Logic
 
 ```typescript
 function pathToEndpoint(relativePath: string): string {
   let endpoint = relativePath
-    .replace(/\.(ts|js|tsx|jsx)$/, '')  // Remove extension
-    .replace(/\/route$/, '')             // Remove "route" filename
-    .replace(/\/index$/, '')             // Remove "index" filename
+    .replace(/\.(ts|js|tsx|jsx)$/, '') // Remove extension
+    .replace(/\/route$/, '') // Remove "route" filename
+    .replace(/\/index$/, ''); // Remove "index" filename
 
   // Remove app/api or pages/api prefix
-  endpoint = endpoint
-    .replace(/^(src\/)?app\/api\//, '/')
-    .replace(/^(src\/)?pages\/api\//, '/')
+  endpoint = endpoint.replace(/^(src\/)?app\/api\//, '/').replace(/^(src\/)?pages\/api\//, '/');
 
   // Convert [param] to :param
-  endpoint = endpoint.replace(/\[([^\]]+)\]/g, ':$1')
+  endpoint = endpoint.replace(/\[([^\]]+)\]/g, ':$1');
 
   // Ensure it starts with /api
   if (!endpoint.startsWith('/api')) {
-    endpoint = '/api' + endpoint
+    endpoint = '/api' + endpoint;
   }
 
-  return endpoint || '/api'
+  return endpoint || '/api';
 }
 ```
 
@@ -227,31 +224,33 @@ Path parameters are extracted from the file structure:
 The scanner analyzes code to detect request body parameters:
 
 **Pattern 1: Direct destructuring with types**
+
 ```typescript
 export async function POST(request: Request) {
-  const { name, email }: { name: string; email: string } =
-    await request.json()
+  const { name, email }: { name: string; email: string } = await request.json();
 }
 ```
 
 **Pattern 2: Variable assignment**
+
 ```typescript
 export async function POST(request: Request) {
-  const body = await request.json()
-  const { title, content } = body
+  const body = await request.json();
+  const { title, content } = body;
 }
 ```
 
 **Pattern 3: Type interfaces**
+
 ```typescript
 interface CreateUserRequest {
-  name: string
-  email: string
-  age?: number
+  name: string;
+  email: string;
+  age?: number;
 }
 
 export async function POST(request: Request) {
-  const data: CreateUserRequest = await request.json()
+  const data: CreateUserRequest = await request.json();
 }
 ```
 
@@ -266,13 +265,13 @@ The scanner looks for common authentication patterns in the code:
 ### NextAuth.js
 
 ```typescript
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/lib/auth"
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 
 export async function GET(request: Request) {
-  const session = await getServerSession(authOptions)
+  const session = await getServerSession(authOptions);
   if (!session) {
-    return Response.json({ error: "Unauthorized" }, { status: 401 })
+    return Response.json({ error: 'Unauthorized' }, { status: 401 });
   }
   // ...
 }
@@ -282,10 +281,10 @@ export async function GET(request: Request) {
 
 ```typescript
 export async function POST(request: Request) {
-  const token = request.headers.get('Authorization')
-  const verified = await verifyToken(token)
+  const token = request.headers.get('Authorization');
+  const verified = await verifyToken(token);
   if (!verified) {
-    return Response.json({ error: "Unauthorized" }, { status: 401 })
+    return Response.json({ error: 'Unauthorized' }, { status: 401 });
   }
   // ...
 }
@@ -295,7 +294,7 @@ export async function POST(request: Request) {
 
 ```typescript
 export async function DELETE(request: Request) {
-  await requireAuth(request)
+  await requireAuth(request);
   // ...
 }
 ```
@@ -343,6 +342,7 @@ npx @interworky/carla-nextjs scan --format json
 ```
 
 **Output:**
+
 ```json
 {
   "success": true,
@@ -363,12 +363,13 @@ npx @interworky/carla-nextjs scan --format json
 
 ```typescript
 export async function GET() {
-  const products = await db.products.findMany()
-  return Response.json(products)
+  const products = await db.products.findMany();
+  return Response.json(products);
 }
 ```
 
 **Scanned info:**
+
 ```json
 {
   "filePath": "/project/app/api/products/route.ts",
@@ -390,43 +391,38 @@ export async function GET() {
 **File:** `app/api/users/[userId]/route.ts`
 
 ```typescript
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/lib/auth"
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 
-export async function GET(
-  request: Request,
-  { params }: { params: { userId: string } }
-) {
-  const session = await getServerSession(authOptions)
+export async function GET(request: Request, { params }: { params: { userId: string } }) {
+  const session = await getServerSession(authOptions);
   if (!session) {
-    return Response.json({ error: "Unauthorized" }, { status: 401 })
+    return Response.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   const user = await db.users.findUnique({
-    where: { id: params.userId }
-  })
+    where: { id: params.userId },
+  });
 
-  return Response.json(user)
+  return Response.json(user);
 }
 
-export async function DELETE(
-  request: Request,
-  { params }: { params: { userId: string } }
-) {
-  const session = await getServerSession(authOptions)
+export async function DELETE(request: Request, { params }: { params: { userId: string } }) {
+  const session = await getServerSession(authOptions);
   if (!session) {
-    return Response.json({ error: "Unauthorized" }, { status: 401 })
+    return Response.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   await db.users.delete({
-    where: { id: params.userId }
-  })
+    where: { id: params.userId },
+  });
 
-  return Response.json({ success: true })
+  return Response.json({ success: true });
 }
 ```
 
 **Scanned info:**
+
 ```json
 {
   "filePath": "/project/app/api/users/[userId]/route.ts",
@@ -473,27 +469,28 @@ export async function POST(request: Request) {
   const {
     customerId,
     items,
-    shippingAddress
+    shippingAddress,
   }: {
-    customerId: string
-    items: Array<{ productId: string; quantity: number }>
-    shippingAddress: string
-  } = await request.json()
+    customerId: string;
+    items: Array<{ productId: string; quantity: number }>;
+    shippingAddress: string;
+  } = await request.json();
 
   const order = await db.orders.create({
     data: {
       customerId,
       items,
       shippingAddress,
-      status: 'pending'
-    }
-  })
+      status: 'pending',
+    },
+  });
 
-  return Response.json(order, { status: 201 })
+  return Response.json(order, { status: 201 });
 }
 ```
 
 **Scanned info:**
+
 ```json
 {
   "filePath": "/project/app/api/orders/route.ts",
@@ -537,16 +534,16 @@ The scanner looks for specific TypeScript node types:
 
 ```typescript
 // Function declarations
-ts.isFunctionDeclaration(node)
+ts.isFunctionDeclaration(node);
 
 // Await expressions (for request.json())
-ts.isAwaitExpression(node)
+ts.isAwaitExpression(node);
 
 // Call expressions (for function calls)
-ts.isCallExpression(node)
+ts.isCallExpression(node);
 
 // Variable declarations (for const/let/var)
-ts.isVariableDeclaration(node)
+ts.isVariableDeclaration(node);
 ```
 
 ### Walking the AST
@@ -557,31 +554,33 @@ The scanner recursively traverses the syntax tree:
 function visit(node: ts.Node) {
   // Check if this is an HTTP method function
   if (ts.isFunctionDeclaration(node) && node.name) {
-    const methodName = node.name.text
+    const methodName = node.name.text;
     if (['GET', 'POST', 'PUT', 'DELETE', 'PATCH'].includes(methodName)) {
       // Extract method information
-      extractMethodInfo(node)
+      extractMethodInfo(node);
     }
   }
 
   // Continue traversing child nodes
-  ts.forEachChild(node, visit)
+  ts.forEachChild(node, visit);
 }
 
-visit(sourceFile)
+visit(sourceFile);
 ```
 
 ### Example AST Analysis
 
 **Source code:**
+
 ```typescript
 export async function GET(request: Request) {
-  const data = await request.json()
-  return Response.json(data)
+  const data = await request.json();
+  return Response.json(data);
 }
 ```
 
 **AST structure:**
+
 ```
 SourceFile
 └── FunctionDeclaration (name: "GET")
@@ -602,38 +601,37 @@ SourceFile
 
 ```typescript
 // ✅ Good - Clear structure
-app/api/users/route.ts
-app/api/users/[id]/route.ts
-app/api/products/route.ts
-app/api/products/[id]/route.ts
+app / api / users / route.ts;
+app / api / users / [id] / route.ts;
+app / api / products / route.ts;
+app / api / products / [id] / route.ts;
 
 // ❌ Confusing - Mixed patterns
-app/api/getUsers.ts
-app/api/user-details/[id].ts
+app / api / getUsers.ts;
+app / api / user - details / [id].ts;
 ```
 
 ### 2. Add Type Annotations
 
 ```typescript
 // ✅ Good - Scanner can detect parameters
-const { name, email }: { name: string; email: string } =
-  await request.json()
+const { name, email }: { name: string; email: string } = await request.json();
 
 // ❌ Limited - Scanner may miss parameters
-const body = await request.json()
-const name = body.name
+const body = await request.json();
+const name = body.name;
 ```
 
 ### 3. Use Standard HTTP Methods
 
 ```typescript
 // ✅ Good - Standard methods
-export async function GET() { }
-export async function POST() { }
+export async function GET() {}
+export async function POST() {}
 
 // ❌ Won't be detected
-export async function getUsers() { }
-export async function fetchData() { }
+export async function getUsers() {}
+export async function fetchData() {}
 ```
 
 ### 4. Keep Auth Patterns Visible
@@ -641,16 +639,16 @@ export async function fetchData() { }
 ```typescript
 // ✅ Good - Auth is in the same function
 export async function POST(request: Request) {
-  const session = await getServerSession(authOptions)
-  if (!session) return Response.json({ error: "Unauthorized" }, { status: 401 })
+  const session = await getServerSession(authOptions);
+  if (!session) return Response.json({ error: 'Unauthorized' }, { status: 401 });
   // ...
 }
 
 // ❌ May not be detected
-async function checkAuth(request: Request) { }
+async function checkAuth(request: Request) {}
 
 export async function POST(request: Request) {
-  checkAuth(request) // Auth in separate function
+  checkAuth(request); // Auth in separate function
   // ...
 }
 ```
@@ -673,7 +671,9 @@ app/api/[[...optional]]/route.ts
 **Problem:** Scanner reports 0 API routes found
 
 **Solutions:**
+
 1. Check your route files are in the correct location:
+
    ```
    app/api/  or  pages/api/
    ```
@@ -691,9 +691,11 @@ app/api/[[...optional]]/route.ts
 **Problem:** Body parameters aren't showing up in scanned results
 
 **Solutions:**
+
 1. Add explicit type annotations:
+
    ```typescript
-   const { name }: { name: string } = await request.json()
+   const { name }: { name: string } = await request.json();
    ```
 
 2. Use destructuring directly in the await statement
@@ -705,6 +707,7 @@ app/api/[[...optional]]/route.ts
 **Problem:** Authentication is implemented but `hasAuth: false`
 
 **Solutions:**
+
 1. Use recognized auth patterns (see [Authentication Detection](#authentication-detection))
 
 2. Ensure auth code is in the route handler function, not imported functions
@@ -716,19 +719,23 @@ app/api/[[...optional]]/route.ts
 **Problem:** Only one method detected when multiple exist
 
 **Solutions:**
+
 1. Ensure each method is a separate exported function:
+
    ```typescript
-   export async function GET() { }
-   export async function POST() { }
-   export async function DELETE() { }
+   export async function GET() {}
+   export async function POST() {}
+   export async function DELETE() {}
    ```
 
 2. Don't use conditional logic to handle multiple methods:
    ```typescript
    // ❌ Won't work
    export async function handler(request: Request) {
-     if (request.method === 'GET') { }
-     if (request.method === 'POST') { }
+     if (request.method === 'GET') {
+     }
+     if (request.method === 'POST') {
+     }
    }
    ```
 
@@ -737,6 +744,7 @@ app/api/[[...optional]]/route.ts
 ### Scan Speed
 
 Typical scan times:
+
 - **Small project** (< 10 routes): < 1 second
 - **Medium project** (10-50 routes): 1-3 seconds
 - **Large project** (50+ routes): 3-10 seconds

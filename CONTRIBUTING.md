@@ -29,27 +29,32 @@ This project adheres to the [Contributor Covenant Code of Conduct](./CODE_OF_CON
 ### Development Setup
 
 1. **Fork the repository**
+
    ```bash
    # Click the "Fork" button on GitHub
    ```
 
 2. **Clone your fork**
+
    ```bash
    git clone https://github.com/YOUR_USERNAME/carla-nextjs.git
    cd carla-nextjs
    ```
 
 3. **Install dependencies**
+
    ```bash
    npm install
    ```
 
 4. **Build the project**
+
    ```bash
    npm run build
    ```
 
 5. **Link for local development**
+
    ```bash
    npm link
    ```
@@ -90,6 +95,7 @@ chore(deps): update dependencies
 ```
 
 **Types:**
+
 - `feat` - New feature (minor version bump)
 - `fix` - Bug fix (patch version bump)
 - `BREAKING` - Breaking change (major version bump)
@@ -122,6 +128,7 @@ npm run test:coverage
 ```
 
 **Test Requirements:**
+
 - All new features must include tests
 - Bug fixes should include regression tests
 - Maintain >80% code coverage
@@ -136,6 +143,7 @@ npm run test:coverage
    - Update CHANGELOG.md
 
 2. **Run quality checks**
+
    ```bash
    npm run lint
    npm run build
@@ -143,6 +151,7 @@ npm run test:coverage
    ```
 
 3. **Push to your fork**
+
    ```bash
    git push origin feat/your-feature
    ```
@@ -189,6 +198,7 @@ A clear description of what the bug is.
 
 **To Reproduce**
 Steps to reproduce:
+
 1. Run command '...'
 2. See error '...'
 
@@ -196,6 +206,7 @@ Steps to reproduce:
 What you expected to happen.
 
 **Environment:**
+
 - OS: [e.g., macOS 14.0]
 - Node.js: [e.g., 18.17.0]
 - Next.js: [e.g., 14.0.3]
@@ -248,6 +259,7 @@ When contributing, keep these principles in mind:
 ## 🏆 Recognition
 
 Contributors are recognized in:
+
 - GitHub contributors page
 - Release notes
 - README.md acknowledgments

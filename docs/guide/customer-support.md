@@ -20,12 +20,14 @@ The Customer Support Widget includes:
 ## Requirements
 
 ### Subscription
+
 - ✅ **Active premium subscription** ($19.99/month) OR
 - ✅ **Active 7-day free trial**
 
 [Start your free trial →](https://interworky.com/checkout?feature=customer_support)
 
 ### Technical Requirements
+
 - **Next.js 14+** application
 - **Carla widget** installed
 - **Website content** for AI training
@@ -42,6 +44,7 @@ If you're on the free tier, you'll need to upgrade:
 4. Complete checkout
 
 **Trial details:**
+
 - Free for first 7 days
 - $19.99/month after trial
 - Cancel anytime during trial at no charge
@@ -83,6 +86,7 @@ Carla automatically scrapes your public website:
 4. Carla will crawl your site and extract content
 
 **What gets scraped:**
+
 - Page content and headings
 - Product descriptions
 - Pricing information
@@ -91,6 +95,7 @@ Carla automatically scrapes your public website:
 - Documentation
 
 **What doesn't get scraped:**
+
 - Password-protected pages
 - Dynamic content requiring JavaScript
 - Forms and user inputs
@@ -110,6 +115,7 @@ For content not available publicly:
    - CSV files (product data)
 
 **File size limits:**
+
 - Individual file: 10MB max
 - Total content: 100MB max (free tier), unlimited (premium)
 
@@ -122,6 +128,7 @@ For content not available publicly:
 5. Verify AI provides accurate responses
 
 **Example test questions:**
+
 - "What products do you offer?"
 - "How much does pricing start at?"
 - "Do you have a free trial?"
@@ -134,6 +141,7 @@ For content not available publicly:
 Real-time text-based conversations:
 
 **User experience:**
+
 1. User clicks chat widget icon
 2. Chat window opens
 3. User types message
@@ -141,6 +149,7 @@ Real-time text-based conversations:
 5. Conversation continues naturally
 
 **AI capabilities:**
+
 - Understands natural language
 - Handles follow-up questions
 - Remembers conversation context
@@ -148,6 +157,7 @@ Real-time text-based conversations:
 - Offers multiple response options
 
 **Example conversation:**
+
 ```
 User: What's included in the free tier?
 
@@ -167,24 +177,28 @@ No credit card required! Would you like to know about premium features?
 Speech-to-text and text-to-speech:
 
 **How to use:**
+
 1. Click microphone icon in chat
 2. Speak your question
 3. AI transcribes and responds
 4. Response can be read aloud
 
 **Features:**
+
 - **Speech recognition** - Converts speech to text
 - **Text-to-speech** - Reads responses aloud
 - **Voice selection** - Choose AI voice (male/female)
 - **Language detection** - Automatically detects spoken language
 
 **Best for:**
+
 - Mobile users
 - Accessibility
 - Hands-free interaction
 - Multitasking users
 
 **Example:**
+
 ```
 User: [speaks] "How do I integrate Carla with my Next.js app?"
 
@@ -203,12 +217,14 @@ Would you like step-by-step instructions sent to your email?"
 AI maintains conversation history:
 
 **Context retention:**
+
 - Remembers previous questions in same session
 - Understands pronouns ("it", "that", "them")
 - Recalls user preferences mentioned earlier
 - Builds on previous answers
 
 **Example contextual conversation:**
+
 ```
 User: Tell me about your pricing
 
@@ -245,7 +261,7 @@ Or watch our 5-minute setup video:
 
 AI can show code examples:
 
-```
+````
 User: How do I track custom events?
 
 AI: You can track custom events with this code:
@@ -257,9 +273,10 @@ trackEvent('button_click', {
   button: 'Start Trial',
   location: 'hero'
 })
-```
+````
 
 Would you like more examples?
+
 ```
 
 #### Quick Replies
@@ -267,12 +284,14 @@ Would you like more examples?
 AI suggests quick response options:
 
 ```
+
 AI: Would you like to:
 
 [📊 See pricing details]
 [🚀 Start free trial]
 [📧 Contact sales]
 [📖 Read documentation]
+
 ```
 
 Clicking a button sends that message automatically.
@@ -282,11 +301,13 @@ Clicking a button sends that message automatically.
 For complex questions, AI offers human handoff:
 
 ```
+
 AI: This question requires specific technical details about your setup.
 Would you like me to connect you with our support team?
 
 [Yes, connect me] [No, keep chatting]
-```
+
+````
 
 **If user clicks "Yes, connect me":**
 1. Conversation transcript sent to your support team
@@ -325,14 +346,16 @@ Customize the widget to match your brand:
   "aiMessageColor": "#f1f3f5",
   "accentColor": "#ff6b6b"
 }
-```
+````
 
 #### Widget Icon
+
 - Upload custom icon (SVG, PNG)
 - Or choose from library
 - Size: 40x40px to 60x60px
 
 #### Welcome Message
+
 Customize the first message users see:
 
 ```
@@ -345,7 +368,9 @@ Custom examples:
 ```
 
 #### Greeting Delay
+
 Set delay before showing welcome message:
+
 - **Immediate** - Shows right away when page loads
 - **3 seconds** - Gives user time to browse first
 - **5 seconds** - User has scrolled/interacted
@@ -379,6 +404,7 @@ Automatically open widget for certain users:
 - **On exit intent** - Open when user moves to close tab
 
 **Example: Exit intent**
+
 ```
 User moves mouse toward close button
 
@@ -450,6 +476,7 @@ POST https://yourapi.com/webhooks/chat
 ```
 
 **Available events:**
+
 - `conversation_started`
 - `conversation_ended`
 - `message_sent`
@@ -465,12 +492,14 @@ Track widget performance:
 **Dashboard → Customer Support → Analytics**
 
 #### Volume Metrics
+
 - **Total conversations:** 1,234 this month
 - **Average messages per conversation:** 4.2
 - **Total messages:** 5,185
 - **Active users now:** 12
 
 #### Engagement Metrics
+
 - **Response time:** Avg 1.2 seconds
 - **Conversation duration:** Avg 3m 45s
 - **Satisfaction score:** 4.5/5 (based on ratings)
@@ -489,6 +518,7 @@ Top 10 questions asked:
 ```
 
 **Use insights to:**
+
 - Improve documentation for common questions
 - Update website content
 - Identify missing information
@@ -503,6 +533,7 @@ Understand user emotions:
 - **Negative:** 8% (frustrated, confused users)
 
 **Example negative sentiment:**
+
 ```
 User: "This is confusing, I can't figure out how to cancel"
 Sentiment: Negative (frustration)
@@ -515,10 +546,12 @@ Action: Improve cancellation documentation
 Rate AI responses:
 
 Users can rate each AI response:
+
 - 👍 Helpful
 - 👎 Not helpful
 
 Or provide detailed feedback:
+
 ```
 How was this response?
 
@@ -528,6 +561,7 @@ How was this response?
 ```
 
 **Dashboard shows:**
+
 - Overall satisfaction score
 - Percentage of positive ratings
 - Common complaints
@@ -539,11 +573,11 @@ View full conversation history:
 
 **Dashboard → Customer Support → Conversations**
 
-| ID | Date | Duration | Messages | Status | Rating |
-|----|------|----------|----------|--------|--------|
-| #1234 | Nov 10 | 4m 32s | 8 | Resolved | ⭐⭐⭐⭐⭐ |
-| #1235 | Nov 10 | 2m 15s | 4 | Resolved | ⭐⭐⭐⭐ |
-| #1236 | Nov 10 | 6m 45s | 12 | Escalated | ⭐⭐ |
+| ID    | Date   | Duration | Messages | Status    | Rating     |
+| ----- | ------ | -------- | -------- | --------- | ---------- |
+| #1234 | Nov 10 | 4m 32s   | 8        | Resolved  | ⭐⭐⭐⭐⭐ |
+| #1235 | Nov 10 | 2m 15s   | 4        | Resolved  | ⭐⭐⭐⭐   |
+| #1236 | Nov 10 | 6m 45s   | 12       | Escalated | ⭐⭐       |
 
 Click any conversation to view full transcript:
 
@@ -615,6 +649,7 @@ Teach AI specific responses:
 **Dashboard → Customer Support → Training → Custom Responses**
 
 **Add custom Q&A:**
+
 ```
 Question: "Do you offer enterprise plans?"
 
@@ -634,6 +669,7 @@ Improve AI from user feedback:
 1. You receive notification
 2. Review the conversation
 3. Provide correct answer:
+
    ```
    Question: "Can I use Carla with Vue.js?"
    AI said: "Yes, Carla works with all frameworks"
@@ -653,18 +689,21 @@ Test different response styles:
 **Test:** Formal vs Casual tone
 
 **Variant A (Formal):**
+
 ```
 "Thank you for your inquiry. Our premium tier costs $19.99 per month
 and includes AI-powered Auto-Fix and Customer Support features."
 ```
 
 **Variant B (Casual):**
+
 ```
 "Great question! 😊 Premium is $19.99/month and gets you Auto-Fix
 (AI creates PRs to fix bugs) plus this AI chat widget."
 ```
 
 **Dashboard shows:**
+
 - Which variant gets better satisfaction scores
 - Conversion rate by variant
 - User engagement by variant
@@ -678,6 +717,7 @@ Get notified of important chat events:
 **Dashboard → Customer Support → Notifications**
 
 **Notify me when:**
+
 - ☑ User rates conversation poorly (< 3 stars)
 - ☑ User requests human support
 - ☑ AI confidence is low (< 60%)
@@ -685,6 +725,7 @@ Get notified of important chat events:
 - □ Every conversation (not recommended)
 
 **Send to:**
+
 - support@yourcompany.com
 - sales@yourcompany.com
 - Custom email addresses
@@ -694,6 +735,7 @@ Get notified of important chat events:
 Connect with your CRM:
 
 **Supported integrations:**
+
 - Salesforce
 - HubSpot
 - Intercom
@@ -701,12 +743,14 @@ Connect with your CRM:
 - Custom webhook
 
 **What syncs:**
+
 - Conversation transcripts
 - User contact information (if provided)
 - Satisfaction ratings
 - Conversation tags/categories
 
 **Example: HubSpot**
+
 ```
 Conversation with lead who asked about pricing
 → Creates HubSpot contact
@@ -727,6 +771,7 @@ When AI escalates to human:
 4. User continues in same chat window
 
 **Supported platforms:**
+
 - Intercom
 - Zendesk Chat
 - Drift
@@ -738,6 +783,7 @@ When AI escalates to human:
 ### Widget Not Appearing
 
 **Check:**
+
 1. ✅ Premium subscription active
 2. ✅ Customer Support enabled in dashboard
 3. ✅ Carla widget installed (`npx @interworky/carla-nextjs install`)
@@ -748,6 +794,7 @@ When AI escalates to human:
 ### AI Giving Wrong Answers
 
 **Solutions:**
+
 1. **Refresh training data:**
    - Dashboard → Customer Support → Training → Refresh
    - Re-scrape website for updated content
@@ -769,6 +816,7 @@ When AI escalates to human:
 **Usual response time:** 1-3 seconds
 
 **If slower (> 5 seconds):**
+
 1. Check your website/API server performance
 2. Verify Carla's status: [status.interworky.com](https://status.interworky.com)
 3. Try different browser/device
@@ -779,6 +827,7 @@ When AI escalates to human:
 If multiple widgets on your site conflict:
 
 **Option 1: Adjust z-index**
+
 ```css
 /* In your global CSS */
 .carla-widget {
@@ -787,10 +836,12 @@ If multiple widgets on your site conflict:
 ```
 
 **Option 2: Reposition widget**
+
 - Dashboard → Appearance → Position
 - Move to different corner
 
 **Option 3: Disable other widgets**
+
 - Consider consolidating to just Carla
 
 ## Best Practices
@@ -812,6 +863,7 @@ If multiple widgets on your site conflict:
 ### 3. Respond to Low Ratings
 
 When users rate conversations poorly:
+
 1. Read the transcript
 2. Understand what went wrong
 3. Add custom response if needed
@@ -820,6 +872,7 @@ When users rate conversations poorly:
 ### 4. Use Conversation Starters
 
 Guide users to ask better questions:
+
 ```
 "I can help you with:
 - 📦 Product features
@@ -831,12 +884,14 @@ Guide users to ask better questions:
 ### 5. Don't Over-Automate
 
 Balance AI and human support:
+
 - Use AI for common questions
 - Escalate complex issues to humans
 - Always offer human option
 - Monitor escalation rates
 
 **Good balance:**
+
 - 70-80% resolved by AI
 - 20-30% escalated to human
 
@@ -845,6 +900,7 @@ Balance AI and human support:
 ### How does AI learn about my business?
 
 AI learns from:
+
 1. **Website scraping** - Automatic crawling of public pages
 2. **Document uploads** - PDFs, markdown, text files you provide
 3. **Custom Q&A** - Manual question/answer pairs you add
@@ -853,6 +909,7 @@ AI learns from:
 ### Can the widget speak multiple languages?
 
 **Yes!** Widget automatically:
+
 - Detects user's browser language
 - Responds in that language
 - Translates your content if needed
@@ -862,6 +919,7 @@ AI learns from:
 ### Does the widget work on mobile?
 
 **Yes, fully responsive:**
+
 - Adapts to screen size
 - Touch-friendly interface
 - Mobile-optimized layout
@@ -873,28 +931,29 @@ AI learns from:
 
 ```tsx
 // In specific page component
-import { useEffect } from 'react'
+import { useEffect } from 'react';
 
 export default function CheckoutPage() {
   useEffect(() => {
     // Hide widget on this page
     if (window.Carla) {
-      window.Carla.hideWidget()
+      window.Carla.hideWidget();
     }
 
     // Show again when leaving page
     return () => {
       if (window.Carla) {
-        window.Carla.showWidget()
+        window.Carla.showWidget();
       }
-    }
-  }, [])
+    };
+  }, []);
 
-  return <div>Checkout page content</div>
+  return <div>Checkout page content</div>;
 }
 ```
 
 Or configure in dashboard:
+
 - Dashboard → Appearance → Page Rules
 - Add pages to hide widget: `/checkout`, `/admin/*`
 
@@ -908,12 +967,14 @@ Or configure in dashboard:
 ### Can I see who I'm chatting with?
 
 **Limited identification:**
+
 - Anonymous ID (e.g., `user_12345`)
 - Browser/device info
 - Pages visited
 - Geographic location (city level)
 
 **If user provides:**
+
 - Name (if they tell AI)
 - Email (if they share)
 - Account info (if they log in)
@@ -921,12 +982,14 @@ Or configure in dashboard:
 ### What if AI can't answer a question?
 
 AI will:
+
 1. Admit it doesn't know
 2. Offer to escalate to human support
 3. Suggest related resources
 4. Ask clarifying questions
 
 **Example:**
+
 ```
 User: What's your data retention policy for GDPR?
 
@@ -944,14 +1007,14 @@ Would you like me to have someone from our team reach out to you?
 
 Customer Support Widget is included in premium:
 
-| | Free Tier | Premium Tier |
-|---|---|---|
-| **Price** | FREE | **$19.99/month** |
-| **Trial** | N/A | ✅ 7 days free |
-| **AI Customer Support** | ❌ | ✅ Unlimited conversations |
-| **Voice Chat** | ❌ | ✅ Included |
-| **Custom Training** | ❌ | ✅ Unlimited uploads |
-| **Conversation History** | N/A | ✅ Unlimited retention |
+|                          | Free Tier | Premium Tier               |
+| ------------------------ | --------- | -------------------------- |
+| **Price**                | FREE      | **$19.99/month**           |
+| **Trial**                | N/A       | ✅ 7 days free             |
+| **AI Customer Support**  | ❌        | ✅ Unlimited conversations |
+| **Voice Chat**           | ❌        | ✅ Included                |
+| **Custom Training**      | ❌        | ✅ Unlimited uploads       |
+| **Conversation History** | N/A       | ✅ Unlimited retention     |
 
 **[View full pricing comparison →](/guide/pricing)**
 

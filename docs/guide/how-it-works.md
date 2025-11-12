@@ -25,16 +25,14 @@ The CLI scans your API directory using TypeScript's AST (Abstract Syntax Tree) p
 
 ```typescript
 // Your API route: app/api/users/[id]/route.ts
-export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
-  const user = await getUserById(params.id)
-  return Response.json(user)
+export async function GET(request: Request, { params }: { params: { id: string } }) {
+  const user = await getUserById(params.id);
+  return Response.json(user);
 }
 ```
 
 The scanner extracts:
+
 - **HTTP Method**: `GET`
 - **Route Path**: `/api/users/[id]`
 - **Parameters**: `{ id: string }`
@@ -80,24 +78,24 @@ The widget component embeds Carla on your site:
 
 ```tsx
 // Auto-generated component
-'use client'
+'use client';
 
-import { useEffect } from 'react'
+import { useEffect } from 'react';
 
 export default function InterworkyWidget() {
   useEffect(() => {
     const timer = setTimeout(() => {
-      const script = document.createElement('script')
-      script.src = 'https://cdn.interworky.com/widget.js'
-      script.async = true
-      script.setAttribute('data-api-key', process.env.NEXT_PUBLIC_CARLA_API_KEY!)
-      document.body.appendChild(script)
-    }, 1500)
+      const script = document.createElement('script');
+      script.src = 'https://cdn.interworky.com/widget.js';
+      script.async = true;
+      script.setAttribute('data-api-key', process.env.NEXT_PUBLIC_CARLA_API_KEY!);
+      document.body.appendChild(script);
+    }, 1500);
 
-    return () => clearTimeout(timer)
-  }, [])
+    return () => clearTimeout(timer);
+  }, []);
 
-  return null
+  return null;
 }
 ```
 
@@ -121,8 +119,8 @@ The scanner uses TypeScript's compiler API to understand your code:
 ```typescript
 // Input code
 export async function POST(request: Request) {
-  const body = await request.json()
-  const { name, email }: { name: string; email: string } = body
+  const body = await request.json();
+  const { name, email }: { name: string; email: string } = body;
   // ...
 }
 ```
@@ -146,14 +144,14 @@ export async function POST(request: Request) {
 ```typescript
 // Input code
 interface User {
-  id: string
-  name: string
-  email: string
+  id: string;
+  name: string;
+  email: string;
 }
 
 export async function GET(): Promise<Response> {
-  const user: User = await getUser()
-  return Response.json(user)
+  const user: User = await getUser();
+  return Response.json(user);
 }
 ```
 
@@ -221,7 +219,7 @@ You control which tools Carla can access:
 ```json
 {
   "name": "delete_user",
-  "enabled": false  // Disabled for safety
+  "enabled": false // Disabled for safety
 }
 ```
 
@@ -232,9 +230,9 @@ All API calls go through your existing validation:
 ```typescript
 // Your existing middleware still applies
 export async function POST(request: Request) {
-  const auth = request.headers.get('authorization')
+  const auth = request.headers.get('authorization');
   if (!isValidAuth(auth)) {
-    return Response.json({ error: 'Unauthorized' }, { status: 401 })
+    return Response.json({ error: 'Unauthorized' }, { status: 401 });
   }
   // ...
 }
@@ -272,6 +270,7 @@ Tools are automatically detected during development.
 ### Production
 
 1. **Build your app**:
+
    ```bash
    npm run build
    ```

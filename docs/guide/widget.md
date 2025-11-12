@@ -21,6 +21,7 @@ npx @interworky/carla-nextjs install
 ```
 
 This will:
+
 1. Detect your project type (TypeScript/JavaScript)
 2. Create a `InterworkyWidget` component in your `components/` directory
 3. Add the widget to your root layout
@@ -37,6 +38,7 @@ npx @interworky/carla-nextjs interactive
 ```
 
 You'll be prompted for:
+
 - Which pages to display Carla on (all or specific)
 - Load delay timing
 - Landing page mode (minimal UI)
@@ -67,12 +69,14 @@ npx @interworky/carla-nextjs install --pages "/,/docs" --delay 1000 --landing
 ### Installation Process
 
 1. **Finds your layout file:**
+
    ```
    src/app/layout.tsx  (or .js)
    app/layout.tsx      (or .js)
    ```
 
 2. **Creates widget component:**
+
    ```
    src/components/InterworkyWidget.tsx  (or .jsx)
    components/InterworkyWidget.tsx      (or .jsx)
@@ -85,6 +89,7 @@ npx @interworky/carla-nextjs install --pages "/,/docs" --delay 1000 --landing
 ### Generated Widget Component
 
 **TypeScript version:**
+
 ```typescript
 'use client';
 
@@ -113,7 +118,7 @@ export default function InterworkyWidget() {
         }, 100);
       };
 
-      script.onerror = (e) => {
+      script.onerror = e => {
         console.error('Interworky Plugin failed to load', e);
       };
 
@@ -134,29 +139,23 @@ export default function InterworkyWidget() {
 ### Updated Layout File
 
 **Before:**
+
 ```tsx
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body>{children}</body>
     </html>
-  )
+  );
 }
 ```
 
 **After:**
+
 ```tsx
 import InterworkyWidget from '../components/InterworkyWidget';
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body>
@@ -164,7 +163,7 @@ export default function RootLayout({
         {children}
       </body>
     </html>
-  )
+  );
 }
 ```
 
@@ -184,6 +183,7 @@ The `NEXT_PUBLIC_` prefix makes the key available to client-side code. This is s
 :::
 
 **Getting your API key:**
+
 1. Visit [interworky.com](https://interworky.com)
 2. Sign in or create an account
 3. Navigate to **Integrations** in the sidebar
@@ -194,6 +194,7 @@ The `NEXT_PUBLIC_` prefix makes the key available to client-side code. This is s
 Show Carla only on specific pages:
 
 **During installation:**
+
 ```bash
 npx @interworky/carla-nextjs install --pages "/,/products,/pricing"
 ```
@@ -235,6 +236,7 @@ const timeoutId = setTimeout(() => {
 ```
 
 **Recommended delays:**
+
 - **Fast connection:** 1000ms (1 second)
 - **Balanced (default):** 1500ms (1.5 seconds)
 - **Slow connection/heavy page:** 2000-3000ms (2-3 seconds)
@@ -252,6 +254,7 @@ script.dataset.position = 'bottom-50 right-50';
 ```
 
 **Position options:**
+
 - `bottom-right` (default)
 - `bottom-left`
 - `top-right`
@@ -267,6 +270,7 @@ npx @interworky/carla-nextjs install --landing
 ```
 
 Or manually:
+
 ```typescript
 script.dataset.landing = 'true';
 ```
@@ -367,16 +371,22 @@ useEffect(() => {
 The widget uses several optimizations:
 
 1. **Async + Defer:**
+
    ```typescript
    script.async = true;
    script.defer = true;
    ```
+
    Doesn't block page rendering or parsing
 
 2. **Delayed Loading:**
+
    ```typescript
-   setTimeout(() => { /* load widget */ }, 1500)
+   setTimeout(() => {
+     /* load widget */
+   }, 1500);
    ```
+
    Waits for critical content to load first
 
 3. **Lazy Initialization:**
@@ -392,6 +402,7 @@ The widget uses several optimizations:
 ### Bundle Size
 
 The widget script is:
+
 - **Compressed:** ~45KB gzipped
 - **Cached:** Browser caches after first load
 - **CDN-delivered:** Fast global delivery via Google Cloud Storage
@@ -399,6 +410,7 @@ The widget script is:
 ### Impact on Lighthouse Score
 
 Typical impact on Lighthouse metrics:
+
 - **Performance:** -1 to -3 points (minimal)
 - **First Contentful Paint:** No impact (async loading)
 - **Time to Interactive:** +0.1-0.2s (negligible)
@@ -414,14 +426,14 @@ The widget automatically cleans up on page navigation:
 
 ```typescript
 return () => {
-  clearTimeout(timeoutId);              // Cancel delayed loading
-  window.Interworky?.remove?.();        // Remove widget UI
-  document.querySelectorAll('script[data-api-key]')
-    .forEach(s => s.remove());          // Remove script tags
+  clearTimeout(timeoutId); // Cancel delayed loading
+  window.Interworky?.remove?.(); // Remove widget UI
+  document.querySelectorAll('script[data-api-key]').forEach(s => s.remove()); // Remove script tags
 };
 ```
 
 This prevents:
+
 - Memory leaks
 - Duplicate widgets
 - Stale event listeners
@@ -435,12 +447,15 @@ This prevents:
 **Solutions:**
 
 1. **Check API key:**
+
    ```bash
    echo $NEXT_PUBLIC_CARLA_API_KEY
    ```
+
    Make sure it's set in `.env.local`
 
 2. **Restart dev server:**
+
    ```bash
    # Environment changes require restart
    npm run dev
@@ -459,8 +474,11 @@ This prevents:
 **Solutions:**
 
 1. **Reduce delay:**
+
    ```typescript
-   setTimeout(() => { /* load */ }, 1000) // Reduced from 1500ms
+   setTimeout(() => {
+     /* load */
+   }, 1000); // Reduced from 1500ms
    ```
 
 2. **Check network speed:**
@@ -649,13 +667,19 @@ export default function InterworkyWidget() {
 
 ```typescript
 // ✅ Good - Balanced
-setTimeout(() => { /* load */ }, 1500)
+setTimeout(() => {
+  /* load */
+}, 1500);
 
 // ❌ Too fast - May affect page load metrics
-setTimeout(() => { /* load */ }, 100)
+setTimeout(() => {
+  /* load */
+}, 100);
 
 // ❌ Too slow - Poor user experience
-setTimeout(() => { /* load */ }, 5000)
+setTimeout(() => {
+  /* load */
+}, 5000);
 ```
 
 ### 2. Place in Layout, Not Pages
@@ -689,7 +713,9 @@ export default function HomePage() {
 ```typescript
 // ✅ Good - Proper cleanup
 useEffect(() => {
-  const timeoutId = setTimeout(() => { /* load */ }, 1500);
+  const timeoutId = setTimeout(() => {
+    /* load */
+  }, 1500);
 
   return () => {
     clearTimeout(timeoutId);
@@ -699,7 +725,9 @@ useEffect(() => {
 
 // ❌ Bad - No cleanup
 useEffect(() => {
-  setTimeout(() => { /* load */ }, 1500);
+  setTimeout(() => {
+    /* load */
+  }, 1500);
   // Missing cleanup!
 }, [pathname]);
 ```
@@ -708,7 +736,7 @@ useEffect(() => {
 
 ```typescript
 // ✅ Good - Error handling
-script.onerror = (e) => {
+script.onerror = e => {
   console.error('Interworky Plugin failed to load', e);
   // Optionally: report to error tracking service
 };

@@ -117,15 +117,19 @@ No credit card required for the free tier. You get unlimited performance monitor
 ## What's Included?
 
 ### CLI Tool
+
 A powerful command-line interface for scanning, generating, and syncing your API tools.
 
 ### Widget Component
+
 A ready-to-use React component that embeds Carla on your website with zero configuration.
 
 ### MCP Integration
+
 Full Model Context Protocol support for integration with AI editors like Cursor and Claude Desktop.
 
 ### TypeScript Support
+
 First-class TypeScript support with automatic type inference and validation.
 
 ## Get Your API Key
@@ -148,11 +152,13 @@ Join our community to get help, share your projects, and stay updated:
 Carla is a comprehensive platform for Next.js applications with a flexible freemium model:
 
 ### Free Tier (No Credit Card Required)
+
 - **Performance Monitoring** - Track your app's performance in real-time with detailed metrics
 - **Error Detection** - Automatic error capture with full stack traces and device context
 - **Analytics** - Track user behavior, page views, and gather insights (10,000+ device detection)
 
 ### Premium Tier ($19.99/month with 7-Day Free Trial)
+
 - **AI-Powered Auto-Fix** - AI automatically detects errors and creates GitHub PRs with fixes
 - **AI Customer Support Widget** - Embeddable voice & text chat for intelligent customer support
 - **GitHub Integration** - OAuth connection and automated pull request creation

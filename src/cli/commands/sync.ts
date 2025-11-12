@@ -106,9 +106,10 @@ export async function syncCommand(options: SyncOptions): Promise<void> {
 
       logger.section('📝 Next Steps');
       logger.list([
+        'Install the widget: npx carla-nextjs install',
+        'Deploy to staging/production for the plugin to work',
         'Check status: npx carla-nextjs status',
-        'View tools in Interworky dashboard',
-        'Test your assistant with the new tools',
+        'View and manage tools in your Interworky dashboard',
       ]);
     } catch (error) {
       logger.failSpinner('Sync failed');

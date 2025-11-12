@@ -51,20 +51,20 @@ After running `npx @interworky/carla-nextjs scan`, a configuration file is creat
 
 Each tool in the configuration has the following properties:
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `id` | string | Unique identifier for the tool |
-| `name` | string | Display name of the tool |
-| `description` | string | Short description of what the tool does |
-| `instruction` | string | Detailed instructions for when and how to use the tool |
-| `source` | string | File path where the API route is defined |
-| `enabled` | boolean | Whether this tool is active and available to the AI |
-| `method` | string | HTTP method (GET, POST, PUT, DELETE, PATCH) |
-| `endpoint` | string | API endpoint path |
-| `parameters` | object | JSON Schema defining the tool's parameters |
-| `fixed_params` | array | Parameters with fixed values (optional) |
-| `auth` | string | Authentication type (e.g., "bearer") (optional) |
-| `issues` | array | Any detected issues with the tool definition (optional) |
+| Property       | Type    | Description                                             |
+| -------------- | ------- | ------------------------------------------------------- |
+| `id`           | string  | Unique identifier for the tool                          |
+| `name`         | string  | Display name of the tool                                |
+| `description`  | string  | Short description of what the tool does                 |
+| `instruction`  | string  | Detailed instructions for when and how to use the tool  |
+| `source`       | string  | File path where the API route is defined                |
+| `enabled`      | boolean | Whether this tool is active and available to the AI     |
+| `method`       | string  | HTTP method (GET, POST, PUT, DELETE, PATCH)             |
+| `endpoint`     | string  | API endpoint path                                       |
+| `parameters`   | object  | JSON Schema defining the tool's parameters              |
+| `fixed_params` | array   | Parameters with fixed values (optional)                 |
+| `auth`         | string  | Authentication type (e.g., "bearer") (optional)         |
+| `issues`       | array   | Any detected issues with the tool definition (optional) |
 
 ### Enabling/Disabling Tools
 
@@ -74,7 +74,7 @@ You can manually enable or disable tools by editing the `enabled` property:
 {
   "id": "delete_user",
   "name": "delete_user",
-  "enabled": false,  // Disabled - AI won't use this tool
+  "enabled": false // Disabled - AI won't use this tool
   // ... other properties
 }
 ```
@@ -111,6 +111,7 @@ The `parameters` object follows JSON Schema format and defines what inputs the t
 ```
 
 **Supported parameter types:**
+
 - `string` - Text values
 - `number` - Numeric values
 - `boolean` - True/false values
@@ -137,6 +138,7 @@ Fixed parameters are values that are always sent with the request, regardless of
 ```
 
 These are useful for:
+
 - Setting API versions
 - Including authentication tokens
 - Adding default values
@@ -154,12 +156,13 @@ This uploads your tool definitions to make them available to your AI assistant.
 ### Best Practices
 
 ::: tip Configuration Tips
+
 1. **Descriptive Names**: Use clear, action-oriented names (e.g., `create_user`, not `user`)
 2. **Detailed Instructions**: Provide context about when to use each tool
 3. **Security First**: Disable sensitive operations by default
 4. **Keep in Sync**: Run `scan` and `sync` after API changes
 5. **Version Control**: Commit `.carla/tools.json` to track changes over time
-:::
+   :::
 
 ## Widget Customization
 
@@ -176,41 +179,50 @@ Customize the appearance and behavior of your Carla widget through the [Interwor
 Choose how the widget appears on your website:
 
 #### Circle (Classic)
+
 The default circular button view that appears in the corner of your page.
 
 **Best for:**
+
 - Most websites
 - Non-intrusive presence
 - Standard chat interface
 
 **Appearance:**
+
 - Circular floating button
 - Customizable position
 - Expands to chat window on click
 
 #### Agent (Landing Page)
+
 A full character landing page view that showcases your AI assistant prominently.
 
 **Best for:**
+
 - Landing pages
 - Product showcases
 - Marketing pages
 - Dedicated assistant pages
 
 **Appearance:**
+
 - Full-width character display
 - Prominent call-to-action
 - Integrated chat interface
 
 #### Badge
+
 A compact badge positioned in the center-right of the screen.
 
 **Best for:**
+
 - Minimal designs
 - Mobile-optimized sites
 - Subtle assistant presence
 
 **Appearance:**
+
 - Small badge format
 - Center-right positioning
 - Quick access to chat
@@ -220,9 +232,11 @@ A compact badge positioned in the center-right of the screen.
 Configure how your assistant communicates with visitors:
 
 #### Welcoming
+
 Friendly and inviting tone, perfect for customer-facing applications.
 
 **Characteristics:**
+
 - Warm greetings
 - Helpful and patient
 - Conversational style
@@ -230,9 +244,11 @@ Friendly and inviting tone, perfect for customer-facing applications.
 **Example:** "Hi there! I'm here to help you find what you need. What can I assist you with today?"
 
 #### Efficient
+
 Direct and to-the-point, ideal for productivity tools and dashboards.
 
 **Characteristics:**
+
 - Brief responses
 - Task-focused
 - Minimal small talk
@@ -240,9 +256,11 @@ Direct and to-the-point, ideal for productivity tools and dashboards.
 **Example:** "How can I help? I can search products, check orders, or answer questions."
 
 #### Clear Cut
+
 Straightforward and professional, great for business applications.
 
 **Characteristics:**
+
 - Professional tone
 - Clear explanations
 - Structured responses
@@ -250,9 +268,11 @@ Straightforward and professional, great for business applications.
 **Example:** "I can assist with: 1) Product information, 2) Order status, 3) Technical support. Which would you like?"
 
 #### Funny
+
 Light-hearted and entertaining, perfect for casual or creative brands.
 
 **Characteristics:**
+
 - Playful language
 - Occasional humor
 - Engaging personality
@@ -264,16 +284,19 @@ Light-hearted and entertaining, perfect for casual or creative brands.
 Control where the widget appears on your page:
 
 **Available Options:**
+
 - **Bottom Right** (default) - Classic position
 - **Bottom Left** - Alternative corner placement
 - **Custom Position** - Drag to exact pixel coordinates
 
 **Settings:**
+
 - `bottom`: Distance from bottom of page (in pixels)
 - `right`: Distance from right edge (in pixels)
 - `left`: Distance from left edge (in pixels)
 
 **Example:**
+
 ```javascript
 // Widget positioned 20px from bottom, 20px from right
 {
@@ -291,6 +314,7 @@ Position settings automatically adjust for mobile devices to ensure the widget r
 Customize the widget's color scheme to match your brand:
 
 **Customizable Elements:**
+
 - Primary color (button, headers)
 - Secondary color (accents, highlights)
 - Text colors (messages, labels)
@@ -305,18 +329,21 @@ Choose colors that contrast well with your website's design for better visibilit
 Additional customization options available in the dashboard:
 
 **Display Options:**
+
 - Show/hide avatar
 - Enable/disable sound notifications
 - Auto-open on page load
 - Greeting message customization
 
 **Behavior:**
+
 - Response delay timing
 - Typing indicator
 - Message history length
 - Session persistence
 
 **Integration:**
+
 - Custom welcome message
 - Pre-filled conversation starters
 - Contextual triggers (URL-based display)

@@ -118,6 +118,7 @@ node bin/cli.js scan
 - **Use const assertions** where appropriate
 
 Example:
+
 ```typescript
 // Good
 export async function scanRoutes(projectRoot: string): Promise<Tool[]> {
@@ -136,10 +137,10 @@ Always provide meaningful error messages with context:
 
 ```typescript
 // Good - specific error with context
-throw new Error(`Failed to scan route ${filePath}: ${error.message}`)
+throw new Error(`Failed to scan route ${filePath}: ${error.message}`);
 
 // Bad - generic error
-throw new Error('Something went wrong')
+throw new Error('Something went wrong');
 ```
 
 ### CLI Feedback
@@ -147,17 +148,17 @@ throw new Error('Something went wrong')
 Use `ora` and `chalk` for clear user feedback:
 
 ```typescript
-import ora from 'ora'
-import chalk from 'chalk'
+import ora from 'ora';
+import chalk from 'chalk';
 
-const spinner = ora('Processing...').start()
+const spinner = ora('Processing...').start();
 
 try {
   // Do work
-  spinner.succeed(chalk.green('Success!'))
+  spinner.succeed(chalk.green('Success!'));
 } catch (error) {
-  spinner.fail(chalk.red(`Failed: ${error.message}`))
-  process.exit(1)
+  spinner.fail(chalk.red(`Failed: ${error.message}`));
+  process.exit(1);
 }
 ```
 
@@ -172,40 +173,37 @@ try {
 1. **Create command file** in `src/cli/commands/`:
 
 ```typescript
-import { Command } from 'commander'
-import { logger } from '../utils/logger.js'
+import { Command } from 'commander';
+import { logger } from '../utils/logger.js';
 
 export async function myCommand(): Promise<void> {
-  logger.section('🚀 My Command')
+  logger.section('🚀 My Command');
 
   try {
-    logger.startSpinner('Processing...')
+    logger.startSpinner('Processing...');
 
     // Your implementation here
 
-    logger.succeedSpinner('Done!')
+    logger.succeedSpinner('Done!');
   } catch (error) {
-    logger.failSpinner('Failed')
-    logger.error(error instanceof Error ? error.message : String(error))
-    process.exit(1)
+    logger.failSpinner('Failed');
+    logger.error(error instanceof Error ? error.message : String(error));
+    process.exit(1);
   }
 }
 
 export function registerMyCommand(program: Command): void {
-  program
-    .command('mycommand')
-    .description('Description of what this does')
-    .action(myCommand)
+  program.command('mycommand').description('Description of what this does').action(myCommand);
 }
 ```
 
 2. **Register in** `src/cli/index.ts`:
 
 ```typescript
-import { registerMyCommand } from './commands/mycommand.js'
+import { registerMyCommand } from './commands/mycommand.js';
 
 // In the program setup
-registerMyCommand(program)
+registerMyCommand(program);
 ```
 
 ## Submitting Changes
@@ -240,6 +238,7 @@ git commit -m "feat: add my new feature"
 ```
 
 Follow [Conventional Commits](https://www.conventionalcommits.org/) format:
+
 - `feat:` - New feature
 - `fix:` - Bug fix
 - `docs:` - Documentation changes

@@ -28,11 +28,11 @@ npx @interworky/carla-nextjs install [options]
 
 **Options:**
 
-| Option | Type | Description | Default |
-|--------|------|-------------|---------|
-| `--pages` | string | Comma-separated list of pages to show widget on | All pages |
-| `--delay` | number | Delay before loading widget (ms) | 1500 |
-| `--landing` | boolean | Use landing page mode (minimal UI) | false |
+| Option      | Type    | Description                                     | Default   |
+| ----------- | ------- | ----------------------------------------------- | --------- |
+| `--pages`   | string  | Comma-separated list of pages to show widget on | All pages |
+| `--delay`   | number  | Delay before loading widget (ms)                | 1500      |
+| `--landing` | boolean | Use landing page mode (minimal UI)              | false     |
 
 **Examples:**
 
@@ -51,6 +51,7 @@ npx @interworky/carla-nextjs install --landing
 ```
 
 **What it does:**
+
 1. Detects your project type (TypeScript/JavaScript)
 2. Detects your routing (App Router/Pages Router)
 3. Generates the appropriate widget component
@@ -68,11 +69,11 @@ npx @interworky/carla-nextjs scan [options]
 
 **Options:**
 
-| Option | Type | Description | Default |
-|--------|------|-------------|---------|
-| `--path` | string | Directory to scan | `./app/api` or `./pages/api` |
-| `--force` | boolean | Force rescan (ignore cache) | false |
-| `--verbose` | boolean | Show detailed output | false |
+| Option      | Type    | Description                 | Default                      |
+| ----------- | ------- | --------------------------- | ---------------------------- |
+| `--path`    | string  | Directory to scan           | `./app/api` or `./pages/api` |
+| `--force`   | boolean | Force rescan (ignore cache) | false                        |
+| `--verbose` | boolean | Show detailed output        | false                        |
 
 **Examples:**
 
@@ -88,6 +89,7 @@ npx @interworky/carla-nextjs scan --force --verbose
 ```
 
 **What it does:**
+
 1. Analyzes your API routes using TypeScript AST
 2. Extracts route parameters, request bodies, and response types
 3. Generates tool definitions in `.carla/tools.json`
@@ -105,9 +107,9 @@ npx @interworky/carla-nextjs sync [options]
 
 **Options:**
 
-| Option | Type | Description | Default |
-|--------|------|-------------|---------|
-| `--verbose` | boolean | Show detailed output | false |
+| Option      | Type    | Description          | Default |
+| ----------- | ------- | -------------------- | ------- |
+| `--verbose` | boolean | Show detailed output | false   |
 
 **Examples:**
 
@@ -120,6 +122,7 @@ npx @interworky/carla-nextjs sync --verbose
 ```
 
 **What it does:**
+
 1. Reads tools from `.carla/tools.json`
 2. Filters for enabled tools only
 3. Uploads to Interworky via API
@@ -141,9 +144,9 @@ npx @interworky/carla-nextjs status [options]
 
 **Options:**
 
-| Option | Type | Description | Default |
-|--------|------|-------------|---------|
-| `--verbose` | boolean | Show detailed information | false |
+| Option      | Type    | Description               | Default |
+| ----------- | ------- | ------------------------- | ------- |
+| `--verbose` | boolean | Show detailed information | false   |
 
 **Examples:**
 
@@ -156,6 +159,7 @@ npx @interworky/carla-nextjs status --verbose
 ```
 
 **Output includes:**
+
 - Total number of tools found
 - Number of enabled tools
 - Last sync time
@@ -174,9 +178,9 @@ npx @interworky/carla-nextjs fix [options]
 
 **Options:**
 
-| Option | Type | Description | Default |
-|--------|------|-------------|---------|
-| `--verbose` | boolean | Show detailed output | false |
+| Option      | Type    | Description          | Default |
+| ----------- | ------- | -------------------- | ------- |
+| `--verbose` | boolean | Show detailed output | false   |
 
 **Examples:**
 
@@ -189,6 +193,7 @@ npx @interworky/carla-nextjs fix --verbose
 ```
 
 **What it fixes:**
+
 - Missing descriptions
 - Invalid parameter types
 - Malformed tool names
@@ -207,9 +212,9 @@ npx @interworky/carla-nextjs generate-mcp [options]
 
 **Options:**
 
-| Option | Type | Description | Default |
-|--------|------|-------------|---------|
-| `--force` | boolean | Overwrite existing routes | false |
+| Option    | Type    | Description               | Default |
+| --------- | ------- | ------------------------- | ------- |
+| `--force` | boolean | Overwrite existing routes | false   |
 
 **Examples:**
 
@@ -222,6 +227,7 @@ npx @interworky/carla-nextjs generate-mcp --force
 ```
 
 **What it creates:**
+
 - `GET /api/mcp/tools` - Returns tool catalog
 - `POST /api/mcp/call` - Executes tools
 
@@ -240,6 +246,7 @@ npx @interworky/carla-nextjs mcp
 **No options.**
 
 **What it does:**
+
 - Starts a Model Context Protocol server
 - Exposes tools to AI editors (Cursor, Claude Desktop)
 - Enables AI editors to scan, fix, and sync tools
@@ -259,6 +266,7 @@ npx @interworky/carla-nextjs interactive
 **No options.**
 
 **What it does:**
+
 - Guides you through the entire setup process
 - Asks questions about your preferences
 - Runs appropriate commands based on your answers
@@ -272,10 +280,10 @@ Perfect for first-time users!
 
 These options work with all commands:
 
-| Option | Description |
-|--------|-------------|
-| `-h, --help` | Show help for a command |
-| `-v, --version` | Show version number |
+| Option          | Description             |
+| --------------- | ----------------------- |
+| `-h, --help`    | Show help for a command |
+| `-v, --version` | Show version number     |
 
 **Examples:**
 
@@ -334,13 +342,13 @@ npx @interworky/carla-nextjs sync
 
 ## Exit Codes
 
-| Code | Meaning |
-|------|---------|
-| 0 | Success |
-| 1 | General error |
-| 2 | Validation error |
-| 3 | Network error |
-| 4 | File system error |
+| Code | Meaning           |
+| ---- | ----------------- |
+| 0    | Success           |
+| 1    | General error     |
+| 2    | Validation error  |
+| 3    | Network error     |
+| 4    | File system error |
 
 ## Environment Variables
 

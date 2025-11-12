@@ -52,6 +52,7 @@ Carla offers a **freemium model** designed to get you started quickly with essen
 The free tier provides **essential monitoring and analytics** for your Next.js application at no cost:
 
 #### Performance Monitoring
+
 - Real-time performance tracking
 - Page load times
 - API response times
@@ -59,6 +60,7 @@ The free tier provides **essential monitoring and analytics** for your Next.js a
 - Historical performance data
 
 #### Error Detection & Tracking
+
 - Automatic error capture
 - Stack traces with source mapping
 - Error frequency and trends
@@ -66,6 +68,7 @@ The free tier provides **essential monitoring and analytics** for your Next.js a
 - Session replay capabilities
 
 #### Analytics & Insights
+
 - Visitor tracking and demographics
 - Page view analytics
 - User journey mapping
@@ -73,6 +76,7 @@ The free tier provides **essential monitoring and analytics** for your Next.js a
 - Geographic data
 
 #### Dashboard Access
+
 - Comprehensive monitoring dashboard
 - Real-time alerts and notifications
 - Custom date range filtering
@@ -120,6 +124,7 @@ Try all premium features completely free for 7 days:
 Automatically detect errors in your Next.js application and create GitHub pull requests with suggested fixes:
 
 **How It Works:**
+
 1. Carla monitors your application for errors
 2. When an error is detected, AI analyzes the stack trace and codebase
 3. Auto-Fix generates a code fix addressing the root cause
@@ -127,12 +132,14 @@ Automatically detect errors in your Next.js application and create GitHub pull r
 5. You review and merge the PR (or request changes)
 
 **Benefits:**
+
 - Reduce time spent debugging
 - Get fixes even when you're offline
 - Learn from AI-generated solutions
 - Maintain code quality with PR review process
 
 **Requirements:**
+
 - Premium subscription (or active trial)
 - GitHub repository connected via OAuth
 - Next.js 14+ application
@@ -144,6 +151,7 @@ Automatically detect errors in your Next.js application and create GitHub pull r
 Embed an intelligent AI-powered chat widget on your website to handle customer inquiries:
 
 **Features:**
+
 - Voice and text chat support
 - Trained on your website content
 - Intelligent response generation
@@ -152,6 +160,7 @@ Embed an intelligent AI-powered chat widget on your website to handle customer i
 - Real-time conversation handling
 
 **Use Cases:**
+
 - Answer common customer questions
 - Provide product information
 - Guide users through onboarding
@@ -159,6 +168,7 @@ Embed an intelligent AI-powered chat widget on your website to handle customer i
 - Escalate complex issues to human support
 
 **Setup:**
+
 ```bash
 # Install the widget component
 npx @interworky/carla-nextjs install
@@ -214,12 +224,14 @@ The Model Context Protocol server enables AI coding assistants to discover and u
 ### After Trial
 
 **If You Keep Subscription:**
+
 - Automatic charge of $19.99/month
 - Premium features remain active
 - Month-to-month billing (no long-term contract)
 - Cancel anytime
 
 **If You Cancel:**
+
 - Premium features disabled (Auto-Fix, Customer Support)
 - Free tier features remain active
 - Historical data preserved
@@ -276,6 +288,7 @@ If you're not satisfied within the first 30 days of paid service, contact suppor
 ### What payment methods do you accept?
 
 We use **Stripe** for secure payment processing:
+
 - Credit cards (Visa, Mastercard, Amex, Discover)
 - Debit cards
 - Apple Pay / Google Pay
@@ -288,44 +301,48 @@ Yes. All payments are processed through **Stripe**, a PCI-compliant payment proc
 ### What if my trial expires but I'm not ready to decide?
 
 If your trial expires and you're not ready to commit, you can:
+
 1. Let it expire - revert to free tier with no charge
 2. Contact support for a trial extension (case-by-case basis)
 3. Re-start a trial later (eligibility varies)
 
 ## Feature Comparison Matrix
 
-| Feature | Free Tier | Premium Tier |
-|---------|-----------|--------------|
-| **Performance Monitoring** | ✅ Unlimited | ✅ Included |
-| **Error Detection & Tracking** | ✅ Unlimited | ✅ Included |
-| **Analytics & Insights** | ✅ Unlimited | ✅ Included |
-| **10,000+ Device Awareness** | ✅ Yes | ✅ Yes |
-| **Dashboard Access** | ✅ Full Access | ✅ Full Access |
-| **Real-time Alerts** | ✅ Yes | ✅ Yes |
-| **Stack Traces** | ✅ Yes | ✅ Yes |
-| **Historical Data** | ✅ 90 days | ✅ Unlimited |
-| **GitHub OAuth Connection** | ✅ Yes | ✅ Yes |
-| **AI-Powered Auto-Fix** | ❌ No | ✅ Yes |
-| **Auto PR Creation** | ❌ No | ✅ Yes |
-| **AI Customer Support Widget** | ❌ No | ✅ Yes |
-| **Voice Chat Support** | ❌ No | ✅ Yes |
-| **MCP Server** | ⚠️ Limited | ✅ Full |
-| **Priority Support** | ❌ No | ✅ Yes |
-| **Price** | **FREE** | **$19.99/month** |
-| **Credit Card Required** | ❌ No | ✅ Yes |
-| **Free Trial Available** | N/A | ✅ 7 days |
+| Feature                        | Free Tier      | Premium Tier     |
+| ------------------------------ | -------------- | ---------------- |
+| **Performance Monitoring**     | ✅ Unlimited   | ✅ Included      |
+| **Error Detection & Tracking** | ✅ Unlimited   | ✅ Included      |
+| **Analytics & Insights**       | ✅ Unlimited   | ✅ Included      |
+| **10,000+ Device Awareness**   | ✅ Yes         | ✅ Yes           |
+| **Dashboard Access**           | ✅ Full Access | ✅ Full Access   |
+| **Real-time Alerts**           | ✅ Yes         | ✅ Yes           |
+| **Stack Traces**               | ✅ Yes         | ✅ Yes           |
+| **Historical Data**            | ✅ 90 days     | ✅ Unlimited     |
+| **GitHub OAuth Connection**    | ✅ Yes         | ✅ Yes           |
+| **AI-Powered Auto-Fix**        | ❌ No          | ✅ Yes           |
+| **Auto PR Creation**           | ❌ No          | ✅ Yes           |
+| **AI Customer Support Widget** | ❌ No          | ✅ Yes           |
+| **Voice Chat Support**         | ❌ No          | ✅ Yes           |
+| **MCP Server**                 | ⚠️ Limited     | ✅ Full          |
+| **Priority Support**           | ❌ No          | ✅ Yes           |
+| **Price**                      | **FREE**       | **$19.99/month** |
+| **Credit Card Required**       | ❌ No          | ✅ Yes           |
+| **Free Trial Available**       | N/A            | ✅ 7 days        |
 
 ## Next Steps
 
 ### Start with Free Tier
+
 ```bash
 npx @interworky/carla-nextjs init
 ```
 
 ### Try Premium Features
+
 Visit your [Dashboard Settings](https://interworky.com/dashboard/settings?tab=billing) to start your 7-day free trial.
 
 ### Questions?
+
 - 📧 Email: support@interworky.com
 - 💬 Discord: [Join our community](https://discord.com/invite/YHmsekzMV5)
 - 📖 Documentation: [Full Guides](https://carla.interworky.com)
