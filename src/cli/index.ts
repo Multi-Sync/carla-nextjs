@@ -67,7 +67,7 @@ const args = process.argv.slice(2);
 if (args.length > 0 && args[0].includes(' ')) {
   console.log(chalk.yellow('ℹ️  Natural language mode coming soon!'));
   console.log(chalk.gray(`    You said: "${args[0]}"`));
-  console.log(chalk.gray('    For now, use: npx carla-nextjs scan'));
+  console.log(chalk.gray('    For now, use: npx @interworky/carla-nextjs scan'));
   process.exit(0);
 }
 

@@ -83,10 +83,10 @@ export async function initCommand(options: InitOptions): Promise<void> {
 
       logger.section('📝 Next Steps');
       logger.list([
-        'Scan your API routes: npx carla-nextjs scan',
+        'Scan your API routes: npx @interworky/carla-nextjs scan',
         'Review generated tools: cat carla-tools.json',
-        'Sync to Interworky: npx carla-nextjs sync',
-        'Install Carla widget: npx carla-nextjs install',
+        'Sync to Interworky: npx @interworky/carla-nextjs sync',
+        'Install Carla widget: npx @interworky/carla-nextjs install',
       ]);
     } catch (error) {
       logger.failSpinner('Initialization failed');

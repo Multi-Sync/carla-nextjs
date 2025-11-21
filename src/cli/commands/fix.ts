@@ -21,7 +21,7 @@ export async function fixCommand(options: FixOptions): Promise<void> {
     // Check if tools exist
     const toolsConfig = configManager.loadTools();
     if (!toolsConfig) {
-      logger.error('No tools found. Run: npx carla-nextjs scan');
+      logger.error('No tools found. Run: npx @interworky/carla-nextjs scan');
       process.exit(1);
     }
 
@@ -75,8 +75,8 @@ export async function fixCommand(options: FixOptions): Promise<void> {
       logger.section('📝 Next Steps');
       logger.list([
         'Review changes: git diff carla-tools.json',
-        'Sync to Interworky: npx carla-nextjs sync',
-        'Check status: npx carla-nextjs status',
+        'Sync to Interworky: npx @interworky/carla-nextjs sync',
+        'Check status: npx @interworky/carla-nextjs status',
       ]);
     } else {
       logger.section('📝 Next Steps');

@@ -63,7 +63,7 @@ This project adheres to the [Contributor Covenant Code of Conduct](./CODE_OF_CON
    ```bash
    cd /path/to/your/nextjs/project
    npm link carla-nextjs
-   npx carla-nextjs --help
+   npx @interworky/carla-nextjs --help
    ```
 
 ## 🛠️ Making Changes
@@ -236,7 +236,7 @@ Describe your proposed solution.
 
 **Example Usage**
 \`\`\`bash
-npx carla-nextjs your-feature --example
+npx @interworky/carla-nextjs your-feature --example
 \`\`\`
 
 **Alternatives Considered**

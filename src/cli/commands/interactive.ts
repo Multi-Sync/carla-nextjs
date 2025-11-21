@@ -161,10 +161,10 @@ export async function interactiveCommand(): Promise<void> {
 
     logger.section('📝 Quick Reference');
     logger.list([
-      'Check status: npx carla-nextjs status',
-      'Rescan APIs: npx carla-nextjs scan',
-      'Sync changes: npx carla-nextjs sync',
-      'Fix issues: npx carla-nextjs fix',
+      'Check status: npx @interworky/carla-nextjs status',
+      'Rescan APIs: npx @interworky/carla-nextjs scan',
+      'Sync changes: npx @interworky/carla-nextjs sync',
+      'Fix issues: npx @interworky/carla-nextjs fix',
     ]);
   } catch (error) {
     logger.stopSpinner();

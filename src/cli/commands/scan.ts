@@ -23,7 +23,7 @@ export async function scanCommand(options: ScanOptions): Promise<void> {
     // Check if tools already exist
     if (!options.force && configManager.hasTools()) {
       logger.warn('Tools already exist. Use --force to rescan.');
-      logger.info('Run: npx carla-nextjs scan --force');
+      logger.info('Run: npx @interworky/carla-nextjs scan --force');
       return;
     }
 
@@ -93,8 +93,8 @@ export async function scanCommand(options: ScanOptions): Promise<void> {
     logger.section('✅ Next Steps');
     logger.list([
       'Review tools: cat carla-tools.json',
-      'Initialize: npx carla-nextjs init (if not done)',
-      'Sync to Interworky: npx carla-nextjs sync',
+      'Initialize: npx @interworky/carla-nextjs init (if not done)',
+      'Sync to Interworky: npx @interworky/carla-nextjs sync',
     ]);
 
     // Output JSON if requested

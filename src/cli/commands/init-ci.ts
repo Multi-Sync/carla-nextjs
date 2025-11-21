@@ -71,13 +71,13 @@ jobs:
         run: npm ci
 
       - name: Run Carla Doctor (Hydration & Error Check)
-        run: npx carla-nextjs doctor --check
+        run: npx @interworky/carla-nextjs doctor --check
 
       - name: Run Carla Clean (Unused Code Check)
-        run: npx carla-nextjs clean --check
+        run: npx @interworky/carla-nextjs clean --check
 
       - name: Run Carla Verify (Broken Links)
-        run: npx carla-nextjs verify --build
+        run: npx @interworky/carla-nextjs verify --build
         continue-on-error: true # Don't fail the build on broken links
 
       - name: Build Next.js
@@ -145,7 +145,7 @@ jobs:
         run: npm ci
 
       - name: Run Carla Doctor (Critical Errors Only)
-        run: npx carla-nextjs doctor --check --type hydration
+        run: npx @interworky/carla-nextjs doctor --check --type hydration
 
       - name: Build Check
         run: npm run build
@@ -161,7 +161,7 @@ const PRE_COMMIT_HOOK = `#!/usr/bin/env sh
 echo "🤖 Carla is checking your code before commit..."
 
 # Run doctor check
-npx carla-nextjs doctor --check
+npx @interworky/carla-nextjs doctor --check
 
 echo "✅ Carla check complete!"
 `;
@@ -172,8 +172,8 @@ const PRE_PUSH_HOOK = `#!/usr/bin/env sh
 echo "🤖 Running full Carla check before push..."
 
 # Run all checks
-npx carla-nextjs doctor --check
-npx carla-nextjs clean --check
+npx @interworky/carla-nextjs doctor --check
+npx @interworky/carla-nextjs clean --check
 
 echo "✅ All checks passed!"
 `;
@@ -485,7 +485,7 @@ export async function initCICommand(options: InitCIOptions): Promise<void> {
     logger.list(steps);
 
     logger.section('🎯 How It Works');
-    logger.info('Pre-commit hook: Runs `carla doctor --check` before each commit');
+    logger.info('Pre-commit hook: Runs `@interworky/carla-nextjs doctor --check` before each commit');
     logger.info('Pre-push hook: Runs full checks before pushing');
     if (strategy !== 'hooks-only') {
       logger.info('GitHub Actions: Runs on every Pull Request to prevent bad code');

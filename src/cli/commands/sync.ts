@@ -26,7 +26,7 @@ export async function syncCommand(_options: SyncOptions): Promise<void> {
     // Check if tools exist
     const toolsConfig = configManager.loadTools();
     if (!toolsConfig) {
-      logger.error('No tools found. Run: npx carla-nextjs scan');
+      logger.error('No tools found. Run: npx @interworky/carla-nextjs scan');
       process.exit(1);
     }
 
@@ -77,7 +77,7 @@ export async function syncCommand(_options: SyncOptions): Promise<void> {
 
       logger.section('📝 Next Steps');
       logger.list([
-        'Check status: npx carla-nextjs status',
+        'Check status: npx @interworky/carla-nextjs status',
         'View tools in Interworky dashboard',
         'Test your assistant with the new tools',
       ]);

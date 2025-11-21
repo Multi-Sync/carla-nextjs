@@ -23,7 +23,7 @@ export async function generateMCPCommand(options: GenerateMCPOptions): Promise<v
     // Check if tools exist
     const toolsConfig = configManager.loadTools();
     if (!toolsConfig) {
-      logger.error('No tools found. Run: npx carla-nextjs scan');
+      logger.error('No tools found. Run: npx @interworky/carla-nextjs scan');
       process.exit(1);
     }
 

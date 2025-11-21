@@ -40,7 +40,7 @@ Then use via npm scripts or directly:
 ```bash
 npm run carla-nextjs scan
 # or
-npx carla-nextjs scan
+npx @interworky/carla-nextjs scan
 ```
 
 ### Global Installation

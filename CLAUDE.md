@@ -113,16 +113,16 @@ Carla v2.0 introduces powerful QA and cleanup tools designed for "vibe coders" u
 **Usage:**
 ```bash
 # Check and report issues
-npx carla-nextjs doctor
+npx @interworky/carla-nextjs doctor
 
 # Check only (CI mode) - exit 1 if issues found
-npx carla-nextjs doctor --check
+npx @interworky/carla-nextjs doctor --check
 
 # Check specific issue type
-npx carla-nextjs doctor --type hydration
-npx carla-nextjs doctor --type types
-npx carla-nextjs doctor --type hardcoded
-npx carla-nextjs doctor --type unused
+npx @interworky/carla-nextjs doctor --type hydration
+npx @interworky/carla-nextjs doctor --type types
+npx @interworky/carla-nextjs doctor --type hardcoded
+npx @interworky/carla-nextjs doctor --type unused
 ```
 
 **How it works:**
@@ -146,19 +146,19 @@ npx carla-nextjs doctor --type unused
 **Usage:**
 ```bash
 # Interactive mode - prompts before deleting
-npx carla-nextjs clean
+npx @interworky/carla-nextjs clean
 
 # Check only (CI mode) - exit 1 if issues found
-npx carla-nextjs clean --check
+npx @interworky/carla-nextjs clean --check
 
 # Clean specific type only
-npx carla-nextjs clean --type files
-npx carla-nextjs clean --type exports
-npx carla-nextjs clean --type deps
-npx carla-nextjs clean --type duplicates
+npx @interworky/carla-nextjs clean --type files
+npx @interworky/carla-nextjs clean --type exports
+npx @interworky/carla-nextjs clean --type deps
+npx @interworky/carla-nextjs clean --type duplicates
 
 # Auto-delete without prompts (dangerous!)
-npx carla-nextjs clean --auto-fix
+npx @interworky/carla-nextjs clean --auto-fix
 ```
 
 **How it works:**
@@ -184,16 +184,16 @@ npx carla-nextjs clean --auto-fix
 **Usage:**
 ```bash
 # Basic link check (auto-starts dev server)
-npx carla-nextjs verify
+npx @interworky/carla-nextjs verify
 
 # Build before checking
-npx carla-nextjs verify --build
+npx @interworky/carla-nextjs verify --build
 
 # Custom port
-npx carla-nextjs verify --port 3001
+npx @interworky/carla-nextjs verify --port 3001
 
 # Auto-generate redirects for broken links
-npx carla-nextjs verify --fix
+npx @interworky/carla-nextjs verify --fix
 ```
 
 **How it works:**
@@ -222,22 +222,22 @@ npx carla-nextjs verify --fix
 **Usage:**
 ```bash
 # Interactive mode - choose strategy
-npx carla-nextjs init-ci
+npx @interworky/carla-nextjs init-ci
 
 # Full QA strategy (GitHub Actions + hooks + all checks)
-npx carla-nextjs init-ci --strategy full
+npx @interworky/carla-nextjs init-ci --strategy full
 
 # Quick check (GitHub Actions with essential checks only)
-npx carla-nextjs init-ci --strategy quick
+npx @interworky/carla-nextjs init-ci --strategy quick
 
 # Hooks only (no GitHub Actions)
-npx carla-nextjs init-ci --strategy hooks-only
+npx @interworky/carla-nextjs init-ci --strategy hooks-only
 
 # Force overwrite existing configuration
-npx carla-nextjs init-ci --force
+npx @interworky/carla-nextjs init-ci --force
 
 # Skip pre-commit hooks installation
-npx carla-nextjs init-ci --skip-hooks
+npx @interworky/carla-nextjs init-ci --skip-hooks
 ```
 
 **What it installs:**

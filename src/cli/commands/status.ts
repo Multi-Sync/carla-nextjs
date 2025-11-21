@@ -46,7 +46,7 @@ export async function statusCommand(options: StatusOptions): Promise<void> {
     logger.section('📝 Local Tools');
     if (!toolsConfig) {
       logger.warn('No tools scanned');
-      logger.info('Run: npx carla-nextjs scan');
+      logger.info('Run: npx @interworky/carla-nextjs scan');
     } else {
       const enabledCount = toolsConfig.tools.filter((t: Tool) => t.enabled).length;
       const disabledCount = toolsConfig.tools.length - enabledCount;
@@ -82,7 +82,7 @@ export async function statusCommand(options: StatusOptions): Promise<void> {
 
     if (!lastSync) {
       logger.warn('Never synced');
-      logger.info('Run: npx carla-nextjs sync');
+      logger.info('Run: npx @interworky/carla-nextjs sync');
     } else {
       logger.success(`Last synced: ${new Date(lastSync).toLocaleString()}`);
 
@@ -131,15 +131,15 @@ export async function statusCommand(options: StatusOptions): Promise<void> {
     const suggestions: string[] = [];
 
     if (!toolsConfig) {
-      suggestions.push('Scan API routes: npx carla-nextjs scan');
+      suggestions.push('Scan API routes: npx @interworky/carla-nextjs scan');
     }
     if (!lastSync && toolsConfig) {
-      suggestions.push('Sync tools: npx carla-nextjs sync');
+      suggestions.push('Sync tools: npx @interworky/carla-nextjs sync');
     }
     if (lastSync && toolsConfig) {
       const hoursSinceSync = (Date.now() - new Date(lastSync).getTime()) / (1000 * 60 * 60);
       if (hoursSinceSync > 24) {
-        suggestions.push('Sync tools again: npx carla-nextjs sync');
+        suggestions.push('Sync tools again: npx @interworky/carla-nextjs sync');
       }
     }
     if (toolsConfig) {
@@ -147,7 +147,7 @@ export async function statusCommand(options: StatusOptions): Promise<void> {
         (t: Tool) => t.issues && t.issues.length > 0
       );
       if (toolsWithIssues.length > 0) {
-        suggestions.push('Fix tool issues: npx carla-nextjs fix');
+        suggestions.push('Fix tool issues: npx @interworky/carla-nextjs fix');
       }
     }
 
