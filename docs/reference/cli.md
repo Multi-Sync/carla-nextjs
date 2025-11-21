@@ -276,6 +276,264 @@ Perfect for first-time users!
 
 ---
 
+### `doctor` 🆕
+
+AI-powered detection and fixing of Next.js errors.
+
+```bash
+npx @interworky/carla-nextjs doctor [options]
+```
+
+**Options:**
+
+| Option        | Type    | Description                                | Default |
+| ------------- | ------- | ------------------------------------------ | ------- |
+| `--check`     | boolean | CI mode - check only, exit 1 if issues    | false   |
+| `--fix-safe`  | boolean | Auto-fix without prompts (for pre-commit)  | false   |
+| `--type`      | string  | Check specific type (see below)            | all     |
+
+**Type values:**
+- `hydration` - Hydration mismatches only
+- `types` - Missing TypeScript types
+- `hardcoded` - Hardcoded values that should be env vars
+- `unused` - Unused code detection
+- `all` - All checks (default)
+
+**Examples:**
+
+```bash
+# Interactive mode - prompts for each fix
+npx @interworky/carla-nextjs doctor
+
+# CI mode - check only, exit 1 if issues found
+npx @interworky/carla-nextjs doctor --check
+
+# Auto-fix mode (for pre-commit hooks)
+npx @interworky/carla-nextjs doctor --fix-safe
+
+# Check only hydration errors
+npx @interworky/carla-nextjs doctor --type hydration
+```
+
+**What it detects:**
+
+- **Hydration mismatches** - Server/client HTML differences
+- **Server/Client errors** - Using `window`, `document` in server components
+- **Missing types** - Usage of `any` type
+- **Hardcoded values** - API URLs that should be environment variables
+- **Unused code** - Files and exports not reachable from any entry point
+- **Invalid nesting** - HTML violations like `<div>` inside `<p>`
+
+**How it works:**
+
+1. Runs Next.js build to detect runtime errors
+2. Performs AST-based static analysis
+3. Uses reachability analysis to find unused code
+4. Gathers context (parent components, layouts, imports)
+5. Generates AI-powered fixes using OpenAI GPT-4
+6. Applies fixes interactively or automatically
+
+::: tip
+Set `OPENAI_API_KEY` environment variable for AI-powered fix generation.
+:::
+
+---
+
+### `clean` 🆕
+
+Find and remove unused code, exports, dependencies, and duplicate components.
+
+```bash
+npx @interworky/carla-nextjs clean [options]
+```
+
+**Options:**
+
+| Option        | Type    | Description                              | Default |
+| ------------- | ------- | ---------------------------------------- | ------- |
+| `--check`     | boolean | CI mode - check only, exit 1 if issues  | false   |
+| `--auto-fix`  | boolean | Auto-delete without prompts (dangerous!) | false   |
+| `--type`      | string  | Clean specific type (see below)          | all     |
+| `--git-only`  | boolean | Only check git-tracked files             | false   |
+
+**Type values:**
+- `files` - Unused files only
+- `exports` - Unused exports only
+- `deps` - Unused dependencies only
+- `duplicates` - Duplicate components only
+- `all` - All types (default)
+
+**Examples:**
+
+```bash
+# Interactive mode - prompts before deleting
+npx @interworky/carla-nextjs clean
+
+# CI mode - check only
+npx @interworky/carla-nextjs clean --check
+
+# Clean only unused files
+npx @interworky/carla-nextjs clean --type files
+
+# Clean only duplicate components
+npx @interworky/carla-nextjs clean --type duplicates
+```
+
+**What it finds:**
+
+- **Unused files** - Not reachable from any Next.js entry point
+- **Unused exports** - Functions/constants/classes never imported
+- **Unused assets** - Images/fonts in `/public` not referenced in code
+- **Duplicate components** - Components with identical JSX structure
+- **Unused dependencies** - npm packages not imported anywhere
+
+**How it works:**
+
+1. Builds reachability tree from Next.js entry points
+2. Follows all imports recursively
+3. Identifies unreachable files and assets
+4. Extracts exports and checks if they're imported
+5. Uses structural hashing to detect duplicates
+6. Provides interactive cleanup with diff previews
+
+::: warning
+Review changes carefully before confirming deletion. Use `--check` mode in CI to prevent accidental deletions.
+:::
+
+---
+
+### `verify` 🆕
+
+Scan for broken links (404s) and auto-generate redirects.
+
+```bash
+npx @interworky/carla-nextjs verify [options]
+```
+
+**Options:**
+
+| Option    | Type    | Description                            | Default              |
+| --------- | ------- | -------------------------------------- | -------------------- |
+| `--url`   | string  | Base URL to check                      | http://localhost:3000 |
+| `--port`  | number  | Port for dev server                    | 3000                 |
+| `--build` | boolean | Build before checking                  | false                |
+| `--fix`   | boolean | Auto-generate redirects for broken links | false              |
+
+**Examples:**
+
+```bash
+# Basic link check (auto-starts dev server)
+npx @interworky/carla-nextjs verify
+
+# Build before checking
+npx @interworky/carla-nextjs verify --build
+
+# Check with custom port
+npx @interworky/carla-nextjs verify --port 3001
+
+# Auto-generate redirects
+npx @interworky/carla-nextjs verify --fix
+```
+
+**What it does:**
+
+1. Discovers all Next.js routes (App Router and Pages Router)
+2. Auto-starts dev server if not running
+3. Crawls entire site for broken internal links
+4. For each broken link, suggests fixes using:
+   - Exact match (case-insensitive)
+   - Trailing slash differences
+   - Partial matches
+   - Fuzzy matching (Levenshtein distance)
+5. Optionally generates redirect configuration for `next.config.js`
+6. Auto-stops dev server when done
+
+**Confidence levels:**
+
+- 🎯 **High** - Exact match or trailing slash difference
+- 🤔 **Medium** - Partial match or close fuzzy match
+- ⚠️ **Low** - Distant fuzzy match (not recommended for auto-fix)
+
+::: tip
+The `--fix` option will only generate redirects for high and medium confidence suggestions.
+:::
+
+---
+
+### `init-ci` 🆕
+
+Setup CI/CD with GitHub Actions and pre-commit hooks.
+
+```bash
+npx @interworky/carla-nextjs init-ci [options]
+```
+
+**Options:**
+
+| Option          | Type    | Description                              | Default |
+| --------------- | ------- | ---------------------------------------- | ------- |
+| `--strategy`    | string  | CI strategy (see below)                  | full    |
+| `--force`       | boolean | Overwrite existing configuration         | false   |
+| `--skip-hooks`  | boolean | Skip pre-commit hooks installation       | false   |
+
+**Strategy values:**
+- `full` - GitHub Actions + Pre-commit hooks + All checks (recommended)
+- `quick` - GitHub Actions with essential checks only
+- `hooks-only` - Pre-commit hooks only (no GitHub Actions)
+
+**Examples:**
+
+```bash
+# Interactive mode - choose strategy
+npx @interworky/carla-nextjs init-ci
+
+# Full QA strategy
+npx @interworky/carla-nextjs init-ci --strategy full
+
+# Quick check strategy
+npx @interworky/carla-nextjs init-ci --strategy quick
+
+# Hooks only (no GitHub Actions)
+npx @interworky/carla-nextjs init-ci --strategy hooks-only
+
+# Force overwrite
+npx @interworky/carla-nextjs init-ci --force
+```
+
+**What it installs:**
+
+**GitHub Actions workflow** (`.github/workflows/carla-qa-*.yml`):
+- Runs on Pull Requests to main/master/develop
+- Executes `doctor`, `clean`, `verify` commands
+- Builds Next.js and runs tests
+- Comments on PR with results
+
+**Pre-commit hook** (`.husky/pre-commit`):
+- Runs `carla doctor --fix-safe` before each commit
+- Auto-adds fixed files to commit
+
+**Pre-push hook** (`.husky/pre-push`):
+- Runs `carla doctor --check` and `carla clean --check`
+- Prevents pushing code with issues
+
+**Quality tracking** (`.carla/metrics.json`):
+- Baseline metrics for trend tracking
+- Health score calculation
+- History of issues found/fixed
+
+::: warning GitHub Secrets Required
+You need to add `OPENAI_API_KEY` as a GitHub repository secret for AI-powered fixes to work in CI.
+
+**Steps:**
+1. Go to GitHub repo → Settings → Secrets → Actions
+2. Click "New repository secret"
+3. Name: `OPENAI_API_KEY`
+4. Value: Your OpenAI API key (sk-...)
+5. Click "Add secret"
+:::
+
+---
+
 ## Global Options
 
 These options work with all commands:
@@ -340,6 +598,51 @@ npx @interworky/carla-nextjs scan --force
 npx @interworky/carla-nextjs sync
 ```
 
+### QA & Cleanup Workflow 🆕
+
+```bash
+# 1. Check for errors
+npx @interworky/carla-nextjs doctor
+
+# 2. Clean up unused code
+npx @interworky/carla-nextjs clean
+
+# 3. Verify links
+npx @interworky/carla-nextjs verify
+
+# 4. Commit changes
+git add .
+git commit -m "chore: fix issues and clean up code"
+```
+
+### Setting Up CI/CD 🆕
+
+```bash
+# 1. Initialize CI/CD
+npx @interworky/carla-nextjs init-ci --strategy full
+
+# 2. Add GitHub secret (OPENAI_API_KEY)
+# Do this in GitHub repo settings
+
+# 3. Commit and push
+git add .
+git commit -m "chore: add Carla CI/CD"
+git push
+
+# 4. Create a Pull Request to test
+```
+
+### Pre-Release Quality Check 🆕
+
+```bash
+# Run all checks before releasing
+npx @interworky/carla-nextjs doctor --check
+npx @interworky/carla-nextjs clean --check
+npx @interworky/carla-nextjs verify --build
+
+# If all pass, you're good to go!
+```
+
 ## Exit Codes
 
 | Code | Meaning           |
@@ -352,10 +655,20 @@ npx @interworky/carla-nextjs sync
 
 ## Environment Variables
 
-Commands that interact with Interworky require:
+**Commands that interact with Interworky require:**
 
 ```bash
 NEXT_PUBLIC_CARLA_API_KEY="your-api-key"
 ```
+
+**Commands that use AI-powered features require:**
+
+```bash
+OPENAI_API_KEY="sk-..."
+```
+
+This is needed for:
+- `doctor` command (AI-powered fix generation)
+- `init-ci` command (when using GitHub Actions)
 
 See [Environment Variables](/reference/env-variables) for all options.

@@ -35,14 +35,21 @@ carla-nextjs/
 
 ### CLI Commands
 
-Each command is in `src/cli/<command>.ts`:
+Each command is in `src/cli/commands/<command>.ts`:
 
+**Original Commands (v1.x):**
 - `scan.ts` - Scans Next.js project for API routes
 - `sync.ts` - Syncs tools to Interworky API
 - `install.ts` - Installs widget component
 - `mcp.ts` - Starts MCP server
 - `status.ts` - Shows current status
 - `fix.ts` - Auto-fixes common issues
+
+**New QA Commands (v2.0):**
+- `doctor.ts` - Detection of hydration errors, unused code, type issues, and antipatterns
+- `clean.ts` - Find and remove unused files, exports, dependencies, and duplicates
+- `verify.ts` - Scan for broken links and auto-generate redirects
+- `init-ci.ts` - Setup CI/CD with GitHub Actions and pre-commit hooks
 
 ### Route Scanning
 
@@ -88,20 +95,190 @@ npm run docs:build
 npm run docs:dev
 ```
 
+## New QA Commands (v2.0)
+
+Carla v2.0 introduces powerful QA and cleanup tools designed for "vibe coders" using AI tools like Cursor and v0.
+
+### Doctor Command
+
+**Purpose:** Detection of Next.js errors and code quality issues
+
+**Features:**
+- Detects hydration mismatches (server/client HTML differences)
+- Identifies server/client component errors (e.g., using `window` in server components)
+- Finds missing TypeScript types (`any` usage)
+- Detects hardcoded API URLs that should be environment variables
+- Discovers unused files and exports via reachability analysis
+
+**Usage:**
+```bash
+# Check and report issues
+npx carla-nextjs doctor
+
+# Check only (CI mode) - exit 1 if issues found
+npx carla-nextjs doctor --check
+
+# Check specific issue type
+npx carla-nextjs doctor --type hydration
+npx carla-nextjs doctor --type types
+npx carla-nextjs doctor --type hardcoded
+npx carla-nextjs doctor --type unused
+```
+
+**How it works:**
+1. Runs Next.js build to detect runtime errors
+2. Performs AST-based static analysis for common issues
+3. Uses reachability analysis to find unused code
+4. Reports all detected issues
+
+### Clean Command
+
+**Purpose:** Find and remove unused code, exports, dependencies, and duplicate components
+
+**Features:**
+- Finds unused files not reachable from any Next.js entry point
+- Discovers unused exports (functions/constants/classes) within used files
+- Detects unused public assets (images, fonts, etc.)
+- Identifies duplicate components with identical JSX structure (e.g., Button.tsx vs NewButton.tsx)
+- Shows visual diffs before deletion
+- Calculates disk space savings
+
+**Usage:**
+```bash
+# Interactive mode - prompts before deleting
+npx carla-nextjs clean
+
+# Check only (CI mode) - exit 1 if issues found
+npx carla-nextjs clean --check
+
+# Clean specific type only
+npx carla-nextjs clean --type files
+npx carla-nextjs clean --type exports
+npx carla-nextjs clean --type deps
+npx carla-nextjs clean --type duplicates
+
+# Auto-delete without prompts (dangerous!)
+npx carla-nextjs clean --auto-fix
+```
+
+**How it works:**
+1. Builds reachability tree from Next.js entry points (pages, routes, layouts)
+2. Follows all imports recursively to mark reachable files
+3. Identifies unreachable files and assets
+4. Extracts exports from used files and checks if they're imported anywhere
+5. Uses structural hashing to detect duplicate components
+6. Provides interactive cleanup with diff previews
+
+### Verify Command
+
+**Purpose:** Scan for broken links (404s) and auto-generate redirects
+
+**Features:**
+- Auto-starts and stops Next.js dev server (no manual setup)
+- Crawls entire site for broken internal links
+- Fuzzy matching with Levenshtein distance for suggested fixes
+- Context-aware suggestions (checks for redirects in next.config.js)
+- Generates redirect configuration for Next.js
+- Confidence levels: high, medium, low
+
+**Usage:**
+```bash
+# Basic link check (auto-starts dev server)
+npx carla-nextjs verify
+
+# Build before checking
+npx carla-nextjs verify --build
+
+# Custom port
+npx carla-nextjs verify --port 3001
+
+# Auto-generate redirects for broken links
+npx carla-nextjs verify --fix
+```
+
+**How it works:**
+1. Discovers all Next.js routes (App Router and Pages Router)
+2. Starts dev server automatically if not running
+3. Crawls site using linkinator library
+4. For each broken link, suggests fixes using:
+   - Exact match (case-insensitive)
+   - Trailing slash differences
+   - Partial matches
+   - Fuzzy matching (Levenshtein distance)
+5. Optionally generates redirects for next.config.js
+6. Stops dev server when done
+
+### Init-CI Command
+
+**Purpose:** Setup CI/CD with GitHub Actions and pre-commit hooks
+
+**Features:**
+- Generates GitHub Actions workflows for PR checks
+- Installs and configures Husky for pre-commit hooks
+- Creates quality tracking baseline (.carla/metrics.json)
+- Multiple strategies (full QA, quick check, hooks-only)
+- Trend tracking for health score over time
+
+**Usage:**
+```bash
+# Interactive mode - choose strategy
+npx carla-nextjs init-ci
+
+# Full QA strategy (GitHub Actions + hooks + all checks)
+npx carla-nextjs init-ci --strategy full
+
+# Quick check (GitHub Actions with essential checks only)
+npx carla-nextjs init-ci --strategy quick
+
+# Hooks only (no GitHub Actions)
+npx carla-nextjs init-ci --strategy hooks-only
+
+# Force overwrite existing configuration
+npx carla-nextjs init-ci --force
+
+# Skip pre-commit hooks installation
+npx carla-nextjs init-ci --skip-hooks
+```
+
+**What it installs:**
+- **GitHub Actions workflow** (`.github/workflows/carla-qa-*.yml`)
+  - Runs on Pull Requests to main/master/develop
+  - Executes doctor, clean, verify commands
+  - Builds Next.js and runs tests
+  - Comments on PR with results
+- **Pre-commit hook** (`.husky/pre-commit`)
+  - Runs `carla doctor --check` before each commit
+- **Pre-push hook** (`.husky/pre-push`)
+  - Runs `carla doctor --check` and `carla clean --check`
+  - Prevents pushing code with issues
+- **Quality tracking** (`.carla/metrics.json`)
+  - Baseline metrics for trend tracking
+  - Health score calculation
+  - History of issues found/fixed
+
 ## Testing the CLI Locally
 
 ```bash
 # Build first
 npm run build
 
-# Test CLI commands
+# Test original commands
 node bin/cli.js --help
 node bin/cli.js scan
 node bin/cli.js status
+node bin/cli.js sync
+
+# Test new QA commands
+node bin/cli.js doctor --check
+node bin/cli.js clean --check
+node bin/cli.js verify
+node bin/cli.js init-ci --strategy hooks-only
 
 # Or link globally
 npm link
 carla-nextjs --help
+carla-nextjs doctor
+carla-nextjs clean
 ```
 
 ## Important Constraints
@@ -300,17 +477,23 @@ cat .carla/tools.json
 
 When working with Carla Next.js, try these prompts:
 
-**Scanning routes:**
-"Scan my Next.js API routes and show me what tools were found"
+**Original features (v1.x):**
+- "Scan my Next.js API routes and show me what tools were found"
+- "The scanner is not detecting my API routes in the pages directory. Can you help debug?"
+- "Add a new CLI command called 'validate' that checks if all tools have proper descriptions"
 
-**Adding a new feature:**
-"Add a new CLI command called 'validate' that checks if all tools have proper descriptions"
-
-**Fixing issues:**
-"The scanner is not detecting my API routes in the pages directory. Can you help debug?"
+**New QA features (v2.0):**
+- "Run the doctor command and help me fix the hydration errors it found"
+- "Use the clean command to find and remove unused code from my project"
+- "Check for broken links in my Next.js app using the verify command"
+- "Set up CI/CD with GitHub Actions using init-ci"
+- "The doctor command found unused exports. How can I review them before removing?"
+- "I have duplicate Button components. How does the clean command detect and handle them?"
+- "Generate redirects for broken links found by verify command"
 
 **Documentation:**
-"Update the getting started guide to include Windows-specific installation steps"
+- "Update the getting started guide to include Windows-specific installation steps"
+- "Add examples of using the new QA commands in the docs"
 
 ## Related Resources
 
@@ -328,3 +511,11 @@ When working with Carla Next.js, try these prompts:
 - Maintain consistent error handling and user feedback
 - Update documentation when adding features
 - Follow semantic versioning for package updates
+
+**v2.0 Specific Notes:**
+- Reachability analysis is used extensively in `doctor` and `clean` commands
+- AST parsing is done with Babel (`@babel/parser`, `@babel/traverse`, `@babel/generator`)
+- The `verify` command uses `linkinator` for link checking
+- The `init-ci` command sets up Husky hooks and GitHub Actions workflows
+- Quality tracking is stored in `.carla/metrics.json` for trend analysis
+- All commands follow the pattern: check mode (`--check`) for CI
