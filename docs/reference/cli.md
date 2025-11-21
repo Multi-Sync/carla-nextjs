@@ -414,7 +414,7 @@ npx @interworky/carla-nextjs verify [options]
 
 | Option    | Type    | Description                            | Default              |
 | --------- | ------- | -------------------------------------- | -------------------- |
-| `--url`   | string  | Base URL to check                      | http://localhost:3000 |
+| `--url`   | string  | Base URL to check                      | `http://localhost:3000` |
 | `--port`  | number  | Port for dev server                    | 3000                 |
 | `--build` | boolean | Build before checking                  | false                |
 | `--fix`   | boolean | Auto-generate redirects for broken links | false              |
