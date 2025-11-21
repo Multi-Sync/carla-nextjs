@@ -485,7 +485,9 @@ export async function initCICommand(options: InitCIOptions): Promise<void> {
     logger.list(steps);
 
     logger.section('🎯 How It Works');
-    logger.info('Pre-commit hook: Runs `@interworky/carla-nextjs doctor --check` before each commit');
+    logger.info(
+      'Pre-commit hook: Runs `@interworky/carla-nextjs doctor --check` before each commit'
+    );
     logger.info('Pre-push hook: Runs full checks before pushing');
     if (strategy !== 'hooks-only') {
       logger.info('GitHub Actions: Runs on every Pull Request to prevent bad code');
