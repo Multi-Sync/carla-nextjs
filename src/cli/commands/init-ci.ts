@@ -4,12 +4,14 @@
  * Automatically generates CI/CD configuration to prevent bad code from shipping:
  * - GitHub Actions workflow for PR checks
  * - Pre-commit hooks with Husky
- * - Quality gates (doctor, clean, verify)
+ * - Quality gates (doctor, clean)
  *
  * REFINEMENTS:
  * - Detects existing CI configuration
  * - Multiple strategies (full QA, quick check, pre-commit only)
  * - Trend tracking setup (for GitHub App integration later)
+ * - Verify command excluded from CI (designed for local development only)
+ * - Docker-friendly prepare script (skips husky in containers without .git)
  */
 
 import { Command } from 'commander';
@@ -76,10 +78,6 @@ jobs:
       - name: Run Carla Clean (Unused Code Check)
         run: npx @interworky/carla-nextjs clean --check
 
-      - name: Run Carla Verify (Broken Links)
-        run: npx @interworky/carla-nextjs verify --build
-        continue-on-error: true # Don't fail the build on broken links
-
       - name: Build Next.js
         run: npm run build
 
@@ -102,7 +100,6 @@ jobs:
             ### Checks Run:
             - 👨‍⚕️ Doctor (Hydration & Errors)
             - 🧹 Clean (Unused Code)
-            - 🔗 Verify (Broken Links)
             - 🏗️ Build
             - 🧪 Tests
 
@@ -152,13 +149,12 @@ jobs:
 `;
 
 // ============================================================================
-// Pre-commit Hook Templates
+// Pre-commit Hook Templates (Husky v10+ Compatible)
 // ============================================================================
+// Note: No shebang or husky.sh sourcing needed in v10+
+// Hooks are simple shell scripts executed directly by Git
 
-const PRE_COMMIT_HOOK = `#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
-
-echo "🤖 Carla is checking your code before commit..."
+const PRE_COMMIT_HOOK = `echo "🤖 Carla is checking your code before commit..."
 
 # Run doctor check
 npx @interworky/carla-nextjs doctor --check
@@ -166,10 +162,7 @@ npx @interworky/carla-nextjs doctor --check
 echo "✅ Carla check complete!"
 `;
 
-const PRE_PUSH_HOOK = `#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
-
-echo "🤖 Running full Carla check before push..."
+const PRE_PUSH_HOOK = `echo "🤖 Running full Carla check before push..."
 
 # Run all checks
 npx @interworky/carla-nextjs doctor --check
@@ -345,9 +338,11 @@ async function setupPreCommitHooks(): Promise<void> {
   }
 
   if (!packageJson.scripts.prepare) {
-    packageJson.scripts.prepare = 'husky';
+    // Docker-friendly prepare script: only run husky in git repositories
+    // This prevents "husky: not found" errors in Docker builds with --production
+    packageJson.scripts.prepare = '[ -d .git ] && husky || exit 0';
     await writePackageJson(packageJson);
-    logger.success('Added prepare script to package.json');
+    logger.success('Added Docker-friendly prepare script to package.json');
   }
 }
 
