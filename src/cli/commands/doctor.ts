@@ -30,12 +30,18 @@ import chalk from 'chalk';
 // ============================================================================
 
 export interface DoctorOptions {
-  check?: boolean;        // CI mode - only check, exit with code 1 if issues found
+  check?: boolean; // CI mode - only check, exit with code 1 if issues found
   type?: 'hydration' | 'types' | 'hardcoded' | 'unused' | 'all';
 }
 
 interface HealthIssue {
-  type: 'hydration' | 'server-client' | 'missing-types' | 'hardcoded-value' | 'unused-code' | 'performance';
+  type:
+    | 'hydration'
+    | 'server-client'
+    | 'missing-types'
+    | 'hardcoded-value'
+    | 'unused-code'
+    | 'performance';
   severity: 'critical' | 'warning' | 'info';
   file: string;
   line: number;
@@ -78,7 +84,7 @@ async function runBuildCheck(): Promise<HealthIssue[]> {
   try {
     const result = await execa('npm', ['run', 'build'], {
       reject: false,
-      all: true
+      all: true,
     });
 
     const output = result.all || '';
@@ -99,12 +105,11 @@ async function runBuildCheck(): Promise<HealthIssue[]> {
         line,
         column,
         message: 'Hydration mismatch detected',
-        code: await getCodeContext(filePath, line)
+        code: await getCodeContext(filePath, line),
       });
     }
 
     logger.succeedSpinner(`Build check complete - found ${issues.length} issues`);
-
   } catch (error: any) {
     logger.failSpinner('Build check failed');
     // Still parse the output for errors
@@ -122,14 +127,14 @@ async function staticAnalysis(): Promise<HealthIssue[]> {
 
   const files = await glob.default(['**/*.{tsx,jsx}'], {
     cwd: process.cwd(),
-    ignore: ['node_modules', '.next', 'dist']
+    ignore: ['node_modules', '.next', 'dist'],
   });
 
   for (const file of files) {
     const code = await fs.readFile(file, 'utf-8');
     const ast = parser.parse(code, {
       sourceType: 'module',
-      plugins: ['jsx', 'typescript', 'decorators-legacy']
+      plugins: ['jsx', 'typescript', 'decorators-legacy'],
     });
 
     const hasUseClient = code.includes('"use client"') || code.includes("'use client'");
@@ -151,7 +156,7 @@ async function staticAnalysis(): Promise<HealthIssue[]> {
             file,
             line: astPath.node.loc?.start.line || 0,
             message: 'Invalid HTML nesting: <div> cannot be child of <p> (causes hydration errors)',
-            code: generate(astPath.node).code
+            code: generate(astPath.node).code,
           });
         }
       },
@@ -160,7 +165,9 @@ async function staticAnalysis(): Promise<HealthIssue[]> {
       MemberExpression(astPath: any) {
         if (
           t.isIdentifier(astPath.node.object) &&
-          ['window', 'document', 'localStorage', 'sessionStorage'].includes(astPath.node.object.name) &&
+          ['window', 'document', 'localStorage', 'sessionStorage'].includes(
+            astPath.node.object.name
+          ) &&
           !hasUseClient
         ) {
           issues.push({
@@ -169,7 +176,7 @@ async function staticAnalysis(): Promise<HealthIssue[]> {
             file,
             line: astPath.node.loc?.start.line || 0,
             message: `Using ${astPath.node.object.name} in Server Component. Add "use client" directive.`,
-            code: generate(astPath.node).code
+            code: generate(astPath.node).code,
           });
         }
       },
@@ -182,7 +189,7 @@ async function staticAnalysis(): Promise<HealthIssue[]> {
           file,
           line: astPath.node.loc?.start.line || 0,
           message: 'Using "any" type. TypeScript type should be inferred or declared.',
-          code: generate(astPath.parentPath.node).code
+          code: generate(astPath.parentPath.node).code,
         });
       },
 
@@ -201,11 +208,11 @@ async function staticAnalysis(): Promise<HealthIssue[]> {
               file,
               line: astPath.node.loc?.start.line || 0,
               message: `Hardcoded API URL: "${firstArg.value}". Consider using environment variable.`,
-              code: generate(astPath.node).code
+              code: generate(astPath.node).code,
             });
           }
         }
-      }
+      },
     });
   }
 
@@ -233,7 +240,7 @@ async function discoverPublicAssets(): Promise<Set<string>> {
       cwd: process.cwd(),
       absolute: false,
       onlyFiles: true,
-      ignore: ['**/node_modules/**', '**/.DS_Store', '**/Thumbs.db']
+      ignore: ['**/node_modules/**', '**/.DS_Store', '**/Thumbs.db'],
     });
 
     // Normalize paths (remove 'public/' prefix and add leading '/')
@@ -260,15 +267,13 @@ async function findAssetReferences(): Promise<Set<string>> {
     const glob = await import('fast-glob');
 
     // Scan JavaScript/TypeScript files
-    const codeFiles = await glob.default([
-      'src/**/*.{js,jsx,ts,tsx}',
-      '!**/node_modules/**',
-      '!**/.next/**',
-      '!**/dist/**'
-    ], {
-      cwd: process.cwd(),
-      absolute: false
-    });
+    const codeFiles = await glob.default(
+      ['src/**/*.{js,jsx,ts,tsx}', '!**/node_modules/**', '!**/.next/**', '!**/dist/**'],
+      {
+        cwd: process.cwd(),
+        absolute: false,
+      }
+    );
 
     for (const file of codeFiles) {
       try {
@@ -283,14 +288,13 @@ async function findAssetReferences(): Promise<Set<string>> {
     }
 
     // Scan CSS files
-    const cssFiles = await glob.default([
-      'src/**/*.{css,scss,sass,less}',
-      '!**/node_modules/**',
-      '!**/.next/**'
-    ], {
-      cwd: process.cwd(),
-      absolute: false
-    });
+    const cssFiles = await glob.default(
+      ['src/**/*.{css,scss,sass,less}', '!**/node_modules/**', '!**/.next/**'],
+      {
+        cwd: process.cwd(),
+        absolute: false,
+      }
+    );
 
     for (const file of cssFiles) {
       try {
@@ -326,7 +330,8 @@ function extractAssetReferences(content: string): string[] {
 
   // Pattern 2: String literals with public paths
   // Matches: "/images/logo.png", '/videos/demo.mp4'
-  const stringLiteralPattern = /["']([/](?:images?|videos?|assets?|fonts?|icons?|files?|documents?|media|static|public|maps?|blogs?|landing)[^"']+)["']/g;
+  const stringLiteralPattern =
+    /["']([/](?:images?|videos?|assets?|fonts?|icons?|files?|documents?|media|static|public|maps?|blogs?|landing)[^"']+)["']/g;
   while ((match = stringLiteralPattern.exec(content)) !== null) {
     references.push(match[1]);
   }
@@ -336,7 +341,9 @@ function extractAssetReferences(content: string): string[] {
   const templateLiteralPattern = /`[^`]*\/([^`/]+\.[a-z0-9]+)[^`]*`/gi;
   while ((match = templateLiteralPattern.exec(content)) !== null) {
     // Try to extract simple paths from template literals
-    const innerMatch = content.slice(match.index, match.index + match[0].length).match(/\/([a-zA-Z0-9_\-./]+)/);
+    const innerMatch = content
+      .slice(match.index, match.index + match[0].length)
+      .match(/\/([a-zA-Z0-9_\-./]+)/);
     if (innerMatch) {
       references.push(innerMatch[0]);
     }
@@ -344,7 +351,8 @@ function extractAssetReferences(content: string): string[] {
 
   // Pattern 4: Common static file extensions in strings
   // Matches: "/file.pdf", "/doc.zip", etc.
-  const extensionPattern = /["']([/][^"']+\.(?:png|jpg|jpeg|gif|svg|webp|mp4|webm|mov|pdf|zip|json|xml|txt|woff|woff2|ttf|eot|ico|mp3|wav|ogg|csv))["']/gi;
+  const extensionPattern =
+    /["']([/][^"']+\.(?:png|jpg|jpeg|gif|svg|webp|mp4|webm|mov|pdf|zip|json|xml|txt|woff|woff2|ttf|eot|ico|mp3|wav|ogg|csv))["']/gi;
   while ((match = extensionPattern.exec(content)) !== null) {
     references.push(match[1]);
   }
@@ -390,61 +398,129 @@ async function detectUnusedCodeViaReachability(): Promise<HealthIssue[]> {
     const visitedFiles = new Set<string>();
 
     // Step 1: Find all Next.js entry points
-    const entryPoints = await glob.default([
-      // Core route files
-      'src/app/**/page.{js,jsx,ts,tsx}',
-      'src/app/**/route.{js,ts}',
-      'src/app/**/layout.{js,jsx,ts,tsx}',
-      'src/app/**/template.{js,jsx,ts,tsx}',
-      'src/app/**/default.{js,jsx,ts,tsx}',
+    const entryPoints = await glob.default(
+      [
+        // Core route files
+        'src/app/**/page.{js,jsx,ts,tsx}',
+        'src/app/**/route.{js,ts}',
+        'src/app/**/layout.{js,jsx,ts,tsx}',
+        'src/app/**/template.{js,jsx,ts,tsx}',
+        'src/app/**/default.{js,jsx,ts,tsx}',
 
-      // UI files
-      'src/app/**/loading.{js,jsx,ts,tsx}',
+        // UI files
+        'src/app/**/loading.{js,jsx,ts,tsx}',
 
-      // Error handling files
-      'src/app/**/error.{js,jsx,ts,tsx}',
-      'src/app/**/not-found.{js,jsx,ts,tsx}',
-      'src/app/**/global-error.{js,jsx,ts,tsx}',
-      'src/app/**/forbidden.{js,jsx,ts,tsx}',
-      'src/app/**/unauthorized.{js,jsx,ts,tsx}',
+        // Error handling files
+        'src/app/**/error.{js,jsx,ts,tsx}',
+        'src/app/**/not-found.{js,jsx,ts,tsx}',
+        'src/app/**/global-error.{js,jsx,ts,tsx}',
+        'src/app/**/forbidden.{js,jsx,ts,tsx}',
+        'src/app/**/unauthorized.{js,jsx,ts,tsx}',
 
-      // Metadata files (executed at build time)
-      'src/app/**/opengraph-image.{js,ts,jsx,tsx}',
-      'src/app/**/twitter-image.{js,ts,jsx,tsx}',
-      'src/app/**/icon.{js,ts,jsx,tsx}',
-      'src/app/**/apple-icon.{js,ts,jsx,tsx}',
-      'src/app/**/sitemap.{js,ts}',
-      'src/app/**/robots.{js,ts}',
-      'src/app/**/manifest.{js,ts}',
+        // Metadata files (executed at build time)
+        'src/app/**/opengraph-image.{js,ts,jsx,tsx}',
+        'src/app/**/twitter-image.{js,ts,jsx,tsx}',
+        'src/app/**/icon.{js,ts,jsx,tsx}',
+        'src/app/**/apple-icon.{js,ts,jsx,tsx}',
+        'src/app/**/sitemap.{js,ts}',
+        'src/app/**/robots.{js,ts}',
+        'src/app/**/manifest.{js,ts}',
 
-      // Middleware and instrumentation
-      'src/middleware.{js,ts}',
-      'middleware.{js,ts}', // Can be at root
-      'src/proxy.{js,ts}', // Next.js 16+ middleware name
-      'proxy.{js,ts}', // Can be at root
-      'src/instrumentation.{js,ts}',
-      'instrumentation.{js,ts}', // Can be at root
-      'src/instrumentation-client.{js,ts}',
-      'instrumentation-client.{js,ts}', // Can be at root
+        // Middleware and instrumentation
+        'src/middleware.{js,ts}',
+        'middleware.{js,ts}', // Can be at root
+        'src/proxy.{js,ts}', // Next.js 16+ middleware name
+        'proxy.{js,ts}', // Can be at root
+        'src/instrumentation.{js,ts}',
+        'instrumentation.{js,ts}', // Can be at root
+        'src/instrumentation-client.{js,ts}',
+        'instrumentation-client.{js,ts}', // Can be at root
 
-      // MDX configuration
-      'src/mdx-components.{js,ts,jsx,tsx}',
-      'mdx-components.{js,ts,jsx,tsx}', // Can be at root
+        // MDX configuration
+        'src/mdx-components.{js,ts,jsx,tsx}',
+        'mdx-components.{js,ts,jsx,tsx}', // Can be at root
 
-      // Root layout (important)
-      'src/app/layout.{js,jsx,ts,tsx}',
+        // Root layout (important)
+        'src/app/layout.{js,jsx,ts,tsx}',
 
-      // Pages Router support
-      'src/pages/**/*.{js,jsx,ts,tsx}',
-    ], {
-      cwd: process.cwd(),
-      absolute: false
-    });
+        // Pages Router support
+        'src/pages/**/*.{js,jsx,ts,tsx}',
+      ],
+      {
+        cwd: process.cwd(),
+        absolute: false,
+      }
+    );
 
     logger.info(`Found ${entryPoints.length} entry points (pages, routes, layouts)`);
 
+    // Helper to resolve import paths
+    const resolveImport = async (importPath: string, fromFile: string): Promise<string | null> => {
+      // Skip external packages
+      if (
+        !importPath.startsWith('.') &&
+        !importPath.startsWith('/') &&
+        !importPath.startsWith('@/')
+      ) {
+        return null;
+      }
+
+      const fromDir = path.dirname(fromFile);
+      const resolveCandidates: string[] = [];
+
+      // Handle @/ alias - try multiple base paths
+      if (importPath.startsWith('@/')) {
+        const withoutAlias = importPath.replace('@/', '');
+
+        // Try multiple base directories for @/ alias
+        // In Next.js, @/ can resolve to different bases depending on tsconfig.json
+        resolveCandidates.push(`src/${withoutAlias}`); // Most common: @/ → src/
+        resolveCandidates.push(withoutAlias); // Alternative: @/ → project root
+        resolveCandidates.push(`app/${withoutAlias}`); // Alternative: @/ → app/
+      } else if (importPath.startsWith('/')) {
+        resolveCandidates.push(importPath.slice(1));
+      } else {
+        resolveCandidates.push(path.join(fromDir, importPath));
+      }
+
+      // Try each candidate with different extensions
+      for (let resolved of resolveCandidates) {
+        // Normalize to forward slashes
+        resolved = resolved.replace(/\\/g, '/');
+
+        // Try different extensions
+        const extensions = ['.js', '.jsx', '.ts', '.tsx', ''];
+        for (const ext of extensions) {
+          const candidate = resolved + ext;
+          try {
+            const stats = await fs.stat(candidate);
+            if (stats.isFile()) {
+              return candidate.replace(/\\/g, '/');
+            }
+          } catch {
+            // Try next extension
+          }
+        }
+
+        // Try index files
+        for (const ext of ['.js', '.jsx', '.ts', '.tsx']) {
+          const indexPath = path.join(resolved, `index${ext}`).replace(/\\/g, '/');
+          try {
+            const stats = await fs.stat(indexPath);
+            if (stats.isFile()) {
+              return indexPath;
+            }
+          } catch {
+            // Try next
+          }
+        }
+      }
+
+      return null;
+    };
+
     // Step 2: Build reachability tree by following imports
-    async function markReachable(filePath: string): Promise<void> {
+    const markReachable = async (filePath: string): Promise<void> => {
       // Normalize path
       const normalizedPath = filePath.replace(/\\/g, '/');
 
@@ -456,7 +532,7 @@ async function detectUnusedCodeViaReachability(): Promise<HealthIssue[]> {
         const content = await fs.readFile(filePath, 'utf-8');
         const ast = parser.parse(content, {
           sourceType: 'module',
-          plugins: ['jsx', 'typescript', 'decorators-legacy']
+          plugins: ['jsx', 'typescript', 'decorators-legacy'],
         });
 
         // Extract all imports AND re-exports
@@ -536,7 +612,7 @@ async function detectUnusedCodeViaReachability(): Promise<HealthIssue[]> {
             if (astPath.node.source && astPath.node.source.value) {
               imports.push(astPath.node.source.value);
             }
-          }
+          },
         });
 
         // Resolve and follow each import
@@ -549,80 +625,19 @@ async function detectUnusedCodeViaReachability(): Promise<HealthIssue[]> {
       } catch (error) {
         // Skip files that can't be parsed
       }
-    }
-
-    // Helper to resolve import paths
-    async function resolveImport(importPath: string, fromFile: string): Promise<string | null> {
-      // Skip external packages
-      if (!importPath.startsWith('.') && !importPath.startsWith('/') && !importPath.startsWith('@/')) {
-        return null;
-      }
-
-      const fromDir = path.dirname(fromFile);
-      const resolveCandidates: string[] = [];
-
-      // Handle @/ alias - try multiple base paths
-      if (importPath.startsWith('@/')) {
-        const withoutAlias = importPath.replace('@/', '');
-
-        // Try multiple base directories for @/ alias
-        // In Next.js, @/ can resolve to different bases depending on tsconfig.json
-        resolveCandidates.push(`src/${withoutAlias}`);  // Most common: @/ → src/
-        resolveCandidates.push(withoutAlias);            // Alternative: @/ → project root
-        resolveCandidates.push(`app/${withoutAlias}`);  // Alternative: @/ → app/
-      } else if (importPath.startsWith('/')) {
-        resolveCandidates.push(importPath.slice(1));
-      } else {
-        resolveCandidates.push(path.join(fromDir, importPath));
-      }
-
-      // Try each candidate with different extensions
-      for (let resolved of resolveCandidates) {
-        // Normalize to forward slashes
-        resolved = resolved.replace(/\\/g, '/');
-
-        // Try different extensions
-        const extensions = ['.js', '.jsx', '.ts', '.tsx', ''];
-        for (const ext of extensions) {
-          const candidate = resolved + ext;
-          try {
-            const stats = await fs.stat(candidate);
-            if (stats.isFile()) {
-              return candidate.replace(/\\/g, '/');
-            }
-          } catch {
-            // Try next extension
-          }
-        }
-
-        // Try index files
-        for (const ext of ['.js', '.jsx', '.ts', '.tsx']) {
-          const indexPath = path.join(resolved, `index${ext}`).replace(/\\/g, '/');
-          try {
-            const stats = await fs.stat(indexPath);
-            if (stats.isFile()) {
-              return indexPath;
-            }
-          } catch {
-            // Try next
-          }
-        }
-      }
-
-      return null;
-    }
+    };
 
     // Mark all entry points and their dependencies as reachable
     for (const entryPoint of entryPoints) {
       await markReachable(entryPoint);
     }
 
-    logger.info(`Reachability analysis complete: ${reachableFiles.size} files reachable from entry points`);
+    logger.info(
+      `Reachability analysis complete: ${reachableFiles.size} files reachable from entry points`
+    );
 
     // Step 3: Find all project files
-    const allFiles = await glob.default([
-      'src/**/*.{js,jsx,ts,tsx}'
-    ], {
+    const allFiles = await glob.default(['src/**/*.{js,jsx,ts,tsx}'], {
       cwd: process.cwd(),
       absolute: false,
       ignore: [
@@ -632,8 +647,8 @@ async function detectUnusedCodeViaReachability(): Promise<HealthIssue[]> {
         '**/*.test.{js,jsx,ts,tsx}',
         '**/*.spec.{js,jsx,ts,tsx}',
         '**/__tests__/**',
-        '**/__mocks__/**'
-      ]
+        '**/__mocks__/**',
+      ],
     });
 
     // Step 4: Find unreachable files
@@ -655,7 +670,7 @@ async function detectUnusedCodeViaReachability(): Promise<HealthIssue[]> {
         file,
         line: 1,
         message: `File is not reachable from any Next.js page or route. Consider removing it.`,
-        code: `Unreachable file: ${file}`
+        code: `Unreachable file: ${file}`,
       });
     }
 
@@ -685,7 +700,7 @@ async function detectUnusedCodeViaReachability(): Promise<HealthIssue[]> {
           file: publicPath,
           line: 1,
           message: `Public asset is not referenced in any code. Consider removing it.`,
-          code: `Unreachable asset: ${asset}`
+          code: `Unreachable asset: ${asset}`,
         });
       }
     } else {
@@ -693,7 +708,6 @@ async function detectUnusedCodeViaReachability(): Promise<HealthIssue[]> {
     }
 
     return issues;
-
   } catch (error: any) {
     logger.error(`Reachability analysis failed: ${error.message}`);
     return [];
@@ -720,7 +734,7 @@ interface ExportInfo {
   filePath: string;
   line: number;
   code: string;
-  usedInDefaultExport?: boolean;  // True if this named export is used as default export value
+  usedInDefaultExport?: boolean; // True if this named export is used as default export value
 }
 
 interface ImportInfo {
@@ -732,9 +746,9 @@ interface ImportInfo {
 }
 
 interface RenameInfo {
-  originalFile: string;      // File where the original export lives
-  originalName: string;      // Original export name
-  aliasName: string;         // Renamed export name
+  originalFile: string; // File where the original export lives
+  originalName: string; // Original export name
+  aliasName: string; // Renamed export name
   reexportedFromFile: string; // File doing the re-export (barrel file)
 }
 
@@ -748,7 +762,7 @@ async function extractExports(filePath: string): Promise<ExportInfo[]> {
     const content = await fs.readFile(filePath, 'utf-8');
     const ast = parser.parse(content, {
       sourceType: 'module',
-      plugins: ['jsx', 'typescript', 'decorators-legacy']
+      plugins: ['jsx', 'typescript', 'decorators-legacy'],
     });
 
     traverse(ast, {
@@ -764,7 +778,7 @@ async function extractExports(filePath: string): Promise<ExportInfo[]> {
               type: 'function',
               filePath,
               line: path.node.loc?.start.line || 0,
-              code: generate(funcNode).code.split('\n')[0] // First line only
+              code: generate(funcNode).code.split('\n')[0], // First line only
             });
           }
         }
@@ -774,15 +788,15 @@ async function extractExports(filePath: string): Promise<ExportInfo[]> {
           path.node.declaration.declarations.forEach((decl: any) => {
             if (t.isIdentifier(decl.id)) {
               // Determine if it's a function or constant
-              const isFunction = t.isArrowFunctionExpression(decl.init) ||
-                                t.isFunctionExpression(decl.init);
+              const isFunction =
+                t.isArrowFunctionExpression(decl.init) || t.isFunctionExpression(decl.init);
 
               exports.push({
                 name: decl.id.name,
                 type: isFunction ? 'function' : 'const',
                 filePath,
                 line: path.node.loc?.start.line || 0,
-                code: generate(decl).code.split('\n')[0] // First line only
+                code: generate(decl).code.split('\n')[0], // First line only
               });
             }
           });
@@ -797,21 +811,23 @@ async function extractExports(filePath: string): Promise<ExportInfo[]> {
               type: 'class',
               filePath,
               line: path.node.loc?.start.line || 0,
-              code: `class ${classNode.id.name} { ... }`
+              code: `class ${classNode.id.name} { ... }`,
             });
           }
         }
 
         // Type/Interface exports (TypeScript)
-        if (t.isTSTypeAliasDeclaration(path.node.declaration) ||
-            t.isTSInterfaceDeclaration(path.node.declaration)) {
+        if (
+          t.isTSTypeAliasDeclaration(path.node.declaration) ||
+          t.isTSInterfaceDeclaration(path.node.declaration)
+        ) {
           const typeNode = path.node.declaration;
           exports.push({
             name: typeNode.id.name,
             type: 'type',
             filePath,
             line: path.node.loc?.start.line || 0,
-            code: generate(typeNode).code.split('\n')[0]
+            code: generate(typeNode).code.split('\n')[0],
           });
         }
 
@@ -829,7 +845,7 @@ async function extractExports(filePath: string): Promise<ExportInfo[]> {
                 type: 'const', // Unknown type, assume const
                 filePath,
                 line: path.node.loc?.start.line || 0,
-                code: `export { ${exportedName} }`
+                code: `export { ${exportedName} }`,
               });
             }
           });
@@ -857,9 +873,9 @@ async function extractExports(filePath: string): Promise<ExportInfo[]> {
           type,
           filePath,
           line: path.node.loc?.start.line || 0,
-          code: generate(path.node).code.split('\n')[0]
+          code: generate(path.node).code.split('\n')[0],
         });
-      }
+      },
     });
 
     // Second pass: Check if any named export is used as the value of default export
@@ -893,9 +909,8 @@ async function extractExports(filePath: string): Promise<ExportInfo[]> {
             }
           }
         }
-      }
+      },
     });
-
   } catch (error) {
     // Skip files that can't be parsed
   }
@@ -912,7 +927,7 @@ async function isExportUsedWithinFile(filePath: string, exportName: string): Pro
     const content = await fs.readFile(filePath, 'utf-8');
     const ast = parser.parse(content, {
       sourceType: 'module',
-      plugins: ['jsx', 'typescript', 'decorators-legacy']
+      plugins: ['jsx', 'typescript', 'decorators-legacy'],
     });
 
     let usageCount = 0;
@@ -931,13 +946,19 @@ async function isExportUsedWithinFile(filePath: string, exportName: string): Pro
 
           // Skip if this is a function/class name in export declaration
           // export function foo() <- skip the foo here
-          if ((t.isFunctionDeclaration(parent) || t.isClassDeclaration(parent)) && parent.id === path.node) {
+          if (
+            (t.isFunctionDeclaration(parent) || t.isClassDeclaration(parent)) &&
+            parent.id === path.node
+          ) {
             return;
           }
 
           // Skip if this is the exported identifier in export specifier
           // export { foo } <- skip the foo here
-          if (t.isExportSpecifier(parent) && (parent.exported === path.node || parent.local === path.node)) {
+          if (
+            t.isExportSpecifier(parent) &&
+            (parent.exported === path.node || parent.local === path.node)
+          ) {
             return;
           }
 
@@ -949,7 +970,7 @@ async function isExportUsedWithinFile(filePath: string, exportName: string): Pro
           // Count this as a usage
           usageCount++;
         }
-      }
+      },
     });
 
     // If used at least once outside the export declaration, it's used internally
@@ -970,7 +991,7 @@ async function extractImports(filePath: string): Promise<ImportInfo[]> {
     const content = await fs.readFile(filePath, 'utf-8');
     const ast = parser.parse(content, {
       sourceType: 'module',
-      plugins: ['jsx', 'typescript', 'decorators-legacy']
+      plugins: ['jsx', 'typescript', 'decorators-legacy'],
     });
 
     // First pass: collect all imports AND re-exports
@@ -991,7 +1012,7 @@ async function extractImports(filePath: string): Promise<ImportInfo[]> {
               localName: spec.local.name,
               source,
               filePath,
-              isUsed: false
+              isUsed: false,
             });
           } else if (t.isImportDefaultSpecifier(spec)) {
             // import Foo from './bar'
@@ -1000,7 +1021,7 @@ async function extractImports(filePath: string): Promise<ImportInfo[]> {
               localName: spec.local.name,
               source,
               filePath,
-              isUsed: false
+              isUsed: false,
             });
           } else if (t.isImportNamespaceSpecifier(spec)) {
             // import * as foo from './bar'
@@ -1009,7 +1030,7 @@ async function extractImports(filePath: string): Promise<ImportInfo[]> {
               localName: spec.local.name,
               source,
               filePath,
-              isUsed: false
+              isUsed: false,
             });
           }
         });
@@ -1030,7 +1051,7 @@ async function extractImports(filePath: string): Promise<ImportInfo[]> {
             localName: '', // No local binding name for dynamic imports
             source,
             filePath,
-            isUsed: true // Dynamic imports are always considered "used"
+            isUsed: true, // Dynamic imports are always considered "used"
           });
         }
 
@@ -1054,7 +1075,7 @@ async function extractImports(filePath: string): Promise<ImportInfo[]> {
                   localName: '',
                   source,
                   filePath,
-                  isUsed: true
+                  isUsed: true,
                 });
               }
             }
@@ -1072,7 +1093,7 @@ async function extractImports(filePath: string): Promise<ImportInfo[]> {
                       localName: '',
                       source,
                       filePath,
-                      isUsed: true
+                      isUsed: true,
                     });
                   }
                 }
@@ -1101,7 +1122,11 @@ async function extractImports(filePath: string): Promise<ImportInfo[]> {
           if (t.isVariableDeclarator(parent) && t.isObjectPattern(parent.id)) {
             // Extract destructured identifiers: const { Conversation, X } = require('./file')
             parent.id.properties.forEach((prop: any) => {
-              if (t.isObjectProperty(prop) && t.isIdentifier(prop.key) && t.isIdentifier(prop.value)) {
+              if (
+                t.isObjectProperty(prop) &&
+                t.isIdentifier(prop.key) &&
+                t.isIdentifier(prop.value)
+              ) {
                 const importedName = prop.key.name;
                 const localName = prop.value.name;
 
@@ -1110,7 +1135,7 @@ async function extractImports(filePath: string): Promise<ImportInfo[]> {
                   localName,
                   source,
                   filePath,
-                  isUsed: false // Will check usage later
+                  isUsed: false, // Will check usage later
                 });
               }
             });
@@ -1142,7 +1167,7 @@ async function extractImports(filePath: string): Promise<ImportInfo[]> {
                 localName: exportedName,
                 source,
                 filePath,
-                isUsed: true // Re-exports are always "used"
+                isUsed: true, // Re-exports are always "used"
               });
             }
           });
@@ -1157,9 +1182,9 @@ async function extractImports(filePath: string): Promise<ImportInfo[]> {
           localName: '*',
           source,
           filePath,
-          isUsed: true // Re-exports are always "used"
+          isUsed: true, // Re-exports are always "used"
         });
-      }
+      },
     });
 
     // Second pass: check if imported names are used
@@ -1168,19 +1193,20 @@ async function extractImports(filePath: string): Promise<ImportInfo[]> {
       Identifier(path: any) {
         // Skip the import declarations themselves
         const parent = path.parent;
-        if (!t.isImportSpecifier(parent) &&
-            !t.isImportDefaultSpecifier(parent) &&
-            !t.isImportNamespaceSpecifier(parent)) {
+        if (
+          !t.isImportSpecifier(parent) &&
+          !t.isImportDefaultSpecifier(parent) &&
+          !t.isImportNamespaceSpecifier(parent)
+        ) {
           usedIdentifiers.add(path.node.name);
         }
-      }
+      },
     });
 
     // Mark imports as used if their local name appears in the code
     imports.forEach(imp => {
       imp.isUsed = usedIdentifiers.has(imp.localName);
     });
-
   } catch (error) {
     // Skip files that can't be parsed
   }
@@ -1199,7 +1225,7 @@ async function extractReexportsWithRenames(filePath: string): Promise<RenameInfo
     const content = await fs.readFile(filePath, 'utf-8');
     const ast = parser.parse(content, {
       sourceType: 'module',
-      plugins: ['jsx', 'typescript', 'decorators-legacy']
+      plugins: ['jsx', 'typescript', 'decorators-legacy'],
     });
 
     traverse(ast, {
@@ -1227,14 +1253,14 @@ async function extractReexportsWithRenames(filePath: string): Promise<RenameInfo
                     originalFile: resolvedSource,
                     originalName,
                     aliasName,
-                    reexportedFromFile: filePath
+                    reexportedFromFile: filePath,
                   });
                 }
               }
             }
           });
         }
-      }
+      },
     });
   } catch (error) {
     // Skip files that can't be parsed
@@ -1247,7 +1273,11 @@ async function extractReexportsWithRenames(filePath: string): Promise<RenameInfo
  * Resolve import path for rename tracking
  */
 function resolveImportPathForRename(importSource: string, importerFile: string): string | null {
-  if (!importSource.startsWith('.') && !importSource.startsWith('/') && !importSource.startsWith('@/')) {
+  if (
+    !importSource.startsWith('.') &&
+    !importSource.startsWith('/') &&
+    !importSource.startsWith('@/')
+  ) {
     return null;
   }
 
@@ -1296,9 +1326,7 @@ async function detectUnusedExports(): Promise<HealthIssue[]> {
     const glob = await import('fast-glob');
 
     // Get all reachable files (used files)
-    const reachableFiles = await glob.default([
-      'src/**/*.{js,jsx,ts,tsx}'
-    ], {
+    const reachableFiles = await glob.default(['src/**/*.{js,jsx,ts,tsx}'], {
       cwd: process.cwd(),
       absolute: false,
       ignore: [
@@ -1310,7 +1338,7 @@ async function detectUnusedExports(): Promise<HealthIssue[]> {
         '**/__tests__/**',
         '**/__mocks__/**',
         '**/*.d.ts', // Skip type definition files
-      ]
+      ],
     });
 
     // Step 1: Build export map (file -> exports)
@@ -1370,8 +1398,12 @@ async function detectUnusedExports(): Promise<HealthIssue[]> {
 
     for (const [filePath, exports] of exportMap) {
       // Skip barrel files (index files re-export and may look unused)
-      if (filePath.endsWith('/index.ts') || filePath.endsWith('/index.tsx') ||
-          filePath.endsWith('/index.js') || filePath.endsWith('/index.jsx')) {
+      if (
+        filePath.endsWith('/index.ts') ||
+        filePath.endsWith('/index.tsx') ||
+        filePath.endsWith('/index.js') ||
+        filePath.endsWith('/index.jsx')
+      ) {
         continue;
       }
 
@@ -1405,11 +1437,13 @@ async function detectUnusedExports(): Promise<HealthIssue[]> {
           const resolvedSource = resolveImportPath(imp.source, imp.filePath, filePath);
 
           // Check if the import matches this export (original name or any alias)
-          return resolvedSource === filePath &&
-                 (imp.importedName === exportInfo.name ||
-                  aliases.includes(imp.importedName) ||
-                  imp.importedName === 'default' && exportInfo.name === 'default' ||
-                  imp.importedName === '*'); // Namespace imports count as used
+          return (
+            resolvedSource === filePath &&
+            (imp.importedName === exportInfo.name ||
+              aliases.includes(imp.importedName) ||
+              (imp.importedName === 'default' && exportInfo.name === 'default') ||
+              imp.importedName === '*')
+          ); // Namespace imports count as used
         });
 
         // Check if used internally within the same file
@@ -1423,14 +1457,13 @@ async function detectUnusedExports(): Promise<HealthIssue[]> {
             file: filePath,
             line: exportInfo.line,
             message: `Exported ${exportInfo.type} '${exportInfo.name}' is never imported. Consider removing it.`,
-            code: exportInfo.code
+            code: exportInfo.code,
           });
         }
       }
     }
 
     logger.info(`Found ${unusedCount} unused exports`);
-
   } catch (error: any) {
     logger.error(`Unused exports detection failed: ${error.message}`);
   }
@@ -1449,33 +1482,83 @@ function isFrameworkConventionFile(filePath: string): boolean {
   // Framework files that are consumed by Next.js itself
   const frameworkFiles = [
     // Core routing files (App Router)
-    'page.tsx', 'page.ts', 'page.jsx', 'page.js',
-    'layout.tsx', 'layout.ts', 'layout.jsx', 'layout.js',
-    'route.tsx', 'route.ts', 'route.jsx', 'route.js',
-    'loading.tsx', 'loading.ts', 'loading.jsx', 'loading.js',
-    'error.tsx', 'error.ts', 'error.jsx', 'error.js',
-    'not-found.tsx', 'not-found.ts', 'not-found.jsx', 'not-found.js',
-    'global-error.tsx', 'global-error.ts', 'global-error.jsx', 'global-error.js',
-    'template.tsx', 'template.ts', 'template.jsx', 'template.js',
-    'default.tsx', 'default.ts', 'default.jsx', 'default.js',
+    'page.tsx',
+    'page.ts',
+    'page.jsx',
+    'page.js',
+    'layout.tsx',
+    'layout.ts',
+    'layout.jsx',
+    'layout.js',
+    'route.tsx',
+    'route.ts',
+    'route.jsx',
+    'route.js',
+    'loading.tsx',
+    'loading.ts',
+    'loading.jsx',
+    'loading.js',
+    'error.tsx',
+    'error.ts',
+    'error.jsx',
+    'error.js',
+    'not-found.tsx',
+    'not-found.ts',
+    'not-found.jsx',
+    'not-found.js',
+    'global-error.tsx',
+    'global-error.ts',
+    'global-error.jsx',
+    'global-error.js',
+    'template.tsx',
+    'template.ts',
+    'template.jsx',
+    'template.js',
+    'default.tsx',
+    'default.ts',
+    'default.jsx',
+    'default.js',
 
     // Metadata files (consumed by Next.js for SEO/metadata generation)
-    'opengraph-image.tsx', 'opengraph-image.ts', 'opengraph-image.jsx', 'opengraph-image.js',
-    'twitter-image.tsx', 'twitter-image.ts', 'twitter-image.jsx', 'twitter-image.js',
-    'icon.tsx', 'icon.ts', 'icon.jsx', 'icon.js',
-    'apple-icon.tsx', 'apple-icon.ts', 'apple-icon.jsx', 'apple-icon.js',
-    'sitemap.ts', 'sitemap.js',
-    'robots.ts', 'robots.js',
-    'manifest.ts', 'manifest.js',
+    'opengraph-image.tsx',
+    'opengraph-image.ts',
+    'opengraph-image.jsx',
+    'opengraph-image.js',
+    'twitter-image.tsx',
+    'twitter-image.ts',
+    'twitter-image.jsx',
+    'twitter-image.js',
+    'icon.tsx',
+    'icon.ts',
+    'icon.jsx',
+    'icon.js',
+    'apple-icon.tsx',
+    'apple-icon.ts',
+    'apple-icon.jsx',
+    'apple-icon.js',
+    'sitemap.ts',
+    'sitemap.js',
+    'robots.ts',
+    'robots.js',
+    'manifest.ts',
+    'manifest.js',
 
     // Middleware and instrumentation (consumed by Next.js runtime)
-    'middleware.ts', 'middleware.js',
-    'instrumentation.ts', 'instrumentation.js',
-    'instrumentation-client.ts', 'instrumentation-client.js',
+    'middleware.ts',
+    'middleware.js',
+    'instrumentation.ts',
+    'instrumentation.js',
+    'instrumentation-client.ts',
+    'instrumentation-client.js',
 
     // Configuration files
-    'next.config.js', 'next.config.mjs', 'next.config.ts',
-    'mdx-components.tsx', 'mdx-components.ts', 'mdx-components.jsx', 'mdx-components.js',
+    'next.config.js',
+    'next.config.mjs',
+    'next.config.ts',
+    'mdx-components.tsx',
+    'mdx-components.ts',
+    'mdx-components.jsx',
+    'mdx-components.js',
   ];
 
   // Check exact filename match
@@ -1490,7 +1573,11 @@ function isFrameworkConventionFile(filePath: string): boolean {
 
   // Check if it's at root level for middleware/instrumentation
   if (!normalizedPath.includes('/') || normalizedPath.split('/').length <= 2) {
-    if (['middleware.ts', 'middleware.js', 'instrumentation.ts', 'instrumentation.js'].includes(fileName)) {
+    if (
+      ['middleware.ts', 'middleware.js', 'instrumentation.ts', 'instrumentation.js'].includes(
+        fileName
+      )
+    ) {
       return true;
     }
   }
@@ -1501,9 +1588,17 @@ function isFrameworkConventionFile(filePath: string): boolean {
 /**
  * Resolve import path to absolute file path
  */
-function resolveImportPath(importSource: string, importerFile: string, targetFile: string): string | null {
+function resolveImportPath(
+  importSource: string,
+  importerFile: string,
+  targetFile: string
+): string | null {
   // Skip external packages
-  if (!importSource.startsWith('.') && !importSource.startsWith('/') && !importSource.startsWith('@/')) {
+  if (
+    !importSource.startsWith('.') &&
+    !importSource.startsWith('/') &&
+    !importSource.startsWith('@/')
+  ) {
     return null;
   }
 
@@ -1516,9 +1611,9 @@ function resolveImportPath(importSource: string, importerFile: string, targetFil
 
     // Try multiple base directories for @/ alias
     // In Next.js, @/ can resolve to different bases depending on tsconfig.json
-    resolveCandidates.push(`src/${withoutAlias}`);  // Most common: @/ → src/
-    resolveCandidates.push(withoutAlias);            // Alternative: @/ → project root
-    resolveCandidates.push(`app/${withoutAlias}`);  // Alternative: @/ → app/
+    resolveCandidates.push(`src/${withoutAlias}`); // Most common: @/ → src/
+    resolveCandidates.push(withoutAlias); // Alternative: @/ → project root
+    resolveCandidates.push(`app/${withoutAlias}`); // Alternative: @/ → app/
   } else if (importSource.startsWith('/')) {
     resolveCandidates.push(importSource.slice(1));
   } else {
@@ -1559,18 +1654,29 @@ function resolveImportPath(importSource: string, importerFile: string, targetFil
 /**
  * Helper to print a table row with proper column alignment
  */
-function printTableRow(columns: string[], widths: number[], colors?: ('cyan' | 'yellow' | 'red' | 'gray')[]): void {
-  const row = columns.map((col, i) => {
-    const padded = col.padEnd(widths[i]);
-    if (colors && colors[i]) {
-      const color = colors[i];
-      return color === 'cyan' ? chalk.cyan(padded) :
-             color === 'yellow' ? chalk.yellow(padded) :
-             color === 'red' ? chalk.red(padded) :
-             color === 'gray' ? chalk.gray(padded) : padded;
-    }
-    return padded;
-  }).join(' │ ');
+function printTableRow(
+  columns: string[],
+  widths: number[],
+  colors?: ('cyan' | 'yellow' | 'red' | 'gray')[]
+): void {
+  const row = columns
+    .map((col, i) => {
+      const padded = col.padEnd(widths[i]);
+      if (colors && colors[i]) {
+        const color = colors[i];
+        return color === 'cyan'
+          ? chalk.cyan(padded)
+          : color === 'yellow'
+            ? chalk.yellow(padded)
+            : color === 'red'
+              ? chalk.red(padded)
+              : color === 'gray'
+                ? chalk.gray(padded)
+                : padded;
+      }
+      return padded;
+    })
+    .join(' │ ');
   console.log(`│ ${row} │`);
 }
 
@@ -1581,7 +1687,7 @@ function printTableSeparator(widths: number[], type: 'top' | 'middle' | 'bottom'
   const chars = {
     top: { left: '┌', middle: '┬', right: '┐', line: '─' },
     middle: { left: '├', middle: '┼', right: '┤', line: '─' },
-    bottom: { left: '└', middle: '┴', right: '┘', line: '─' }
+    bottom: { left: '└', middle: '┴', right: '┘', line: '─' },
   };
   const char = chars[type];
   const parts = widths.map(w => char.line.repeat(w + 2));
@@ -1614,16 +1720,25 @@ function printEnhancedReport(
     unusedFiles: unusedFiles.length,
     unusedAssets: unusedAssets.length,
     unusedExports: unusedExportsIssues.length,
-    total: allIssues.length
+    total: allIssues.length,
   };
 
   console.log(`  ${chalk.bold('Total Issues:')} ${chalk.red.bold(stats.total)}`);
   console.log('');
-  if (stats.build > 0) console.log(`    ${chalk.yellow('⚠️  Build Errors:')}     ${chalk.yellow.bold(stats.build)}`);
-  if (stats.static > 0) console.log(`    ${chalk.yellow('🔍 Static Issues:')}    ${chalk.yellow.bold(stats.static)}`);
-  if (stats.unusedFiles > 0) console.log(`    ${chalk.cyan('📄 Unused Files:')}     ${chalk.cyan.bold(stats.unusedFiles)}`);
-  if (stats.unusedAssets > 0) console.log(`    ${chalk.cyan('🖼️  Unused Assets:')}    ${chalk.cyan.bold(stats.unusedAssets)}`);
-  if (stats.unusedExports > 0) console.log(`    ${chalk.cyan('📦 Unused Exports:')}   ${chalk.cyan.bold(stats.unusedExports)}`);
+  if (stats.build > 0)
+    console.log(`    ${chalk.yellow('⚠️  Build Errors:')}     ${chalk.yellow.bold(stats.build)}`);
+  if (stats.static > 0)
+    console.log(`    ${chalk.yellow('🔍 Static Issues:')}    ${chalk.yellow.bold(stats.static)}`);
+  if (stats.unusedFiles > 0)
+    console.log(`    ${chalk.cyan('📄 Unused Files:')}     ${chalk.cyan.bold(stats.unusedFiles)}`);
+  if (stats.unusedAssets > 0)
+    console.log(
+      `    ${chalk.cyan('🖼️  Unused Assets:')}    ${chalk.cyan.bold(stats.unusedAssets)}`
+    );
+  if (stats.unusedExports > 0)
+    console.log(
+      `    ${chalk.cyan('📦 Unused Exports:')}   ${chalk.cyan.bold(stats.unusedExports)}`
+    );
   console.log('');
 
   // Group 1: Build and Static Issues (Critical)
@@ -1640,12 +1755,7 @@ function printEnhancedReport(
     printTableSeparator(widths, 'middle');
 
     criticalIssues.forEach(issue => {
-      const fileName = issue.file.length > 50 ? '...' + issue.file.slice(-47) : issue.file;
-      printTableRow([
-        issue.message.slice(0, 50),
-        issue.severity,
-        String(issue.line)
-      ], widths);
+      printTableRow([issue.message.slice(0, 50), issue.severity, String(issue.line)], widths);
     });
 
     printTableSeparator(widths, 'bottom');
@@ -1667,15 +1777,14 @@ function printEnhancedReport(
 
     unusedFiles.forEach((issue, idx) => {
       const filePath = issue.file.length > 65 ? '...' + issue.file.slice(-62) : issue.file;
-      printTableRow([
-        String(idx + 1),
-        filePath
-      ], widths);
+      printTableRow([String(idx + 1), filePath], widths);
     });
 
     printTableSeparator(widths, 'bottom');
     console.log('');
-    console.log(`  ${chalk.gray('Action:')} Run ${chalk.cyan.bold('carla clean')} to remove these files`);
+    console.log(
+      `  ${chalk.gray('Action:')} Run ${chalk.cyan.bold('carla clean')} to remove these files`
+    );
     console.log('');
   }
 
@@ -1694,15 +1803,14 @@ function printEnhancedReport(
 
     unusedAssets.forEach((issue, idx) => {
       const assetPath = issue.file.replace('public/', '');
-      printTableRow([
-        String(idx + 1),
-        assetPath
-      ], widths);
+      printTableRow([String(idx + 1), assetPath], widths);
     });
 
     printTableSeparator(widths, 'bottom');
     console.log('');
-    console.log(`  ${chalk.gray('Action:')} Run ${chalk.cyan.bold('carla clean')} to remove these assets`);
+    console.log(
+      `  ${chalk.gray('Action:')} Run ${chalk.cyan.bold('carla clean')} to remove these assets`
+    );
     console.log('');
   }
 
@@ -1728,20 +1836,20 @@ function printEnhancedReport(
 
       const filePath = issue.file.length > 45 ? '...' + issue.file.slice(-42) : issue.file;
       const exportDisplay = `${typeIcon} ${exportName}`;
-      const exportTruncated = exportDisplay.length > 20 ? exportDisplay.slice(0, 17) + '...' : exportDisplay;
+      const exportTruncated =
+        exportDisplay.length > 20 ? exportDisplay.slice(0, 17) + '...' : exportDisplay;
 
-      printTableRow([
-        String(idx + 1),
-        filePath,
-        exportTruncated,
-        String(issue.line)
-      ], widths);
+      printTableRow([String(idx + 1), filePath, exportTruncated, String(issue.line)], widths);
     });
 
     printTableSeparator(widths, 'bottom');
     console.log('');
-    console.log(`  ${chalk.gray('Legend:')} ${chalk.cyan('ƒ')} = function  ${chalk.cyan('C')} = class  ${chalk.cyan('∙')} = constant`);
-    console.log(`  ${chalk.gray('Action:')} Consider removing these unused exports to clean up your code`);
+    console.log(
+      `  ${chalk.gray('Legend:')} ${chalk.cyan('ƒ')} = function  ${chalk.cyan('C')} = class  ${chalk.cyan('∙')} = constant`
+    );
+    console.log(
+      `  ${chalk.gray('Action:')} Consider removing these unused exports to clean up your code`
+    );
     console.log('');
   }
 
@@ -1777,7 +1885,12 @@ export async function doctorCommand(options: DoctorOptions): Promise<void> {
     const unusedExportsIssues = await detectUnusedExports();
     logger.succeedSpinner(`Found ${unusedExportsIssues.length} unused exports`);
 
-    const allIssues = [...buildIssues, ...staticIssues, ...unusedCodeIssues, ...unusedExportsIssues];
+    const allIssues = [
+      ...buildIssues,
+      ...staticIssues,
+      ...unusedCodeIssues,
+      ...unusedExportsIssues,
+    ];
 
     if (allIssues.length === 0) {
       logger.success('✨ Your app is healthy! No issues found.');
@@ -1785,13 +1898,18 @@ export async function doctorCommand(options: DoctorOptions): Promise<void> {
     }
 
     // Print report
-    printEnhancedReport(allIssues, buildIssues, staticIssues, unusedCodeIssues, unusedExportsIssues);
+    printEnhancedReport(
+      allIssues,
+      buildIssues,
+      staticIssues,
+      unusedCodeIssues,
+      unusedExportsIssues
+    );
 
     // Exit with error code if issues found (for CI)
     if (options.check) {
       process.exit(1);
     }
-
   } catch (error) {
     logger.stopSpinner();
     logger.error('Doctor command failed');

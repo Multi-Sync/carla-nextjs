@@ -35,10 +35,10 @@ import chalk from 'chalk';
 // ============================================================================
 
 export interface CleanOptions {
-  check?: boolean;      // CI mode - only check, don't prompt
-  autoFix?: boolean;    // Auto-delete without prompts
+  check?: boolean; // CI mode - only check, don't prompt
+  autoFix?: boolean; // Auto-delete without prompts
   type?: 'files' | 'exports' | 'deps' | 'duplicates' | 'all';
-  gitOnly?: boolean;    // Only check git-tracked files
+  gitOnly?: boolean; // Only check git-tracked files
 }
 
 interface UnusedItem {
@@ -46,8 +46,8 @@ interface UnusedItem {
   path: string;
   name: string;
   reason: string;
-  size?: number;        // File size in bytes
-  line?: number;        // Line number for exports
+  size?: number; // File size in bytes
+  line?: number; // Line number for exports
   exportType?: 'function' | 'const' | 'class' | 'default';
 }
 
@@ -89,7 +89,7 @@ async function findUnusedCode(): Promise<UnusedItem[]> {
           path: file,
           name: path.basename(file),
           reason: 'Not reachable from any Next.js entry point',
-          size: stats.size
+          size: stats.size,
         });
       } catch {
         // File might not exist anymore
@@ -106,7 +106,7 @@ async function findUnusedCode(): Promise<UnusedItem[]> {
           path: publicPath,
           name: path.basename(asset),
           reason: 'Public asset not referenced in any code',
-          size: stats.size
+          size: stats.size,
         });
       } catch {
         // Asset might not exist anymore
@@ -117,7 +117,6 @@ async function findUnusedCode(): Promise<UnusedItem[]> {
       `Found ${result.unreachableFiles.length} unreachable files and ${result.unreachableAssets.length} unreachable assets`
     );
     return unused;
-
   } catch (error: any) {
     logger.failSpinner(`Reachability analysis failed: ${error.message}`);
     return [];
@@ -134,7 +133,7 @@ interface ExportInfo {
   filePath: string;
   line: number;
   code: string;
-  usedInDefaultExport?: boolean;  // True if this named export is used as default export value
+  usedInDefaultExport?: boolean; // True if this named export is used as default export value
 }
 
 interface ImportInfo {
@@ -145,9 +144,9 @@ interface ImportInfo {
 }
 
 interface RenameInfo {
-  originalFile: string;      // File where the original export lives
-  originalName: string;      // Original export name
-  aliasName: string;         // Renamed export name
+  originalFile: string; // File where the original export lives
+  originalName: string; // Original export name
+  aliasName: string; // Renamed export name
   reexportedFromFile: string; // File doing the re-export (barrel file)
 }
 
@@ -161,7 +160,7 @@ async function extractExports(filePath: string): Promise<ExportInfo[]> {
     const content = await fs.readFile(filePath, 'utf-8');
     const ast = parser.parse(content, {
       sourceType: 'module',
-      plugins: ['jsx', 'typescript', 'decorators-legacy']
+      plugins: ['jsx', 'typescript', 'decorators-legacy'],
     });
 
     traverse(ast, {
@@ -174,7 +173,7 @@ async function extractExports(filePath: string): Promise<ExportInfo[]> {
               type: 'function',
               filePath,
               line: path.node.loc?.start.line || 0,
-              code: generate(funcNode).code.split('\n')[0]
+              code: generate(funcNode).code.split('\n')[0],
             });
           }
         }
@@ -182,14 +181,14 @@ async function extractExports(filePath: string): Promise<ExportInfo[]> {
         if (t.isVariableDeclaration(path.node.declaration)) {
           path.node.declaration.declarations.forEach((decl: any) => {
             if (t.isIdentifier(decl.id)) {
-              const isFunction = t.isArrowFunctionExpression(decl.init) ||
-                                t.isFunctionExpression(decl.init);
+              const isFunction =
+                t.isArrowFunctionExpression(decl.init) || t.isFunctionExpression(decl.init);
               exports.push({
                 name: decl.id.name,
                 type: isFunction ? 'function' : 'const',
                 filePath,
                 line: path.node.loc?.start.line || 0,
-                code: generate(decl).code.split('\n')[0]
+                code: generate(decl).code.split('\n')[0],
               });
             }
           });
@@ -203,20 +202,22 @@ async function extractExports(filePath: string): Promise<ExportInfo[]> {
               type: 'class',
               filePath,
               line: path.node.loc?.start.line || 0,
-              code: `class ${classNode.id.name} { ... }`
+              code: `class ${classNode.id.name} { ... }`,
             });
           }
         }
 
-        if (t.isTSTypeAliasDeclaration(path.node.declaration) ||
-            t.isTSInterfaceDeclaration(path.node.declaration)) {
+        if (
+          t.isTSTypeAliasDeclaration(path.node.declaration) ||
+          t.isTSInterfaceDeclaration(path.node.declaration)
+        ) {
           const typeNode = path.node.declaration;
           exports.push({
             name: typeNode.id.name,
             type: 'type',
             filePath,
             line: path.node.loc?.start.line || 0,
-            code: generate(typeNode).code.split('\n')[0]
+            code: generate(typeNode).code.split('\n')[0],
           });
         }
 
@@ -231,7 +232,7 @@ async function extractExports(filePath: string): Promise<ExportInfo[]> {
                 type: 'const',
                 filePath,
                 line: path.node.loc?.start.line || 0,
-                code: `export { ${exportedName} }`
+                code: `export { ${exportedName} }`,
               });
             }
           });
@@ -258,9 +259,9 @@ async function extractExports(filePath: string): Promise<ExportInfo[]> {
           type,
           filePath,
           line: path.node.loc?.start.line || 0,
-          code: generate(path.node).code.split('\n')[0]
+          code: generate(path.node).code.split('\n')[0],
         });
-      }
+      },
     });
 
     // Second pass: Check if any named export is used as the value of default export
@@ -294,9 +295,8 @@ async function extractExports(filePath: string): Promise<ExportInfo[]> {
             }
           }
         }
-      }
+      },
     });
-
   } catch (error) {
     // Skip files that can't be parsed
   }
@@ -313,7 +313,7 @@ async function isExportUsedWithinFile(filePath: string, exportName: string): Pro
     const content = await fs.readFile(filePath, 'utf-8');
     const ast = parser.parse(content, {
       sourceType: 'module',
-      plugins: ['jsx', 'typescript', 'decorators-legacy']
+      plugins: ['jsx', 'typescript', 'decorators-legacy'],
     });
 
     let usageCount = 0;
@@ -332,13 +332,19 @@ async function isExportUsedWithinFile(filePath: string, exportName: string): Pro
 
           // Skip if this is a function/class name in export declaration
           // export function foo() <- skip the foo here
-          if ((t.isFunctionDeclaration(parent) || t.isClassDeclaration(parent)) && parent.id === path.node) {
+          if (
+            (t.isFunctionDeclaration(parent) || t.isClassDeclaration(parent)) &&
+            parent.id === path.node
+          ) {
             return;
           }
 
           // Skip if this is the exported identifier in export specifier
           // export { foo } <- skip the foo here
-          if (t.isExportSpecifier(parent) && (parent.exported === path.node || parent.local === path.node)) {
+          if (
+            t.isExportSpecifier(parent) &&
+            (parent.exported === path.node || parent.local === path.node)
+          ) {
             return;
           }
 
@@ -350,7 +356,7 @@ async function isExportUsedWithinFile(filePath: string, exportName: string): Pro
           // Count this as a usage
           usageCount++;
         }
-      }
+      },
     });
 
     // If used at least once outside the export declaration, it's used internally
@@ -371,7 +377,7 @@ async function extractImports(filePath: string): Promise<ImportInfo[]> {
     const content = await fs.readFile(filePath, 'utf-8');
     const ast = parser.parse(content, {
       sourceType: 'module',
-      plugins: ['jsx', 'typescript', 'decorators-legacy']
+      plugins: ['jsx', 'typescript', 'decorators-legacy'],
     });
 
     traverse(ast, {
@@ -387,21 +393,21 @@ async function extractImports(filePath: string): Promise<ImportInfo[]> {
               importedName,
               localName: spec.local.name,
               source,
-              filePath
+              filePath,
             });
           } else if (t.isImportDefaultSpecifier(spec)) {
             imports.push({
               importedName: 'default',
               localName: spec.local.name,
               source,
-              filePath
+              filePath,
             });
           } else if (t.isImportNamespaceSpecifier(spec)) {
             imports.push({
               importedName: '*',
               localName: spec.local.name,
               source,
-              filePath
+              filePath,
             });
           }
         });
@@ -421,7 +427,7 @@ async function extractImports(filePath: string): Promise<ImportInfo[]> {
             importedName: 'default',
             localName: '', // No local binding name for dynamic imports
             source,
-            filePath
+            filePath,
           });
         }
 
@@ -444,7 +450,7 @@ async function extractImports(filePath: string): Promise<ImportInfo[]> {
                   importedName: 'default',
                   localName: '',
                   source,
-                  filePath
+                  filePath,
                 });
               }
             }
@@ -461,7 +467,7 @@ async function extractImports(filePath: string): Promise<ImportInfo[]> {
                       importedName: 'default',
                       localName: '',
                       source,
-                      filePath
+                      filePath,
                     });
                   }
                 }
@@ -484,7 +490,11 @@ async function extractImports(filePath: string): Promise<ImportInfo[]> {
           if (t.isVariableDeclarator(parent) && t.isObjectPattern(parent.id)) {
             // Extract destructured identifiers: const { Conversation, X } = require('./file')
             parent.id.properties.forEach((prop: any) => {
-              if (t.isObjectProperty(prop) && t.isIdentifier(prop.key) && t.isIdentifier(prop.value)) {
+              if (
+                t.isObjectProperty(prop) &&
+                t.isIdentifier(prop.key) &&
+                t.isIdentifier(prop.value)
+              ) {
                 const importedName = prop.key.name;
                 const localName = prop.value.name;
 
@@ -492,7 +502,7 @@ async function extractImports(filePath: string): Promise<ImportInfo[]> {
                   importedName,
                   localName,
                   source,
-                  filePath
+                  filePath,
                 });
               }
             });
@@ -523,7 +533,7 @@ async function extractImports(filePath: string): Promise<ImportInfo[]> {
                 importedName,
                 localName: exportedName,
                 source,
-                filePath
+                filePath,
               });
             }
           });
@@ -537,9 +547,9 @@ async function extractImports(filePath: string): Promise<ImportInfo[]> {
           importedName: '*',
           localName: '*',
           source,
-          filePath
+          filePath,
         });
-      }
+      },
     });
   } catch (error) {
     // Skip files that can't be parsed
@@ -559,7 +569,7 @@ async function extractReexportsWithRenames(filePath: string): Promise<RenameInfo
     const content = await fs.readFile(filePath, 'utf-8');
     const ast = parser.parse(content, {
       sourceType: 'module',
-      plugins: ['jsx', 'typescript', 'decorators-legacy']
+      plugins: ['jsx', 'typescript', 'decorators-legacy'],
     });
 
     traverse(ast, {
@@ -587,14 +597,14 @@ async function extractReexportsWithRenames(filePath: string): Promise<RenameInfo
                     originalFile: resolvedSource,
                     originalName,
                     aliasName,
-                    reexportedFromFile: filePath
+                    reexportedFromFile: filePath,
                   });
                 }
               }
             }
           });
         }
-      }
+      },
     });
   } catch (error) {
     // Skip files that can't be parsed
@@ -607,7 +617,11 @@ async function extractReexportsWithRenames(filePath: string): Promise<RenameInfo
  * Resolve import path for rename tracking
  */
 function resolveImportPathForRename(importSource: string, importerFile: string): string | null {
-  if (!importSource.startsWith('.') && !importSource.startsWith('/') && !importSource.startsWith('@/')) {
+  if (
+    !importSource.startsWith('.') &&
+    !importSource.startsWith('/') &&
+    !importSource.startsWith('@/')
+  ) {
     return null;
   }
 
@@ -645,8 +659,16 @@ function resolveImportPathForRename(importSource: string, importerFile: string):
 /**
  * Resolve import path to match target file
  */
-function resolveImportPath(importSource: string, importerFile: string, targetFile: string): string | null {
-  if (!importSource.startsWith('.') && !importSource.startsWith('/') && !importSource.startsWith('@/')) {
+function resolveImportPath(
+  importSource: string,
+  importerFile: string,
+  targetFile: string
+): string | null {
+  if (
+    !importSource.startsWith('.') &&
+    !importSource.startsWith('/') &&
+    !importSource.startsWith('@/')
+  ) {
     return null;
   }
 
@@ -659,9 +681,9 @@ function resolveImportPath(importSource: string, importerFile: string, targetFil
 
     // Try multiple base directories for @/ alias
     // In Next.js, @/ can resolve to different bases depending on tsconfig.json
-    resolveCandidates.push(`src/${withoutAlias}`);  // Most common: @/ → src/
-    resolveCandidates.push(withoutAlias);            // Alternative: @/ → project root
-    resolveCandidates.push(`app/${withoutAlias}`);  // Alternative: @/ → app/
+    resolveCandidates.push(`src/${withoutAlias}`); // Most common: @/ → src/
+    resolveCandidates.push(withoutAlias); // Alternative: @/ → project root
+    resolveCandidates.push(`app/${withoutAlias}`); // Alternative: @/ → app/
   } else if (importSource.startsWith('/')) {
     resolveCandidates.push(importSource.slice(1));
   } else {
@@ -706,33 +728,83 @@ function isFrameworkConventionFile(filePath: string): boolean {
   // Framework files that are consumed by Next.js itself
   const frameworkFiles = [
     // Core routing files (App Router)
-    'page.tsx', 'page.ts', 'page.jsx', 'page.js',
-    'layout.tsx', 'layout.ts', 'layout.jsx', 'layout.js',
-    'route.tsx', 'route.ts', 'route.jsx', 'route.js',
-    'loading.tsx', 'loading.ts', 'loading.jsx', 'loading.js',
-    'error.tsx', 'error.ts', 'error.jsx', 'error.js',
-    'not-found.tsx', 'not-found.ts', 'not-found.jsx', 'not-found.js',
-    'global-error.tsx', 'global-error.ts', 'global-error.jsx', 'global-error.js',
-    'template.tsx', 'template.ts', 'template.jsx', 'template.js',
-    'default.tsx', 'default.ts', 'default.jsx', 'default.js',
+    'page.tsx',
+    'page.ts',
+    'page.jsx',
+    'page.js',
+    'layout.tsx',
+    'layout.ts',
+    'layout.jsx',
+    'layout.js',
+    'route.tsx',
+    'route.ts',
+    'route.jsx',
+    'route.js',
+    'loading.tsx',
+    'loading.ts',
+    'loading.jsx',
+    'loading.js',
+    'error.tsx',
+    'error.ts',
+    'error.jsx',
+    'error.js',
+    'not-found.tsx',
+    'not-found.ts',
+    'not-found.jsx',
+    'not-found.js',
+    'global-error.tsx',
+    'global-error.ts',
+    'global-error.jsx',
+    'global-error.js',
+    'template.tsx',
+    'template.ts',
+    'template.jsx',
+    'template.js',
+    'default.tsx',
+    'default.ts',
+    'default.jsx',
+    'default.js',
 
     // Metadata files (consumed by Next.js for SEO/metadata generation)
-    'opengraph-image.tsx', 'opengraph-image.ts', 'opengraph-image.jsx', 'opengraph-image.js',
-    'twitter-image.tsx', 'twitter-image.ts', 'twitter-image.jsx', 'twitter-image.js',
-    'icon.tsx', 'icon.ts', 'icon.jsx', 'icon.js',
-    'apple-icon.tsx', 'apple-icon.ts', 'apple-icon.jsx', 'apple-icon.js',
-    'sitemap.ts', 'sitemap.js',
-    'robots.ts', 'robots.js',
-    'manifest.ts', 'manifest.js',
+    'opengraph-image.tsx',
+    'opengraph-image.ts',
+    'opengraph-image.jsx',
+    'opengraph-image.js',
+    'twitter-image.tsx',
+    'twitter-image.ts',
+    'twitter-image.jsx',
+    'twitter-image.js',
+    'icon.tsx',
+    'icon.ts',
+    'icon.jsx',
+    'icon.js',
+    'apple-icon.tsx',
+    'apple-icon.ts',
+    'apple-icon.jsx',
+    'apple-icon.js',
+    'sitemap.ts',
+    'sitemap.js',
+    'robots.ts',
+    'robots.js',
+    'manifest.ts',
+    'manifest.js',
 
     // Middleware and instrumentation (consumed by Next.js runtime)
-    'middleware.ts', 'middleware.js',
-    'instrumentation.ts', 'instrumentation.js',
-    'instrumentation-client.ts', 'instrumentation-client.js',
+    'middleware.ts',
+    'middleware.js',
+    'instrumentation.ts',
+    'instrumentation.js',
+    'instrumentation-client.ts',
+    'instrumentation-client.js',
 
     // Configuration files
-    'next.config.js', 'next.config.mjs', 'next.config.ts',
-    'mdx-components.tsx', 'mdx-components.ts', 'mdx-components.jsx', 'mdx-components.js',
+    'next.config.js',
+    'next.config.mjs',
+    'next.config.ts',
+    'mdx-components.tsx',
+    'mdx-components.ts',
+    'mdx-components.jsx',
+    'mdx-components.js',
   ];
 
   // Check exact filename match
@@ -747,7 +819,11 @@ function isFrameworkConventionFile(filePath: string): boolean {
 
   // Check if it's at root level for middleware/instrumentation
   if (!normalizedPath.includes('/') || normalizedPath.split('/').length <= 2) {
-    if (['middleware.ts', 'middleware.js', 'instrumentation.ts', 'instrumentation.js'].includes(fileName)) {
+    if (
+      ['middleware.ts', 'middleware.js', 'instrumentation.ts', 'instrumentation.js'].includes(
+        fileName
+      )
+    ) {
       return true;
     }
   }
@@ -758,7 +834,9 @@ function isFrameworkConventionFile(filePath: string): boolean {
 /**
  * Detect unused exports in used files
  */
-async function detectUnusedExports(unusedFilePaths: Set<string> = new Set()): Promise<UnusedItem[]> {
+async function detectUnusedExports(
+  unusedFilePaths: Set<string> = new Set()
+): Promise<UnusedItem[]> {
   const unused: UnusedItem[] = [];
 
   try {
@@ -769,9 +847,7 @@ async function detectUnusedExports(unusedFilePaths: Set<string> = new Set()): Pr
 
     const glob = await import('fast-glob');
 
-    const allFiles = await glob.default([
-      'src/**/*.{js,jsx,ts,tsx}'
-    ], {
+    const allFiles = await glob.default(['src/**/*.{js,jsx,ts,tsx}'], {
       cwd: process.cwd(),
       absolute: false,
       ignore: [
@@ -783,13 +859,15 @@ async function detectUnusedExports(unusedFilePaths: Set<string> = new Set()): Pr
         '**/__tests__/**',
         '**/__mocks__/**',
         '**/*.d.ts',
-      ]
+      ],
     });
 
     // Filter out files that are themselves unused (will be deleted entirely)
     const reachableFiles = allFiles.filter(file => !unusedFilePaths.has(file));
 
-    logger.info(`Scanning ${reachableFiles.length} reachable files for exports (${allFiles.length - reachableFiles.length} unused files excluded)...`);
+    logger.info(
+      `Scanning ${reachableFiles.length} reachable files for exports (${allFiles.length - reachableFiles.length} unused files excluded)...`
+    );
     const exportMap = new Map<string, ExportInfo[]>();
 
     for (const file of reachableFiles) {
@@ -843,8 +921,12 @@ async function detectUnusedExports(unusedFilePaths: Set<string> = new Set()): Pr
 
     for (const [filePath, exports] of exportMap) {
       // Skip barrel files (index files re-export and may look unused)
-      if (filePath.endsWith('/index.ts') || filePath.endsWith('/index.tsx') ||
-          filePath.endsWith('/index.js') || filePath.endsWith('/index.jsx')) {
+      if (
+        filePath.endsWith('/index.ts') ||
+        filePath.endsWith('/index.tsx') ||
+        filePath.endsWith('/index.js') ||
+        filePath.endsWith('/index.jsx')
+      ) {
         continue;
       }
 
@@ -874,11 +956,13 @@ async function detectUnusedExports(unusedFilePaths: Set<string> = new Set()): Pr
         // Check if this export (or any of its aliases) is imported anywhere
         const isImported = allImports.some(imp => {
           const resolvedSource = resolveImportPath(imp.source, imp.filePath, filePath);
-          return resolvedSource === filePath &&
-                 (imp.importedName === exportInfo.name ||
-                  aliases.includes(imp.importedName) ||
-                  imp.importedName === 'default' && exportInfo.name === 'default' ||
-                  imp.importedName === '*');
+          return (
+            resolvedSource === filePath &&
+            (imp.importedName === exportInfo.name ||
+              aliases.includes(imp.importedName) ||
+              (imp.importedName === 'default' && exportInfo.name === 'default') ||
+              imp.importedName === '*')
+          );
         });
 
         // Check if used internally within the same file
@@ -892,7 +976,7 @@ async function detectUnusedExports(unusedFilePaths: Set<string> = new Set()): Pr
             name: exportInfo.name,
             reason: `Exported ${exportInfo.type} never imported`,
             line: exportInfo.line,
-            exportType: exportInfo.type
+            exportType: exportInfo.type,
           });
         }
       }
@@ -909,12 +993,16 @@ async function detectUnusedExports(unusedFilePaths: Set<string> = new Set()): Pr
 /**
  * Remove a specific export from a file using AST
  */
-async function removeExportFromFile(filePath: string, exportName: string, line: number): Promise<boolean> {
+async function removeExportFromFile(
+  filePath: string,
+  exportName: string,
+  line: number
+): Promise<boolean> {
   try {
     const content = await fs.readFile(filePath, 'utf-8');
     const ast = parser.parse(content, {
       sourceType: 'module',
-      plugins: ['jsx', 'typescript', 'decorators-legacy']
+      plugins: ['jsx', 'typescript', 'decorators-legacy'],
     });
 
     let modified = false;
@@ -952,13 +1040,13 @@ async function removeExportFromFile(filePath: string, exportName: string, line: 
           path.remove();
           modified = true;
         }
-      }
+      },
     });
 
     if (modified) {
       const newCode = generate(ast as any, {
         retainLines: true,
-        comments: true
+        comments: true,
       }).code;
       await fs.writeFile(filePath, newCode);
       return true;
@@ -987,7 +1075,7 @@ async function findDuplicateComponents(): Promise<DuplicateGroup[]> {
   const glob = await import('fast-glob');
   const componentFiles = await glob.default(['**/*.{tsx,jsx}'], {
     cwd: process.cwd(),
-    ignore: ['node_modules', '.next', 'dist', '.git']
+    ignore: ['node_modules', '.next', 'dist', '.git'],
   });
 
   const componentsBySignature = new Map<string, ComponentInfo[]>();
@@ -998,7 +1086,7 @@ async function findDuplicateComponents(): Promise<DuplicateGroup[]> {
     try {
       const ast = parser.parse(content, {
         sourceType: 'module',
-        plugins: ['jsx', 'typescript', 'decorators-legacy']
+        plugins: ['jsx', 'typescript', 'decorators-legacy'],
       });
 
       let hasComponent = false;
@@ -1042,7 +1130,7 @@ async function findDuplicateComponents(): Promise<DuplicateGroup[]> {
               jsxStructure = generate(structureAst).code;
             }
           }
-        }
+        },
       });
 
       if (hasComponent && jsxStructure) {
@@ -1059,7 +1147,7 @@ async function findDuplicateComponents(): Promise<DuplicateGroup[]> {
           ast,
           jsxStructure,
           imports,
-          exports
+          exports,
         });
       }
     } catch (error) {
@@ -1084,7 +1172,7 @@ async function findDuplicateComponents(): Promise<DuplicateGroup[]> {
       duplicateGroups.push({
         signature,
         components,
-        recommendation: `Keep ${sorted[0].name}, remove others`
+        recommendation: `Keep ${sorted[0].name}, remove others`,
       });
     }
   }
@@ -1099,29 +1187,35 @@ async function findDuplicateComponents(): Promise<DuplicateGroup[]> {
 function normalizeJSX(node: any): any {
   const cloned = t.cloneNode(node, true, true);
 
-  traverse(cloned as any, {
-    JSXElement(path: any) {
-      // Remove all attributes
-      if (path.node.openingElement) {
-        path.node.openingElement.attributes = [];
-      }
-    },
+  traverse(
+    cloned as any,
+    {
+      JSXElement(path: any) {
+        // Remove all attributes
+        if (path.node.openingElement) {
+          path.node.openingElement.attributes = [];
+        }
+      },
 
-    JSXText(path: any) {
-      // Replace all text with placeholder
-      path.node.value = 'TEXT';
-    },
+      JSXText(path: any) {
+        // Replace all text with placeholder
+        path.node.value = 'TEXT';
+      },
 
-    StringLiteral(path: any) {
-      // Normalize string literals
-      path.node.value = 'STRING';
-    },
+      StringLiteral(path: any) {
+        // Normalize string literals
+        path.node.value = 'STRING';
+      },
 
-    NumericLiteral(path: any) {
-      // Normalize numbers
-      path.node.value = 0;
-    }
-  }, undefined, undefined, undefined);
+      NumericLiteral(path: any) {
+        // Normalize numbers
+        path.node.value = 0;
+      },
+    },
+    undefined,
+    undefined,
+    undefined
+  );
 
   return cloned;
 }
@@ -1152,7 +1246,7 @@ async function interactiveClean(
     exportsRemoved: 0,
     dependenciesRemoved: 0,
     diskSpaceSaved: 0,
-    deletedFiles: []
+    deletedFiles: [],
   };
   const fileItems = unused.filter(i => i.type === 'file');
   const exportItems = unused.filter(i => i.type === 'export');
@@ -1194,8 +1288,8 @@ async function interactiveClean(
         choices: [
           { title: '📋 Show diff between components', value: 'diff' },
           { title: '✅ Keep first, delete others', value: 'delete' },
-          { title: '⏭️  Skip this group', value: 'skip' }
-        ]
+          { title: '⏭️  Skip this group', value: 'skip' },
+        ],
       });
 
       if (response.action === 'diff') {
@@ -1230,7 +1324,7 @@ async function interactiveClean(
           type: 'confirm',
           name: 'delete',
           message: 'Delete duplicates and keep first?',
-          initial: false
+          initial: false,
         });
 
         if (deleteResponse.delete) {
@@ -1272,7 +1366,7 @@ async function interactiveClean(
       type: 'confirm',
       name: 'deleteFiles',
       message: `Delete ${fileItems.length} unused files?`,
-      initial: false
+      initial: false,
     });
 
     if (response.deleteFiles) {
@@ -1302,11 +1396,10 @@ async function interactiveClean(
       type: 'confirm',
       name: 'uninstallDeps',
       message: `Uninstall ${depItems.length} unused dependencies?`,
-      initial: false
+      initial: false,
     });
 
     if (response.uninstallDeps) {
-      const depsToRemove = depItems.map(d => d.name).join(' ');
       logger.startSpinner('Uninstalling dependencies...');
 
       try {
@@ -1337,9 +1430,11 @@ async function interactiveClean(
     for (const [filePath, exports] of exportsByFile) {
       console.log(chalk.cyan(`\n${filePath}:`));
       exports.forEach((exp, idx) => {
-        const typeIcon = exp.exportType === 'function' ? 'ƒ' :
-                        exp.exportType === 'class' ? 'C' : '∙';
-        console.log(`  ${chalk.gray(`${idx + 1}.`)} ${typeIcon} ${chalk.yellow(exp.name)} ${chalk.gray(`(line ${exp.line})`)}`);
+        const typeIcon =
+          exp.exportType === 'function' ? 'ƒ' : exp.exportType === 'class' ? 'C' : '∙';
+        console.log(
+          `  ${chalk.gray(`${idx + 1}.`)} ${typeIcon} ${chalk.yellow(exp.name)} ${chalk.gray(`(line ${exp.line})`)}`
+        );
       });
 
       const response = await prompts({
@@ -1349,8 +1444,8 @@ async function interactiveClean(
         choices: [
           { title: '✅ Yes, remove all exports from this file', value: 'remove' },
           { title: '📋 Show file preview first', value: 'preview' },
-          { title: '⏭️  Skip this file', value: 'skip' }
-        ]
+          { title: '⏭️  Skip this file', value: 'skip' },
+        ],
       });
 
       if (response.action === 'preview') {
@@ -1386,7 +1481,7 @@ async function interactiveClean(
             type: 'confirm',
             name: 'remove',
             message: 'Remove these exports?',
-            initial: false
+            initial: false,
           });
 
           if (!confirmResponse.remove) {
@@ -1453,9 +1548,7 @@ export async function cleanCommand(options: CleanOptions): Promise<void> {
 
     // Extract unused file paths to pass to detectUnusedExports
     const unusedFilePaths = new Set(
-      unused
-        .filter(item => item.type === 'file')
-        .map(item => item.path)
+      unused.filter(item => item.type === 'file').map(item => item.path)
     );
 
     // Find unused exports (functions/constants/classes)
@@ -1486,7 +1579,12 @@ export async function cleanCommand(options: CleanOptions): Promise<void> {
     const stats = await interactiveClean(unused, duplicates);
 
     // Display beautiful colored summary
-    if (stats.filesDeleted > 0 || stats.exportsRemoved > 0 || stats.dependenciesRemoved > 0 || stats.duplicatesDeleted > 0) {
+    if (
+      stats.filesDeleted > 0 ||
+      stats.exportsRemoved > 0 ||
+      stats.dependenciesRemoved > 0 ||
+      stats.duplicatesDeleted > 0
+    ) {
       console.log('\n' + '='.repeat(70));
       logger.section('✨ Cleanup Impact Summary');
 
@@ -1517,9 +1615,8 @@ export async function cleanCommand(options: CleanOptions): Promise<void> {
     logger.list([
       'Run tests: npm test',
       'Check build: npm run build',
-      'Commit changes: git add . && git commit -m "chore: remove unused code"'
+      'Commit changes: git add . && git commit -m "chore: remove unused code"',
     ]);
-
   } catch (error) {
     logger.stopSpinner();
     logger.error('Clean command failed');

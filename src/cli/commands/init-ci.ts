@@ -18,7 +18,6 @@ import { execa } from 'execa';
 import fs from 'fs/promises';
 import path from 'path';
 import prompts from 'prompts';
-import chalk from 'chalk';
 
 // ============================================================================
 // Types
@@ -202,7 +201,7 @@ async function hasExistingGitHubActions(): Promise<boolean> {
 async function hasHusky(): Promise<boolean> {
   try {
     const packageJson = await readPackageJson();
-    return !!(packageJson.devDependencies?.husky);
+    return !!packageJson.devDependencies?.husky;
   } catch {
     return false;
   }
@@ -254,7 +253,7 @@ async function setupGitHubActions(strategy: CIStrategy, force: boolean): Promise
       type: 'confirm',
       name: 'overwrite',
       message: 'Overwrite existing workflow?',
-      initial: false
+      initial: false,
     });
 
     if (!response.overwrite) {
@@ -373,9 +372,9 @@ async function setupQualityTracking(): Promise<void> {
       issuesFound: 0,
       issuesFixed: 0,
       duplicatesRemoved: 0,
-      brokenLinksFixed: 0
+      brokenLinksFixed: 0,
     },
-    history: []
+    history: [],
   };
 
   await fs.writeFile('.carla/metrics.json', JSON.stringify(baseline, null, 2));
@@ -405,7 +404,7 @@ export async function initCICommand(options: InitCIOptions): Promise<void> {
     logger.section('🛡️ Initializing CI/CD - The Safety Net');
 
     // Check if this is a git repo
-    if (!await isGitRepo()) {
+    if (!(await isGitRepo())) {
       logger.error('This is not a git repository');
       logger.info('Initialize git first: git init');
       process.exit(1);
@@ -423,20 +422,20 @@ export async function initCICommand(options: InitCIOptions): Promise<void> {
           {
             title: '🚀 Full QA (Recommended)',
             description: 'GitHub Actions + Pre-commit hooks + All checks',
-            value: 'full'
+            value: 'full',
           },
           {
             title: '⚡ Quick Check',
             description: 'GitHub Actions with essential checks only',
-            value: 'quick'
+            value: 'quick',
           },
           {
             title: '🪝 Hooks Only',
             description: 'Pre-commit hooks only (no GitHub Actions)',
-            value: 'hooks-only'
-          }
+            value: 'hooks-only',
+          },
         ],
-        initial: 0
+        initial: 0,
       });
 
       strategy = response.strategy;
@@ -476,7 +475,7 @@ export async function initCICommand(options: InitCIOptions): Promise<void> {
 
     const steps = [
       'Commit these changes: git add . && git commit -m "chore: add Carla CI/CD"',
-      'Push to GitHub: git push'
+      'Push to GitHub: git push',
     ];
 
     if (strategy !== 'hooks-only') {
@@ -491,7 +490,6 @@ export async function initCICommand(options: InitCIOptions): Promise<void> {
     if (strategy !== 'hooks-only') {
       logger.info('GitHub Actions: Runs on every Pull Request to prevent bad code');
     }
-
   } catch (error) {
     logger.stopSpinner();
     logger.error('Init-CI command failed');

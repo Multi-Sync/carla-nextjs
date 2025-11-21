@@ -48,10 +48,10 @@ console.log(banner);
 
 // Register commands
 // NEW QA COMMANDS - The Killer Features
-registerDoctorCommand(program);    // 👨‍⚕️ AI-powered hydration & error fixing
-registerCleanCommand(program);     // 🧹 Unused code & duplicate detection
-registerVerifyCommand(program);    // 🔗 Broken link detection & auto-fix
-registerInitCICommand(program);    // 🛡️ CI/CD setup (GitHub Actions + Husky)
+registerDoctorCommand(program); // 👨‍⚕️ AI-powered hydration & error fixing
+registerCleanCommand(program); // 🧹 Unused code & duplicate detection
+registerVerifyCommand(program); // 🔗 Broken link detection & auto-fix
+registerInitCICommand(program); // 🛡️ CI/CD setup (GitHub Actions + Husky)
 
 // ORIGINAL COMMANDS - Still valuable
 registerScanCommand(program);

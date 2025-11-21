@@ -16,7 +16,6 @@ import { logger } from '../utils/logger.js';
 import { LinkChecker, LinkState } from 'linkinator';
 import { execa } from 'execa';
 import fs from 'fs/promises';
-import path from 'path';
 import prompts from 'prompts';
 import chalk from 'chalk';
 
@@ -25,10 +24,10 @@ import chalk from 'chalk';
 // ============================================================================
 
 export interface VerifyOptions {
-  url?: string;         // Base URL (default: http://localhost:3000)
-  build?: boolean;      // Build before checking
-  fix?: boolean;        // Auto-generate redirects for broken links
-  port?: number;        // Port to use for dev server
+  url?: string; // Base URL (default: http://localhost:3000)
+  build?: boolean; // Build before checking
+  fix?: boolean; // Auto-generate redirects for broken links
+  port?: number; // Port to use for dev server
 }
 
 interface BrokenLink {
@@ -58,7 +57,7 @@ async function isServerRunning(port: number): Promise<boolean> {
   try {
     const response = await fetch(`http://localhost:${port}`, {
       method: 'HEAD',
-      signal: AbortSignal.timeout(2000)
+      signal: AbortSignal.timeout(2000),
     });
     return response.ok || response.status === 404; // Any response means server is running
   } catch {
@@ -75,7 +74,7 @@ async function startDevServer(port: number): Promise<void> {
   devServerProcess = execa('npm', ['run', 'dev'], {
     env: { PORT: String(port) },
     detached: false,
-    cleanup: true
+    cleanup: true,
   });
 
   // Wait for server to be ready
@@ -121,62 +120,61 @@ async function discoverRoutes(): Promise<NextRoute[]> {
   // App Router pages
   const appPages = await glob.default(['**/app/**/page.{ts,tsx,js,jsx}'], {
     cwd: process.cwd(),
-    ignore: ['node_modules', '.next', 'dist']
+    ignore: ['node_modules', '.next', 'dist'],
   });
 
   for (const file of appPages) {
-    const routePath = file
-      .replace(/^.*\/app/, '')
-      .replace(/\/page\.(ts|tsx|js|jsx)$/, '')
-      .replace(/\[([^\]]+)\]/g, ':$1') // Convert [id] to :id
-      || '/';
+    const routePath =
+      file
+        .replace(/^.*\/app/, '')
+        .replace(/\/page\.(ts|tsx|js|jsx)$/, '')
+        .replace(/\[([^\]]+)\]/g, ':$1') || // Convert [id] to :id
+      '/';
 
     routes.push({
       path: routePath,
       type: 'page',
-      filePath: file
+      filePath: file,
     });
   }
 
   // App Router API routes
   const appApis = await glob.default(['**/app/**/route.{ts,tsx,js,jsx}'], {
     cwd: process.cwd(),
-    ignore: ['node_modules', '.next', 'dist']
+    ignore: ['node_modules', '.next', 'dist'],
   });
 
   for (const file of appApis) {
-    const routePath = file
-      .replace(/^.*\/app/, '')
-      .replace(/\/route\.(ts|tsx|js|jsx)$/, '')
-      || '/api';
+    const routePath =
+      file.replace(/^.*\/app/, '').replace(/\/route\.(ts|tsx|js|jsx)$/, '') || '/api';
 
     routes.push({
       path: routePath,
       type: 'api',
-      filePath: file
+      filePath: file,
     });
   }
 
   // Pages Router pages
   const pagesFiles = await glob.default(['**/pages/**/*.{ts,tsx,js,jsx}'], {
     cwd: process.cwd(),
-    ignore: ['node_modules', '.next', 'dist', '_app', '_document', '_error']
+    ignore: ['node_modules', '.next', 'dist', '_app', '_document', '_error'],
   });
 
   for (const file of pagesFiles) {
-    const routePath = file
-      .replace(/^.*\/pages/, '')
-      .replace(/\.(ts|tsx|js|jsx)$/, '')
-      .replace(/\/index$/, '')
-      .replace(/\[([^\]]+)\]/g, ':$1')
-      || '/';
+    const routePath =
+      file
+        .replace(/^.*\/pages/, '')
+        .replace(/\.(ts|tsx|js|jsx)$/, '')
+        .replace(/\/index$/, '')
+        .replace(/\[([^\]]+)\]/g, ':$1') || '/';
 
     const type = file.includes('/api/') ? 'api' : 'page';
 
     routes.push({
       path: routePath,
       type,
-      filePath: file
+      filePath: file,
     });
   }
 
@@ -208,8 +206,8 @@ function levenshteinDistance(a: string, b: string): number {
       } else {
         matrix[i][j] = Math.min(
           matrix[i - 1][j - 1] + 1, // substitution
-          matrix[i][j - 1] + 1,     // insertion
-          matrix[i - 1][j] + 1      // deletion
+          matrix[i][j - 1] + 1, // insertion
+          matrix[i - 1][j] + 1 // deletion
         );
       }
     }
@@ -229,9 +227,7 @@ function findSuggestedFix(
   const validPaths = validRoutes.map(r => r.path);
 
   // 1. Exact match (case-insensitive)
-  const exactMatch = validPaths.find(
-    p => p.toLowerCase() === brokenPath.toLowerCase()
-  );
+  const exactMatch = validPaths.find(p => p.toLowerCase() === brokenPath.toLowerCase());
   if (exactMatch && exactMatch !== brokenPath) {
     return { suggestion: exactMatch, confidence: 'high' };
   }
@@ -271,7 +267,7 @@ function findSuggestedFix(
   if (distance < 5) {
     return {
       suggestion: closest,
-      confidence: distance < 3 ? 'medium' : 'low'
+      confidence: distance < 3 ? 'medium' : 'low',
     };
   }
 
@@ -292,7 +288,7 @@ async function checkLinks(baseUrl: string, routes: NextRoute[]): Promise<BrokenL
   const brokenLinks: BrokenLink[] = [];
   const checkedUrls = new Set<string>();
 
-  checker.on('link', (result) => {
+  checker.on('link', result => {
     // Only track broken links
     if (result.state === LinkState.BROKEN && !checkedUrls.has(result.url)) {
       checkedUrls.add(result.url);
@@ -304,7 +300,7 @@ async function checkLinks(baseUrl: string, routes: NextRoute[]): Promise<BrokenL
         status: result.status || 0,
         parent: result.parent || 'unknown',
         suggestedFix: fix?.suggestion,
-        confidence: fix?.confidence || 'low'
+        confidence: fix?.confidence || 'low',
       });
     }
   });
@@ -314,12 +310,7 @@ async function checkLinks(baseUrl: string, routes: NextRoute[]): Promise<BrokenL
       path: baseUrl,
       recurse: true,
       timeout: 5000,
-      linksToSkip: [
-        'mailto:',
-        'tel:',
-        'javascript:',
-        '#'
-      ]
+      linksToSkip: ['mailto:', 'tel:', 'javascript:', '#'],
     });
 
     logger.succeedSpinner(`Found ${brokenLinks.length} broken links`);
@@ -346,7 +337,7 @@ function generateRedirects(brokenLinks: BrokenLink[]): string {
       return {
         source,
         destination: link.suggestedFix!,
-        permanent: false
+        permanent: false,
       };
     });
 
@@ -360,11 +351,15 @@ function generateRedirects(brokenLinks: BrokenLink[]): string {
 
 async redirects() {
   return [
-${redirects.map(r => `    {
+${redirects
+  .map(
+    r => `    {
       source: '${r.source}',
       destination: '${r.destination}',
       permanent: false,
-    },`).join('\n')}
+    },`
+  )
+  .join('\n')}
   ];
 }
 `;
@@ -374,11 +369,7 @@ ${redirects.map(r => `    {
  * Update next.config.js with redirects
  */
 async function updateNextConfig(redirectsCode: string): Promise<void> {
-  const configPaths = [
-    'next.config.js',
-    'next.config.mjs',
-    'next.config.ts'
-  ];
+  const configPaths = ['next.config.js', 'next.config.mjs', 'next.config.ts'];
 
   let configPath: string | null = null;
 
@@ -504,7 +495,7 @@ export async function verifyCommand(options: VerifyOptions): Promise<void> {
         type: 'confirm',
         name: 'generateRedirects',
         message: 'Generate redirects for these broken links?',
-        initial: true
+        initial: true,
       });
 
       if (response.generateRedirects) {
@@ -518,11 +509,10 @@ export async function verifyCommand(options: VerifyOptions): Promise<void> {
     logger.list([
       'Fix broken links in your code',
       'Or run: npx carla verify --fix (to generate redirects)',
-      'Re-run: npx carla verify'
+      'Re-run: npx carla verify',
     ]);
 
     process.exit(brokenLinks.length > 0 ? 1 : 0);
-
   } catch (error) {
     logger.stopSpinner();
 

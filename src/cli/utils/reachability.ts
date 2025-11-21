@@ -45,7 +45,7 @@ export async function discoverPublicAssets(): Promise<Set<string>> {
       cwd: process.cwd(),
       absolute: false,
       onlyFiles: true,
-      ignore: ['**/node_modules/**', '**/.DS_Store', '**/Thumbs.db']
+      ignore: ['**/node_modules/**', '**/.DS_Store', '**/Thumbs.db'],
     });
 
     // Normalize paths (remove 'public/' prefix and add leading '/')
@@ -71,15 +71,13 @@ export async function findAssetReferences(): Promise<Set<string>> {
     const glob = await import('fast-glob');
 
     // Scan JavaScript/TypeScript files
-    const codeFiles = await glob.default([
-      'src/**/*.{js,jsx,ts,tsx}',
-      '!**/node_modules/**',
-      '!**/.next/**',
-      '!**/dist/**'
-    ], {
-      cwd: process.cwd(),
-      absolute: false
-    });
+    const codeFiles = await glob.default(
+      ['src/**/*.{js,jsx,ts,tsx}', '!**/node_modules/**', '!**/.next/**', '!**/dist/**'],
+      {
+        cwd: process.cwd(),
+        absolute: false,
+      }
+    );
 
     for (const file of codeFiles) {
       try {
@@ -94,14 +92,13 @@ export async function findAssetReferences(): Promise<Set<string>> {
     }
 
     // Scan CSS files
-    const cssFiles = await glob.default([
-      'src/**/*.{css,scss,sass,less}',
-      '!**/node_modules/**',
-      '!**/.next/**'
-    ], {
-      cwd: process.cwd(),
-      absolute: false
-    });
+    const cssFiles = await glob.default(
+      ['src/**/*.{css,scss,sass,less}', '!**/node_modules/**', '!**/.next/**'],
+      {
+        cwd: process.cwd(),
+        absolute: false,
+      }
+    );
 
     for (const file of cssFiles) {
       try {
@@ -136,7 +133,8 @@ export function extractAssetReferences(content: string): string[] {
 
   // Pattern 2: String literals with public paths
   // Matches: "/images/logo.png", '/videos/demo.mp4'
-  const stringLiteralPattern = /["']([/](?:images?|videos?|assets?|fonts?|icons?|files?|documents?|media|static|public|maps?|blogs?|landing)[^"']+)["']/g;
+  const stringLiteralPattern =
+    /["']([/](?:images?|videos?|assets?|fonts?|icons?|files?|documents?|media|static|public|maps?|blogs?|landing)[^"']+)["']/g;
   while ((match = stringLiteralPattern.exec(content)) !== null) {
     references.push(match[1]);
   }
@@ -146,7 +144,9 @@ export function extractAssetReferences(content: string): string[] {
   const templateLiteralPattern = /`[^`]*\/([^`/]+\.[a-z0-9]+)[^`]*`/gi;
   while ((match = templateLiteralPattern.exec(content)) !== null) {
     // Try to extract simple paths from template literals
-    const innerMatch = content.slice(match.index, match.index + match[0].length).match(/\/([a-zA-Z0-9_\-./]+)/);
+    const innerMatch = content
+      .slice(match.index, match.index + match[0].length)
+      .match(/\/([a-zA-Z0-9_\-./]+)/);
     if (innerMatch) {
       references.push(innerMatch[0]);
     }
@@ -154,7 +154,8 @@ export function extractAssetReferences(content: string): string[] {
 
   // Pattern 4: Common static file extensions in strings
   // Matches: "/file.pdf", "/doc.zip", etc.
-  const extensionPattern = /["']([/][^"']+\.(?:png|jpg|jpeg|gif|svg|webp|mp4|webm|mov|pdf|zip|json|xml|txt|woff|woff2|ttf|eot|ico|mp3|wav|ogg|csv))["']/gi;
+  const extensionPattern =
+    /["']([/][^"']+\.(?:png|jpg|jpeg|gif|svg|webp|mp4|webm|mov|pdf|zip|json|xml|txt|woff|woff2|ttf|eot|ico|mp3|wav|ogg|csv))["']/gi;
   while ((match = extensionPattern.exec(content)) !== null) {
     references.push(match[1]);
   }
@@ -187,56 +188,59 @@ export async function analyzeReachability(): Promise<ReachabilityResult> {
   const visitedFiles = new Set<string>();
 
   // Step 1: Find all Next.js entry points
-  const entryPoints = await glob.default([
-    // Core route files
-    'src/app/**/page.{js,jsx,ts,tsx}',
-    'src/app/**/route.{js,ts}',
-    'src/app/**/layout.{js,jsx,ts,tsx}',
-    'src/app/**/template.{js,jsx,ts,tsx}',
-    'src/app/**/default.{js,jsx,ts,tsx}',
+  const entryPoints = await glob.default(
+    [
+      // Core route files
+      'src/app/**/page.{js,jsx,ts,tsx}',
+      'src/app/**/route.{js,ts}',
+      'src/app/**/layout.{js,jsx,ts,tsx}',
+      'src/app/**/template.{js,jsx,ts,tsx}',
+      'src/app/**/default.{js,jsx,ts,tsx}',
 
-    // UI files
-    'src/app/**/loading.{js,jsx,ts,tsx}',
+      // UI files
+      'src/app/**/loading.{js,jsx,ts,tsx}',
 
-    // Error handling files
-    'src/app/**/error.{js,jsx,ts,tsx}',
-    'src/app/**/not-found.{js,jsx,ts,tsx}',
-    'src/app/**/global-error.{js,jsx,ts,tsx}',
-    'src/app/**/forbidden.{js,jsx,ts,tsx}',
-    'src/app/**/unauthorized.{js,jsx,ts,tsx}',
+      // Error handling files
+      'src/app/**/error.{js,jsx,ts,tsx}',
+      'src/app/**/not-found.{js,jsx,ts,tsx}',
+      'src/app/**/global-error.{js,jsx,ts,tsx}',
+      'src/app/**/forbidden.{js,jsx,ts,tsx}',
+      'src/app/**/unauthorized.{js,jsx,ts,tsx}',
 
-    // Metadata files (executed at build time)
-    'src/app/**/opengraph-image.{js,ts,jsx,tsx}',
-    'src/app/**/twitter-image.{js,ts,jsx,tsx}',
-    'src/app/**/icon.{js,ts,jsx,tsx}',
-    'src/app/**/apple-icon.{js,ts,jsx,tsx}',
-    'src/app/**/sitemap.{js,ts}',
-    'src/app/**/robots.{js,ts}',
-    'src/app/**/manifest.{js,ts}',
+      // Metadata files (executed at build time)
+      'src/app/**/opengraph-image.{js,ts,jsx,tsx}',
+      'src/app/**/twitter-image.{js,ts,jsx,tsx}',
+      'src/app/**/icon.{js,ts,jsx,tsx}',
+      'src/app/**/apple-icon.{js,ts,jsx,tsx}',
+      'src/app/**/sitemap.{js,ts}',
+      'src/app/**/robots.{js,ts}',
+      'src/app/**/manifest.{js,ts}',
 
-    // Middleware and instrumentation
-    'src/middleware.{js,ts}',
-    'middleware.{js,ts}', // Can be at root
-    'src/proxy.{js,ts}', // Next.js 16+ middleware name
-    'proxy.{js,ts}', // Can be at root
-    'src/instrumentation.{js,ts}',
-    'instrumentation.{js,ts}', // Can be at root
-    'src/instrumentation-client.{js,ts}',
-    'instrumentation-client.{js,ts}', // Can be at root
+      // Middleware and instrumentation
+      'src/middleware.{js,ts}',
+      'middleware.{js,ts}', // Can be at root
+      'src/proxy.{js,ts}', // Next.js 16+ middleware name
+      'proxy.{js,ts}', // Can be at root
+      'src/instrumentation.{js,ts}',
+      'instrumentation.{js,ts}', // Can be at root
+      'src/instrumentation-client.{js,ts}',
+      'instrumentation-client.{js,ts}', // Can be at root
 
-    // MDX configuration
-    'src/mdx-components.{js,ts,jsx,tsx}',
-    'mdx-components.{js,ts,jsx,tsx}', // Can be at root
+      // MDX configuration
+      'src/mdx-components.{js,ts,jsx,tsx}',
+      'mdx-components.{js,ts,jsx,tsx}', // Can be at root
 
-    // Root layout (important)
-    'src/app/layout.{js,jsx,ts,tsx}',
+      // Root layout (important)
+      'src/app/layout.{js,jsx,ts,tsx}',
 
-    // Pages Router support
-    'src/pages/**/*.{js,jsx,ts,tsx}',
-  ], {
-    cwd: process.cwd(),
-    absolute: false
-  });
+      // Pages Router support
+      'src/pages/**/*.{js,jsx,ts,tsx}',
+    ],
+    {
+      cwd: process.cwd(),
+      absolute: false,
+    }
+  );
 
   // Step 2: Build reachability tree by following imports
   async function markReachable(filePath: string): Promise<void> {
@@ -250,7 +254,7 @@ export async function analyzeReachability(): Promise<ReachabilityResult> {
       const content = await fs.readFile(filePath, 'utf-8');
       const ast = parser.parse(content, {
         sourceType: 'module',
-        plugins: ['jsx', 'typescript', 'decorators-legacy']
+        plugins: ['jsx', 'typescript', 'decorators-legacy'],
       });
 
       // Extract all imports AND re-exports
@@ -330,7 +334,7 @@ export async function analyzeReachability(): Promise<ReachabilityResult> {
           if (astPath.node.source && astPath.node.source.value) {
             imports.push(astPath.node.source.value);
           }
-        }
+        },
       });
 
       // Resolve and follow each import
@@ -348,7 +352,11 @@ export async function analyzeReachability(): Promise<ReachabilityResult> {
   // Helper to resolve import paths
   async function resolveImport(importPath: string, fromFile: string): Promise<string | null> {
     // Skip external packages
-    if (!importPath.startsWith('.') && !importPath.startsWith('/') && !importPath.startsWith('@/')) {
+    if (
+      !importPath.startsWith('.') &&
+      !importPath.startsWith('/') &&
+      !importPath.startsWith('@/')
+    ) {
       return null;
     }
 
@@ -361,9 +369,9 @@ export async function analyzeReachability(): Promise<ReachabilityResult> {
 
       // Try multiple base directories for @/ alias
       // In Next.js, @/ can resolve to different bases depending on tsconfig.json
-      resolveCandidates.push(`src/${withoutAlias}`);  // Most common: @/ → src/
-      resolveCandidates.push(withoutAlias);            // Alternative: @/ → project root
-      resolveCandidates.push(`app/${withoutAlias}`);  // Alternative: @/ → app/
+      resolveCandidates.push(`src/${withoutAlias}`); // Most common: @/ → src/
+      resolveCandidates.push(withoutAlias); // Alternative: @/ → project root
+      resolveCandidates.push(`app/${withoutAlias}`); // Alternative: @/ → app/
     } else if (importPath.startsWith('/')) {
       resolveCandidates.push(importPath.slice(1));
     } else {
@@ -412,9 +420,7 @@ export async function analyzeReachability(): Promise<ReachabilityResult> {
   }
 
   // Step 3: Find all project files
-  const allFiles = await glob.default([
-    'src/**/*.{js,jsx,ts,tsx}'
-  ], {
+  const allFiles = await glob.default(['src/**/*.{js,jsx,ts,tsx}'], {
     cwd: process.cwd(),
     absolute: false,
     ignore: [
@@ -424,8 +430,8 @@ export async function analyzeReachability(): Promise<ReachabilityResult> {
       '**/*.test.{js,jsx,ts,tsx}',
       '**/*.spec.{js,jsx,ts,tsx}',
       '**/__tests__/**',
-      '**/__mocks__/**'
-    ]
+      '**/__mocks__/**',
+    ],
   });
 
   // Step 4: Find unreachable files
@@ -457,6 +463,6 @@ export async function analyzeReachability(): Promise<ReachabilityResult> {
     reachableFilesCount: reachableFiles.size,
     entryPointsCount: entryPoints.length,
     totalAssetsCount: publicAssets.size,
-    referencedAssetsCount: publicAssets.size - unreachableAssets.length
+    referencedAssetsCount: publicAssets.size - unreachableAssets.length,
   };
 }
