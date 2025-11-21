@@ -13,44 +13,15 @@ import { getApiKeyFromEnv, decodeApiKey } from '../../utils/decode-api-key.js';
 
 export interface SyncOptions {
   force?: boolean;
-  verbose?: boolean;
 }
 
-export async function syncCommand(options: SyncOptions): Promise<void> {
+export async function syncCommand(_options: SyncOptions): Promise<void> {
   const configManager = new ConfigManager();
-
-  // Enable debug logging if verbose flag is set
-  const verbose = options.verbose || false;
-  if (verbose) {
-    logger.info('Verbose mode enabled');
-  }
 
   try {
     // Get API key from environment
     const apiKey = getApiKeyFromEnv();
-
-    if (verbose) {
-      logger.info(`API Key (first 20 chars): ${apiKey.substring(0, 20)}...`);
-    }
-
-    // Decode and validate API key
-    let orgId: string;
-    try {
-      const decoded = decodeApiKey(apiKey);
-      orgId = decoded.orgId;
-      logger.info(`Organization ID: ${orgId}`);
-
-      if (verbose && decoded.assistantId) {
-        logger.info(`Assistant ID: ${decoded.assistantId}`);
-      }
-    } catch (error) {
-      logger.error('Failed to decode API key');
-      if (error instanceof Error) {
-        logger.error(error.message);
-      }
-      logger.info('Please check your NEXT_PUBLIC_CARLA_API_KEY in your .env file');
-      process.exit(1);
-    }
+    const { orgId } = decodeApiKey(apiKey);
 
     // Check if tools exist
     const toolsConfig = configManager.loadTools();
@@ -106,47 +77,16 @@ export async function syncCommand(options: SyncOptions): Promise<void> {
 
       logger.section('📝 Next Steps');
       logger.list([
-        'Install the widget: npx carla-nextjs install',
-        'Deploy to staging/production for the plugin to work',
         'Check status: npx carla-nextjs status',
-        'View and manage tools in your Interworky dashboard',
+        'View tools in Interworky dashboard',
+        'Test your assistant with the new tools',
       ]);
     } catch (error) {
       logger.failSpinner('Sync failed');
-
-      // Enhanced error reporting
       if (error instanceof Error) {
-        logger.error(`Error: ${error.message}`);
-
-        // Check for specific error types
-        if (error.message.includes('401') || error.message.includes('Unauthorized')) {
-          logger.error('Authentication failed - API key may be invalid');
-        } else if (error.message.includes('404')) {
-          logger.error('API endpoint not found - please check your configuration');
-        } else if (error.message.includes('500') || error.message.includes('502')) {
-          logger.error('Server error - please try again later');
-        } else if (error.message.includes('Network') || error.message.includes('ENOTFOUND')) {
-          logger.error('Network error - please check your internet connection');
-        }
-      } else {
-        logger.error(String(error));
+        logger.error(error.message);
       }
-
-      logger.section('🔍 Debugging Information');
-      logger.list([
-        `Organization ID: ${orgId}`,
-        `Tools to sync: ${toolsToSync.length}`,
-        `API Endpoint: https://interworky.com/api-core/api`,
-      ]);
-
-      logger.section('💡 Troubleshooting');
-      logger.list([
-        'Verify NEXT_PUBLIC_CARLA_API_KEY in your .env file',
-        'Check https://interworky.com/dashboard/integrations for your API key',
-        'Ensure you have an active internet connection',
-        'Try running: npx carla-nextjs status',
-      ]);
-
+      logger.info('Please check your API key and try again');
       process.exit(1);
     }
   } catch (error) {
@@ -164,6 +104,5 @@ export function registerSyncCommand(program: Command): void {
     .command('sync')
     .description('Sync enabled tools to Interworky (disabled tools are excluded)')
     .option('-f, --force', 'Force sync even if already synced')
-    .option('-v, --verbose', 'Enable verbose logging for debugging')
     .action(syncCommand);
 }
