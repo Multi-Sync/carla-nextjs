@@ -450,7 +450,24 @@ export async function analyzeReachability(): Promise<ReachabilityResult> {
   if (publicAssets.size > 0) {
     const assetReferences = await findAssetReferences();
 
+    // Whitelist of files that are automatically served by Next.js or browsers
+    const autoServedFiles = new Set([
+      '/robots.txt',
+      '/sitemap.xml',
+      '/favicon.ico',
+      '/manifest.json',
+      '/site.webmanifest',
+      '/browserconfig.xml',
+      '/humans.txt',
+      '/security.txt',
+    ]);
+
     for (const asset of publicAssets) {
+      // Skip auto-served files and .well-known directory
+      if (autoServedFiles.has(asset) || asset.startsWith('/.well-known/')) {
+        continue;
+      }
+
       if (!assetReferences.has(asset)) {
         unreachableAssets.push(asset);
       }
