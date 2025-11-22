@@ -218,10 +218,13 @@ npx @interworky/carla-nextjs verify --fix
 - Creates quality tracking baseline (.carla/metrics.json)
 - Multiple strategies (full QA, quick check, hooks-only)
 - Trend tracking for health score over time
+- **Auto-detects package manager** (npm, pnpm, yarn) from lock files
+- Generates workflows optimized for your package manager
+- Docker-friendly prepare script (prevents build errors)
 
 **Usage:**
 ```bash
-# Interactive mode - choose strategy
+# Interactive mode - auto-detects package manager
 npx @interworky/carla-nextjs init-ci
 
 # Full QA strategy (GitHub Actions + hooks + all checks)
@@ -232,6 +235,11 @@ npx @interworky/carla-nextjs init-ci --strategy quick
 
 # Hooks only (no GitHub Actions)
 npx @interworky/carla-nextjs init-ci --strategy hooks-only
+
+# Specify package manager (overrides auto-detection)
+npx @interworky/carla-nextjs init-ci --package-manager pnpm
+npx @interworky/carla-nextjs init-ci --package-manager yarn
+npx @interworky/carla-nextjs init-ci --package-manager npm
 
 # Force overwrite existing configuration
 npx @interworky/carla-nextjs init-ci --force

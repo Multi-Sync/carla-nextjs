@@ -462,7 +462,7 @@ The `--fix` option will only generate redirects for high and medium confidence s
 
 ### `init-ci` 🆕
 
-Setup CI/CD with GitHub Actions and pre-commit hooks.
+Setup CI/CD with GitHub Actions and pre-commit hooks. **Auto-detects your package manager** (npm, pnpm, yarn) and generates optimized workflows.
 
 ```bash
 npx @interworky/carla-nextjs init-ci [options]
@@ -470,21 +470,28 @@ npx @interworky/carla-nextjs init-ci [options]
 
 **Options:**
 
-| Option          | Type    | Description                              | Default |
-| --------------- | ------- | ---------------------------------------- | ------- |
-| `--strategy`    | string  | CI strategy (see below)                  | full    |
-| `--force`       | boolean | Overwrite existing configuration         | false   |
-| `--skip-hooks`  | boolean | Skip pre-commit hooks installation       | false   |
+| Option               | Type    | Description                                      | Default        |
+| -------------------- | ------- | ------------------------------------------------ | -------------- |
+| `--strategy`         | string  | CI strategy (see below)                          | full           |
+| `--package-manager`  | string  | Package manager: npm, pnpm, or yarn              | auto-detected  |
+| `--force`            | boolean | Overwrite existing configuration                 | false          |
+| `--skip-hooks`       | boolean | Skip pre-commit hooks installation               | false          |
 
 **Strategy values:**
 - `full` - GitHub Actions + Pre-commit hooks + All checks (recommended)
 - `quick` - GitHub Actions with essential checks only
 - `hooks-only` - Pre-commit hooks only (no GitHub Actions)
 
+**Package Manager Detection:**
+- Checks for `pnpm-lock.yaml` → uses pnpm
+- Checks for `yarn.lock` → uses yarn
+- Defaults to npm if neither found
+- Can be overridden with `--package-manager` flag
+
 **Examples:**
 
 ```bash
-# Interactive mode - choose strategy
+# Interactive mode - auto-detects package manager
 npx @interworky/carla-nextjs init-ci
 
 # Full QA strategy
@@ -496,21 +503,26 @@ npx @interworky/carla-nextjs init-ci --strategy quick
 # Hooks only (no GitHub Actions)
 npx @interworky/carla-nextjs init-ci --strategy hooks-only
 
-# Force overwrite
-npx @interworky/carla-nextjs init-ci --force
+# Specify package manager (for pnpm projects)
+npx @interworky/carla-nextjs init-ci --package-manager pnpm
+
+# Force overwrite with yarn
+npx @interworky/carla-nextjs init-ci --force --package-manager yarn
 ```
 
 **What it installs:**
 
 **GitHub Actions workflow** (`.github/workflows/carla-qa-*.yml`):
 - Runs on Pull Requests to main/master/develop
-- Executes `doctor`, `clean`, `verify` commands
+- Executes `doctor` and `clean` commands
 - Builds Next.js and runs tests
 - Comments on PR with results
+- **Uses your package manager** (pnpm setup included if needed)
+- **Optimized caching** for faster CI runs
 
 **Pre-commit hook** (`.husky/pre-commit`):
-- Runs `carla doctor --fix-safe` before each commit
-- Auto-adds fixed files to commit
+- Runs `carla doctor --check` before each commit
+- Prevents committing code with issues
 
 **Pre-push hook** (`.husky/pre-push`):
 - Runs `carla doctor --check` and `carla clean --check`
@@ -521,15 +533,18 @@ npx @interworky/carla-nextjs init-ci --force
 - Health score calculation
 - History of issues found/fixed
 
-::: warning GitHub Secrets Required
-You need to add `OPENAI_API_KEY` as a GitHub repository secret for AI-powered fixes to work in CI.
+**Docker-friendly prepare script:**
+- Only runs Husky in git repositories (`.git` directory exists)
+- Prevents "husky: not found" errors in Docker builds
+- No special Dockerfile configuration needed
 
-**Steps:**
-1. Go to GitHub repo → Settings → Secrets → Actions
-2. Click "New repository secret"
-3. Name: `OPENAI_API_KEY`
-4. Value: Your OpenAI API key (sk-...)
-5. Click "Add secret"
+::: tip Package Manager Support
+Carla auto-detects your package manager and generates optimized workflows:
+- **pnpm**: Includes `pnpm/action-setup` for faster installs
+- **yarn**: Uses `yarn.lock` for deterministic builds
+- **npm**: Standard npm CI workflow
+
+No manual configuration needed!
 :::
 
 ---

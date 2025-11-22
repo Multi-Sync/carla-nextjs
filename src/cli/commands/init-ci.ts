@@ -29,9 +29,11 @@ export interface InitCIOptions {
   strategy?: 'full' | 'quick' | 'hooks-only';
   force?: boolean;
   skipHooks?: boolean;
+  packageManager?: 'npm' | 'pnpm' | 'yarn';
 }
 
 type CIStrategy = 'full' | 'quick' | 'hooks-only';
+type PackageManager = 'npm' | 'pnpm' | 'yarn';
 
 interface PackageJson {
   name: string;
@@ -41,13 +43,79 @@ interface PackageJson {
 }
 
 // ============================================================================
+// Package Manager Detection
+// ============================================================================
+
+/**
+ * Detect package manager from lock files
+ */
+async function detectPackageManager(): Promise<PackageManager> {
+  try {
+    await fs.access('pnpm-lock.yaml');
+    return 'pnpm';
+  } catch {
+    // Not pnpm
+  }
+
+  try {
+    await fs.access('yarn.lock');
+    return 'yarn';
+  } catch {
+    // Not yarn
+  }
+
+  return 'npm'; // Default to npm
+}
+
+/**
+ * Get package manager configuration
+ */
+function getPackageManagerConfig(pm: PackageManager) {
+  const configs = {
+    npm: {
+      setup: '',
+      cache: 'npm',
+      install: 'npm ci',
+      installDev: 'npm install --save-dev',
+      run: 'npm run',
+      test: 'npm test',
+    },
+    pnpm: {
+      setup: `      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+`,
+      cache: 'pnpm',
+      install: 'pnpm install --frozen-lockfile',
+      installDev: 'pnpm add -D',
+      run: 'pnpm run',
+      test: 'pnpm test',
+    },
+    yarn: {
+      setup: '',
+      cache: 'yarn',
+      install: 'yarn install --frozen-lockfile',
+      installDev: 'yarn add -D',
+      run: 'yarn run',
+      test: 'yarn test',
+    },
+  };
+
+  return configs[pm];
+}
+
+// ============================================================================
 // CI Strategy Templates
 // ============================================================================
 
 /**
  * Full QA strategy - runs all checks on PR
  */
-const FULL_QA_WORKFLOW = `name: Carla QA - Full Check
+function generateFullQAWorkflow(pm: PackageManager): string {
+  const config = getPackageManagerConfig(pm);
+
+  return `name: Carla QA - Full Check
 
 on:
   pull_request:
@@ -62,15 +130,15 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
+${config.setup}
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-          cache: 'npm'
+          cache: '${config.cache}'
 
       - name: Install dependencies
-        run: npm ci
+        run: ${config.install}
 
       - name: Run Carla Doctor (Hydration & Error Check)
         run: npx @interworky/carla-nextjs doctor --check
@@ -79,10 +147,10 @@ jobs:
         run: npx @interworky/carla-nextjs clean --check
 
       - name: Build Next.js
-        run: npm run build
+        run: ${config.run} build
 
       - name: Run Tests
-        run: npm test
+        run: ${config.test}
         continue-on-error: true
 
       - name: Comment PR with Results
@@ -114,11 +182,15 @@ jobs:
               body: output
             });
 `;
+}
 
 /**
  * Quick strategy - only essential checks
  */
-const QUICK_CHECK_WORKFLOW = `name: Carla QA - Quick Check
+function generateQuickCheckWorkflow(pm: PackageManager): string {
+  const config = getPackageManagerConfig(pm);
+
+  return `name: Carla QA - Quick Check
 
 on:
   pull_request:
@@ -131,22 +203,23 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
+${config.setup}
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-          cache: 'npm'
+          cache: '${config.cache}'
 
       - name: Install dependencies
-        run: npm ci
+        run: ${config.install}
 
       - name: Run Carla Doctor (Critical Errors Only)
         run: npx @interworky/carla-nextjs doctor --check --type hydration
 
       - name: Build Check
-        run: npm run build
+        run: ${config.run} build
 `;
+}
 
 // ============================================================================
 // Pre-commit Hook Templates (Husky v10+ Compatible)
@@ -234,7 +307,11 @@ async function isGitRepo(): Promise<boolean> {
 /**
  * Generate GitHub Actions workflow
  */
-async function setupGitHubActions(strategy: CIStrategy, force: boolean): Promise<void> {
+async function setupGitHubActions(
+  strategy: CIStrategy,
+  force: boolean,
+  packageManager: PackageManager
+): Promise<void> {
   logger.section('🔧 Setting up GitHub Actions');
 
   // Check for existing workflow
@@ -264,11 +341,11 @@ async function setupGitHubActions(strategy: CIStrategy, force: boolean): Promise
 
   switch (strategy) {
     case 'full':
-      workflow = FULL_QA_WORKFLOW;
+      workflow = generateFullQAWorkflow(packageManager);
       filename = 'carla-qa-full.yml';
       break;
     case 'quick':
-      workflow = QUICK_CHECK_WORKFLOW;
+      workflow = generateQuickCheckWorkflow(packageManager);
       filename = 'carla-qa-quick.yml';
       break;
     default:
@@ -290,7 +367,7 @@ async function setupGitHubActions(strategy: CIStrategy, force: boolean): Promise
 /**
  * Install and configure Husky
  */
-async function setupPreCommitHooks(): Promise<void> {
+async function setupPreCommitHooks(packageManager: PackageManager): Promise<void> {
   logger.section('🪝 Setting up Pre-commit Hooks');
 
   const hasExistingHusky = await hasHusky();
@@ -299,7 +376,12 @@ async function setupPreCommitHooks(): Promise<void> {
     logger.startSpinner('Installing Husky...');
 
     try {
-      await execa('npm', ['install', '--save-dev', 'husky']);
+      const config = getPackageManagerConfig(packageManager);
+      const installCmd = config.installDev.split(' ');
+      const cmd = installCmd[0];
+      const args = [...installCmd.slice(1), 'husky'];
+
+      await execa(cmd, args);
       logger.succeedSpinner('Husky installed');
     } catch (error) {
       logger.failSpinner('Failed to install Husky');
@@ -405,6 +487,10 @@ export async function initCICommand(options: InitCIOptions): Promise<void> {
       process.exit(1);
     }
 
+    // Detect or use specified package manager
+    let packageManager: PackageManager = options.packageManager || (await detectPackageManager());
+    logger.info(`Detected package manager: ${packageManager}`);
+
     // Determine strategy
     let strategy: CIStrategy = options.strategy || 'full';
 
@@ -438,12 +524,12 @@ export async function initCICommand(options: InitCIOptions): Promise<void> {
 
     // Setup GitHub Actions (unless hooks-only)
     if (strategy !== 'hooks-only') {
-      await setupGitHubActions(strategy, options.force || false);
+      await setupGitHubActions(strategy, options.force || false, packageManager);
     }
 
     // Setup pre-commit hooks (unless explicitly skipped)
     if (!options.skipHooks) {
-      await setupPreCommitHooks();
+      await setupPreCommitHooks(packageManager);
     }
 
     // Setup quality tracking
@@ -502,6 +588,7 @@ export function registerInitCICommand(program: Command): void {
     .command('init-ci')
     .description('🛡️ Setup CI/CD with GitHub Actions and pre-commit hooks')
     .option('--strategy <strategy>', 'CI strategy: full|quick|hooks-only', 'full')
+    .option('--package-manager <pm>', 'Package manager: npm|pnpm|yarn (auto-detected if not specified)')
     .option('--force', 'Overwrite existing configuration')
     .option('--skip-hooks', 'Skip pre-commit hooks installation')
     .action(initCICommand);
