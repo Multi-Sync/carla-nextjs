@@ -488,7 +488,7 @@ export async function initCICommand(options: InitCIOptions): Promise<void> {
     }
 
     // Detect or use specified package manager
-    let packageManager: PackageManager = options.packageManager || (await detectPackageManager());
+    const packageManager: PackageManager = options.packageManager || (await detectPackageManager());
     logger.info(`Detected package manager: ${packageManager}`);
 
     // Determine strategy
@@ -588,7 +588,10 @@ export function registerInitCICommand(program: Command): void {
     .command('init-ci')
     .description('🛡️ Setup CI/CD with GitHub Actions and pre-commit hooks')
     .option('--strategy <strategy>', 'CI strategy: full|quick|hooks-only', 'full')
-    .option('--package-manager <pm>', 'Package manager: npm|pnpm|yarn (auto-detected if not specified)')
+    .option(
+      '--package-manager <pm>',
+      'Package manager: npm|pnpm|yarn (auto-detected if not specified)'
+    )
     .option('--force', 'Overwrite existing configuration')
     .option('--skip-hooks', 'Skip pre-commit hooks installation')
     .action(initCICommand);
