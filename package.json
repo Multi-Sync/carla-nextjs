@@ -1,6 +1,6 @@
 {
   "name": "@interworky/carla-nextjs",
-  "version": "2.3.1",
+  "version": "2.4.0",
   "description": "The QA & Clean-Up Crew for Next.js Vibe Coders. Detect hydration errors, dead code, and bugs from Cursor/v0.",
   "type": "module",
   "main": "dist/index.js",
