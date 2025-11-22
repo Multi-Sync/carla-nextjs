@@ -1009,29 +1009,45 @@ async function removeExportFromFile(
 
     traverse(ast, {
       ExportNamedDeclaration(path: any) {
-        // Check if this is the export we want to remove
-        if (path.node.loc?.start.line === line) {
-          path.remove();
-          modified = true;
-        }
-
-        // Also handle export { foo, bar }
-        else if (path.node.specifiers && path.node.specifiers.length > 0) {
-          const remainingSpecifiers = path.node.specifiers.filter((spec: any) => {
+        // Handle export { foo, bar, baz } - multiple exports in one statement
+        if (path.node.specifiers && path.node.specifiers.length > 0) {
+          // Check if the export name we're looking for is in this statement
+          const hasTargetExport = path.node.specifiers.some((spec: any) => {
             if (t.isExportSpecifier(spec)) {
               const name = t.isIdentifier(spec.exported) ? spec.exported.name : spec.exported.value;
-              return name !== exportName;
+              return name === exportName;
             }
-            return true;
+            return false;
           });
 
-          if (remainingSpecifiers.length === 0) {
-            path.remove();
-            modified = true;
-          } else if (remainingSpecifiers.length !== path.node.specifiers.length) {
-            path.node.specifiers = remainingSpecifiers;
-            modified = true;
+          if (hasTargetExport) {
+            // Filter out only the unused export
+            const remainingSpecifiers = path.node.specifiers.filter((spec: any) => {
+              if (t.isExportSpecifier(spec)) {
+                const name = t.isIdentifier(spec.exported)
+                  ? spec.exported.name
+                  : spec.exported.value;
+                return name !== exportName;
+              }
+              return true;
+            });
+
+            // If no specifiers remain, remove the entire export statement
+            if (remainingSpecifiers.length === 0) {
+              path.remove();
+              modified = true;
+            }
+            // If some specifiers remain, keep them and only remove the unused one
+            else {
+              path.node.specifiers = remainingSpecifiers;
+              modified = true;
+            }
           }
+        }
+        // Handle single exports like: export const foo = ..., export function foo() {}, etc.
+        else if (path.node.loc?.start.line === line) {
+          path.remove();
+          modified = true;
         }
       },
 

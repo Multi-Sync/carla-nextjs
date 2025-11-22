@@ -526,6 +526,13 @@ async function detectUnusedCodeViaReachability(): Promise<HealthIssue[]> {
 
       if (visitedFiles.has(normalizedPath)) return;
       visitedFiles.add(normalizedPath);
+
+      // Skip non-JavaScript/TypeScript files (CSS, images, fonts, etc.)
+      // Only mark them as visited to avoid re-processing, but don't parse them
+      if (!normalizedPath.match(/\.(js|jsx|ts|tsx)$/)) {
+        return;
+      }
+
       reachableFiles.add(normalizedPath);
 
       try {
@@ -623,7 +630,13 @@ async function detectUnusedCodeViaReachability(): Promise<HealthIssue[]> {
           }
         }
       } catch (error) {
-        // Skip files that can't be parsed
+        // Log parsing errors for debugging
+        if (process.env.DEBUG || process.env.CARLA_DEBUG) {
+          logger.warn(
+            `Failed to parse ${filePath}: ${error instanceof Error ? error.message : String(error)}`
+          );
+        }
+        // Still mark file as visited to avoid infinite loops
       }
     };
 
