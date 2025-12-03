@@ -123,7 +123,7 @@ The generator automatically handles:
 - Nested routes (`/api/users/:userId/posts` → `get_user_posts`)
 - Special characters (replaced with underscores)
 - Duplicate prevention
-  :::
+:::
 
 ## Parameter Extraction
 

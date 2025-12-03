@@ -162,7 +162,7 @@ This uploads your tool definitions to make them available to your AI assistant.
 3. **Security First**: Disable sensitive operations by default
 4. **Keep in Sync**: Run `scan` and `sync` after API changes
 5. **Version Control**: Commit `.carla/tools.json` to track changes over time
-   :::
+:::
 
 ## Widget Customization
 

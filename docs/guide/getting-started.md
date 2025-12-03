@@ -132,7 +132,7 @@ In the dashboard, you'll see two options for plugin setup:
 - **Start with Manual (Free)** if you want to try Carla's monitoring features without commitment
 - **Choose GitHub (Premium Trial)** if you want AI to automatically fix errors and create PRs
 - You can **upgrade from Free to Premium anytime** from Dashboard → Settings → Billing
-  :::
+:::
 
 ## Detailed Setup: Manual Integration (Free)
 

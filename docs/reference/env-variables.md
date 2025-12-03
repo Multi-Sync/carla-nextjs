@@ -68,7 +68,7 @@ export default function InterworkyWidget() {
 - Add `.env*.local` to your `.gitignore` file
 - Use different API keys for development and production environments
 - Rotate your API keys if they are ever exposed publicly
-  :::
+:::
 
 ### Deployment
 
