@@ -179,19 +179,105 @@ export class ApiRouteScanner {
    */
   private extractBodyParams(node: ts.FunctionDeclaration): ParamInfo[] {
     const params: ParamInfo[] = [];
+    const bodyVars = new Set<string>();
 
-    // Look for await request.json() or request.body patterns
+    // Very simplified type guesser
+    const getGuessedType = (name: string): string => {
+      const lower = name.toLowerCase();
+
+      if (lower.includes('id')) return 'number';
+      if (lower.includes('age')) return 'number';
+      if (lower.includes('count')) return 'number';
+      if (lower.includes('price')) return 'number';
+
+      if (lower.includes('email')) return 'string';
+      if (lower.includes('name')) return 'string';
+      if (lower.includes('title')) return 'string';
+      if (lower.includes('description')) return 'string';
+      if (lower.includes('category')) return 'string';
+
+      if (lower.includes('tags')) return 'array';
+      if (lower.includes('list')) return 'array';
+
+      if (lower.includes('settings')) return 'object';
+      if (lower.includes('meta')) return 'object';
+      if (lower.includes('profile')) return 'object';
+
+      return 'unknown';
+    };
+
+    /**
+     * Extract nested binding keys
+     */
+    const extractFromBinding = (element: ts.BindingElement, prefix = '') => {
+      if (ts.isObjectBindingPattern(element.name)) {
+        for (const child of element.name.elements) {
+          extractFromBinding(
+            child,
+            prefix
+              ? `${prefix}.${element.propertyName?.getText() ?? element.name.getText()}`
+              : (element.propertyName?.getText() ?? element.name.getText())
+          );
+        }
+      } else {
+        const key = element.propertyName?.getText() ?? element.name.getText();
+        const full = prefix ? `${prefix}.${key}` : key;
+
+        params.push({
+          name: full,
+          required: true,
+          type: getGuessedType(key),
+        });
+      }
+    };
+
+    /**
+     * Main traversal
+     */
     const visit = (n: ts.Node) => {
-      if (ts.isAwaitExpression(n)) {
-        const expression = n.expression;
-        if (ts.isCallExpression(expression)) {
-          const text = expression.expression.getText();
+      // Direct destructuring from await request.json()
+      if (ts.isVariableDeclaration(n) && n.initializer && ts.isAwaitExpression(n.initializer)) {
+        const init = n.initializer.expression;
+
+        if (ts.isCallExpression(init)) {
+          const text = init.expression.getText();
           if (text.includes('request.json') || text.includes('req.json')) {
-            // Try to find destructuring after this
-            // This is simplified - real implementation would need more AST traversal
+            if (ts.isObjectBindingPattern(n.name)) {
+              for (const el of n.name.elements) extractFromBinding(el);
+            }
+            if (ts.isIdentifier(n.name)) {
+              bodyVars.add(n.name.text);
+            }
           }
         }
       }
+
+      // Destructuring: const { x } = data
+      if (ts.isVariableDeclaration(n) && n.initializer && ts.isIdentifier(n.initializer)) {
+        if (bodyVars.has(n.initializer.text) && ts.isObjectBindingPattern(n.name)) {
+          for (const el of n.name.elements) extractFromBinding(el);
+        }
+      }
+
+      // Property access: const x = data.user.age
+      if (
+        ts.isVariableDeclaration(n) &&
+        n.initializer &&
+        ts.isPropertyAccessExpression(n.initializer)
+      ) {
+        const root = n.initializer.expression.getText();
+        if (bodyVars.has(root)) {
+          const extracted = n.initializer.getText().split('.').slice(1).join('.');
+          const key = extracted.split('.').pop() ?? extracted;
+
+          params.push({
+            name: extracted,
+            required: true,
+            type: getGuessedType(key),
+          });
+        }
+      }
+
       ts.forEachChild(n, visit);
     };
 
