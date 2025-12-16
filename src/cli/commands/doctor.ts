@@ -357,6 +357,16 @@ function extractAssetReferences(content: string): string[] {
     references.push(match[1]);
   }
 
+  // Pattern 5: Full URLs referencing domain assets (for metadata like OG images)
+  // Matches: 'https://interworky.com/image.png', 'https://example.com/og-image.jpg'
+  // Extracts just the path portion (e.g., /image.png)
+  const domainUrlPattern =
+    /["'`]https?:\/\/[^"'`/]+\/([^"'`?#]+\.(?:png|jpg|jpeg|gif|svg|webp|ico|mp4|webm|mov|pdf|json|xml))["'`]/gi;
+  while ((match = domainUrlPattern.exec(content)) !== null) {
+    // Add with leading slash to match public asset paths
+    references.push('/' + match[1]);
+  }
+
   return references;
 }
 
