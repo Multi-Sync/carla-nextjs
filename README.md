@@ -1,8 +1,8 @@
 # Carla Next.js
 
-[![npm version](https://badge.fury.io/js/carla-nextjs.svg)](https://www.npmjs.com/package/carla-nextjs)
+[![npm version](https://img.shields.io/npm/v/@interworky/carla-nextjs.svg)](https://www.npmjs.com/package/@interworky/carla-nextjs)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Node.js Version](https://img.shields.io/node/v/carla-nextjs)](https://nodejs.org)
+[![Node.js Version](https://img.shields.io/node/v/@interworky/carla-nextjs)](https://nodejs.org)
 [![Next.js](https://img.shields.io/badge/Next.js-14%2B-black)](https://nextjs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.3%2B-blue)](https://www.typescriptlang.org/)
 
