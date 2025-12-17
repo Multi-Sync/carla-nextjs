@@ -23,7 +23,7 @@ features:
 
   - icon: 🐛
     title: Error Detection & Tracking [FREE]
-    details: Automatic error capture with stack traces, error frequency trends, and device context. No credit card required.
+    details: Automatic error capture with stack traces, error frequency trends, and device context. No credit card required + CVE Vulnerability Tracking.
 
   - icon: 📈
     title: Analytics & Insights [FREE]
